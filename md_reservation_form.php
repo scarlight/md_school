@@ -4,7 +4,8 @@ require_once get_template_directory() . '/md_reservation_functions.php';
 
 global $product;
 global $post;
-$post_massdata_reserved = get_post_massdata_reserve($post->ID, get_current_user_id());
+$post_massdata_reserved = get_post_massdata_reserve($post->ID, get_current_user_id()); // checks whether this product the user has reserved, id yes return the post data, else null.
+$stock_available_arr = get_stock_available($post->ID);
 $message = null;
 $reserved_id = null;
 
@@ -14,15 +15,45 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
     $reservation_arr = array();
     $count = 0;
 
-    if (count($product->children) == count($_POST)) {
+    if (count($product->children) == count($_POST)) { // count of product children is same as the number of product variant send from form
         foreach ($_POST as $variable_name => $reserve_stock) {
 
-            if (isset($reserve_stock)) {
-                if (is_numeric($reserve_stock) && strlen($reserve_stock) >= 0 && strlen($reserve_stock) < 10) {
+            if (isset($reserve_stock)) { // is reservation count set?
 
-                    $reservation_arr[$product->children[$count]] = $reserve_stock;
+                $reserve_stock= (int)$reserve_stock;
+                if ($reserve_stock > 0 && strlen($reserve_stock) >= 0 && strlen($reserve_stock) < 10) { // if reservation count is valid
 
-                } else {
+                    if(isset($stock_available_arr[$product->children[$count]])){ // if there are existing reservations.
+
+                        if($reserve_stock > $stock_available_arr[$product->children[$count]]){ // if reservation is more that stock available
+
+                            $message = 'Product stock reservation cannot exceed the available stock';
+                            break;
+                        }else{ // if reservation is less than stock available
+
+                            $reservation_arr[$product->children[$count]] = $reserve_stock;
+                        }
+                    }else{ // if there is no existing reservations, get stock count of product
+
+                        $product_stock_quantity = get_post_meta($product->children[$count], '_stock', true);
+                        if(isset($product_stock_quantity) && is_int($product_stock_quantity)){
+
+                            if($reserve_stock > $product_stock_quantity){ // if reservation is more than stock quantity
+
+                                $message = 'Product stock reservation cannot exceed the stock quantity';
+                                break;
+                            }else{ // add reservation count
+
+                                $reservation_arr[$product->children[$count]] = $reserve_stock;
+                            }
+
+                        }else{
+                            $message = 'Something when wrong. Please refresh the page. If error persist, please contact the administrator';
+                            break;
+                        }
+                    }
+                } else { // if reservation count is not valid
+
                     $message = 'Please enter a valid number for product stock reservation';
                     break;
                 }
@@ -95,13 +126,18 @@ if (!is_null($message)) {
         foreach ($product->children as $index => $product_variant_id) {
 
             $stock = get_variant_stock($product_variant_id);
+            if(isset($stock_available_arr[$product_variant_id])){
+                $stock_available = $stock - $stock_available_arr[$product_variant_id];
+            }else{
+                $stock_available = $stock - 0;
+            }
             $quantity = get_variant_quantity($product_variant_id);
             $color = get_variant_color_name($product_variant_id);
             $variable_name = get_variant_variable_name($product_variant_id);
             $price = get_variant_price($product_variant_id);
+
             if (isset($post_massdata_reserved)) {
 
-                //get product id, get meta, key and product id
                 $id = $post_massdata_reserved->ID;
                 $current_user_reserved_stock = get_post_meta($id, $product_variant_id, true);
             } else {
@@ -110,7 +146,7 @@ if (!is_null($message)) {
 
             echo "<tr>";
             echo "<td>{$color}</td>"; //product color
-            echo "<td>{$stock}</td>"; //product stock
+            echo "<td>{$stock_available}</td>"; //product stock
             echo "<td>";
             if ($current_user_reserved_stock != 0) { // user reserved stock
 
@@ -124,22 +160,23 @@ if (!is_null($message)) {
                 echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"0\" class=\"form-control\">";
             }
             echo "</td>";
-            echo "<td></td>";
+            echo "<td>{$stock}</td>";
             echo "<td>{$quantity}</td>"; // product quantity for price
             echo "<td>{$price}</td>";    // product price per quantity
             echo '</tr>';
 
+
             $total_variant_stock = $total_variant_stock + $stock;
             $total_current_user_reserved_stock = $total_current_user_reserved_stock + $current_user_reserved_stock;
+            $total_available_stock = $total_available_stock + $stock_available;
         }
         ?>
 
-        <tr class="total-stock-count">;
+        <tr class="total-stock-count">
             <td>Total</td>
-            ;
-            <td> <?php echo $total_variant_stock; ?> </td>
+            <td> <?php echo $total_available_stock; ?> </td>
             <td><?php echo $total_current_user_reserved_stock; ?></td>
-            <td><?php echo ''; ?></td>
+            <td><?php echo $total_variant_stock; ?></td>
             <td></td>
             <td></td>
         </tr>

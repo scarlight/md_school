@@ -54,15 +54,6 @@ function get_variant_variable_name($product_variant_id){
     $color = get_post_meta($product_variant_id, 'attribute_pa_color', true);
     return $color;
 }
-function get_variant_reserved($post_id, $user_id){
-    $query = new WP_Query(
-        array(
-            'post_type' => 'massdata_reserve',
-            'post_content' => $post_id,
-            'post_author' => $user_id
-        )
-    );
-}
 function get_post_massdata_reserve($post_id, $user_id){
     $query = new WP_Query(
         array(
@@ -75,4 +66,48 @@ function get_post_massdata_reserve($post_id, $user_id){
         return $query->posts[0];
     }
     return null;
+}
+function get_stock_available($product_post_id){
+
+    $query = new WP_Query(
+        array(
+            'post_type' => 'massdata_reserve',
+            'post_content' => $product_post_id,
+            'fields' => 'ids'
+        )
+    );
+
+    $bigarr = array();
+    foreach($query->posts as $index => $ids){
+
+        //denormlaize first
+        $temp = array();
+        $a = get_post_meta($query->posts[$index]);
+        unset($a['_edit_lock']);
+
+        foreach($a as $ids => $stock_count){
+            $temp[$ids] = $stock_count[0];
+        }
+        $bigarr[] = $temp;
+        //denormalized array passed into $bigarr
+    }
+
+    $reserved_stock_counts = array();
+    foreach($bigarr as $index => $array){
+        foreach($array as $id => $reserve_count){
+            if(!isset($reserved_stock_counts[$id])){
+                $reserved_stock_counts[$id] = 0;
+                $reserved_stock_counts[$id] += $reserve_count;
+            }else{
+                $reserved_stock_counts[$id] += $reserve_count;
+            }
+        }
+    }
+
+    return $reserved_stock_counts;
+}
+function get_reserved_stock($post_id){
+
+    $post_meta = get_post_meta($post_id);
+
 }

@@ -1231,10 +1231,17 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
             break;
         case 'massdata_reserved_stock':
 
-            echo '<pre>';
-            $reserved_product = get_post_meta($post->ID);
-            //var_dump($reserved_product);
-            echo '</pre>';
+            $post_meta = get_post_meta($post_id);
+            unset($post_meta['_edit_lock']);
+
+            $temp = array();
+            foreach($post_meta as $id => $arr){
+                foreach($arr as $index => $reserved_value){
+                    $temp[$id] = $reserved_value;
+                    break;
+                }
+            }
+            echo array_sum($temp);
             break;
         case 'massdata_reserver':
 

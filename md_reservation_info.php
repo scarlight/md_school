@@ -14,11 +14,10 @@ $query = new WP_Query(
         'fields' => 'ids'
     )
 );
-echo '<pre>';
 $bigarr = array();
 foreach($query->posts as $index => $ids){
 
-    //denormlaize first
+    //denormalize first
    $temp = array();
    $a = get_post_meta($query->posts[$index]);
    unset($a['_edit_lock']);
@@ -40,7 +39,6 @@ foreach($bigarr as $index => $array){
         }
     }
 }
-echo '</pre>';
 //parent =  409
 // childredn(12) = 508, 498, 500, 501, 499, 502, 505, 509, 504, 503, 506, 507
 // post_parent value of 409
@@ -67,7 +65,6 @@ echo '</pre>';
     </script>
 
     <div class="wrap">
-
         <table class="widefat fixed">
             <tbody>
             <tr>
