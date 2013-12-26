@@ -6,43 +6,6 @@
  * Time: 5:32 PM
  */
 
-function get_product_type($product_id){
-
-    $product_post = get_product($product_id);
-    return $product_post->product_type; // i hope it returns variable
-}
-function get_product_colors($product_id){
-    //$product_id = index of product
-    $product_post = get_post($product_id);
-    $colors = array();
-    if($product_post->children == null or $product_post->children == 0){
-        return array();
-    }else{
-        foreach($product_post->children as $index => $id){
-            $colors = get_post_meta($id, 'attribute_pa_color', true);
-        }
-    }
-    return $colors;
-}
-function get_product_children($product_id){
-    $product_post = get_product($product_id);
-    return $product_post;
-}
-function get_available_stock($product_id){
-
-    $args = array(
-        'post_type' => 'massdata_reserve',
-        'post_content' => $product_id
-    );
-
-
-}
-
-
-function get_total_stock($product_id){
-    $total_stock =  get_post_meta($product_id, '_variant_total_stock', true);
-    return $total_stock;
-}
 function get_variant_stock($product_variant_id){
     $stock = get_post_meta($product_variant_id, '_stock', true);
     if(!isset($stock)){
@@ -90,4 +53,26 @@ function get_variant_color_name($product_variant_id){
 function get_variant_variable_name($product_variant_id){
     $color = get_post_meta($product_variant_id, 'attribute_pa_color', true);
     return $color;
+}
+function get_variant_reserved($post_id, $user_id){
+    $query = new WP_Query(
+        array(
+            'post_type' => 'massdata_reserve',
+            'post_content' => $post_id,
+            'post_author' => $user_id
+        )
+    );
+}
+function get_post_massdata_reserve($post_id, $user_id){
+    $query = new WP_Query(
+        array(
+            'post_type' => 'massdata_reserve',
+            'post_content' => $post_id,
+            'post_author' => $user_id
+        )
+    );
+    if(!empty($query->posts)){
+        return $query->posts[0];
+    }
+    return null;
 }

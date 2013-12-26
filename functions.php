@@ -1269,7 +1269,6 @@ function quotation_remove_bulk_actions($actions)
     return $actions;
 }
 
-
 add_filter('manage_users_columns', 'massdata_manager_users_column', 90, 1);
 add_action('manage_users_custom_column', 'massdata_manage_users_custom_columns', 90, 3);
 function massdata_manager_users_column($columns){
@@ -1348,25 +1347,8 @@ function quotation_post_edit_form_tag()
     if ('product' != $post_type) return;
     echo 'enctype="multipart/form-data" encoding="multipart/form-data"';
 }
-function appthemes_check_user_role( $role, $user_id = null ) {
 
-    if ( is_numeric( $user_id ) )
-        $user = get_userdata( $user_id );
-    else
-        $user = wp_get_current_user();
-    if ( empty( $user ) )
-        return false;
-
-    return in_array( $role, (array) $user->roles );
-}
-function get_massdata_stock_count($product_id){
-    $children = get_post($product_id);
-    $total_stock = 0;
-    foreach($children as $index => $id){
-        $total_stock = $total_stock + get_post_meta($id, '_stock', true);
-    }
-    return $total_stock;
-}
+add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );
 function massdata_file_unlink($post_id)
 {
     $artwork_arr = get_post_meta($post_id, 'md_in_artwork');
@@ -1421,23 +1403,12 @@ function massdata_quotation_upload_directory( $args ) {
                 error_log("subdir={$args['subdir']}");
                 error_log("basedir={$args['basedir']}");
                 error_log("baseurl={$args['baseurl']}");
-                error_log("error={$args['error']}");   
+                error_log("error={$args['error']}");
             }
         }
     }
     return $args;
 }
-add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );
-
-//add_filter( 'woocommerce_product_tabs', 'woo_remove_product_tabs', 98 );
-//
-//function woo_remove_product_tabs( $tabs ) {
-//
-//    unset( $tabs['description'] );        // Remove the description tab
-//    unset( $tabs['reviews'] );            // Remove the reviews tab
-//    unset( $tabs['additional_information'] );     // Remove the additional information tab
-//    return $tabs;
-//}
 
 //contact us
 add_shortcode('massdata_contact_us', 'massdata_contactus_shortcode');
@@ -1450,7 +1421,6 @@ function massdata_contactus_shortcode($atts){
     require_once get_template_directory().'/md_template_contact_us.php';
     return;
 }
-
 
 cron_delete_massdata_reservation();
 function cron_delete_massdata_reservation(){
