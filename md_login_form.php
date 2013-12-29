@@ -4,8 +4,12 @@
 <div id="login">
     <?php if(is_user_logged_in()) { ?>
         <ul>
-            <li><strong>Welcome Back <?php $a = get_userdata(get_current_user_id()); if($a) echo ', ' .$a->data->display_name ; else  echo ', ' .$a->data->user_login;?><strong></li>
-            <li><a class="signout" href="<?php echo wp_logout_url( site_url() ); ?>">Sign Out</a></li>
+            <li><a class="signout" href="<?php echo wp_logout_url( site_url() ); ?>">Sign Out,</a></li>
+            <li>
+                <strong>
+                <span class="orange-text">Welcome! &nbsp;&nbsp;</span><?php $a = get_userdata(get_current_user_id()); if($a) echo $a->data->display_name ; else  echo $a->data->user_login;?>
+                </strong>
+            </li>
         </ul>
     <?php }else { ?>
         <ul>
@@ -15,7 +19,6 @@
     <?php } ?>
     <div class="clear"></div>
     <?php get_search_form(); ?>
-</div>
 
 
 <?php
@@ -168,4 +171,6 @@ $message = null;
             </div>
         </form>
     </div>
+</div>
+
 </div>
