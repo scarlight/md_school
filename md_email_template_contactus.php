@@ -1,16 +1,23 @@
 <?php
 
-function massdata_contactus_template()
+function send_admin_email_contact_us()
 {
     remove_filter('wp_mail_content_type', 'set_html_content_type');
-    add_filter('wp_mail_content_type', 'set_html_content_type');
-    function set_html_content_type()
+    add_filter('wp_mail', 'set_html_content_type');
+    $headers = array('Content-type: text/html');
+    add_filter('phpmailer_init', 'set_phpmailer_object');
+    function set_html_content_type($params)
     {
-        return 'text/html';
+        $params['headers'] = 'Content-type: text/html';
+        return $params;
     }
 
-    ob_start();
-    ?>
+    function set_phpmailer_object($phpmailer)
+    {
+        $phpmailer->IsHTML(true);
+    }
+
+    $html = <<<"CONTACT_US"
     <h3>A user has send enquiry from the contact form.</h3>
     <table>
         <thead>
@@ -24,42 +31,42 @@ function massdata_contactus_template()
         <tr>
             <td>Full Name</td>
             <td>:</td>
-            <td><?php echo $_POST['user-login']; ?></td>
+            <td>{$_POST['user-login']}</td>
         </tr>
         <tr>
             <td>Email Address</td>
             <td>:</td>
-            <td><?php echo $_POST['user-email']; ?></td>
+            <td>{$_POST['user-email']}</td>
         </tr>
         <tr>
             <td>Company Name</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-companyname']; ?></td>
+            <td>{$_POST['md-in-companyname']}</td>
         </tr>
         <tr>
             <td>Co/Bis Reg No.</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-registration-no']; ?></td>
+            <td>{$_POST['md-in-registration-no']}</td>
         </tr>
         <tr>
             <td>Mobile</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-mobile']; ?></td>
+            <td>{$_POST['md-in-mobile']}</td>
         </tr>
         <tr>
             <td>Tel</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-tel']; ?></td>
+            <td>{$_POST['md-in-telephone']}</td>
         </tr>
         <tr>
             <td>Fax</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-fax']; ?></td>
+            <td>{$_POST['md-in-fax']}</td>
         </tr>
         <tr>
             <td>Address</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-address']; ?></td>
+            <td>{$_POST['md-in-address']}</td>
         </tr>
         <tr>
             <td>Survey</td>
@@ -67,57 +74,59 @@ function massdata_contactus_template()
             <td>
                 <table>
                     <tbody>
-                    <?php
-                    $post_form = $_POST['md-in-survey'];
-                    foreach ($post_form as $index => $value) {
+CONTACT_US;
 
-                        switch ($value) {
-                            case 'exhibition':
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Exhibition';
-                                echo '</tr>';
-                                break;
-                            case 'search-engine':
+    $post_form = $_POST['md-in-survey'];
+    foreach ($post_form as $index => $value) {
 
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Search Engine';
-                                echo '</tr>';
-                                break;
-                            case 'email-survey':
+        switch ($value) {
+            case 'exhibition':
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Exhibition');
+                $html .= '</tr>';
+                break;
+            case 'search-engine':
 
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Email';
-                                echo '</tr>';
-                                break;
-                            case 'friendfamily':
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Search Engine');
+                $html .= '</tr>';
+                break;
+            case 'email-survey':
 
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Friends & Families';
-                                echo '</tr>';
-                                break;
-                            case 'advertisement':
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Email');
+                $html .= '</tr>';
+                break;
+            case 'friendfamily':
 
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Advertisement';
-                                echo '</tr>';
-                                break;
-                            case 'facebook':
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Friends & Families');
+                $html .= '</tr>';
+                break;
+            case 'advertisement':
 
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . 'Facebook';
-                                echo '</tr>';
-                                break;
-                            case 'others':
-                                $_POST['md-in-other-desc'] = wp_strip_all_tags($_POST['md-in-other-desc']);
-                                echo '<tr>';
-                                echo $index + 1 . '. ' . $_POST['md-in-other-desc'];
-                                echo '</tr>';
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    ?>
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Advertisement');
+                $html .= '</tr>';
+                break;
+            case 'facebook':
+
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . 'Facebook');
+                $html .= '</tr>';
+                break;
+            case 'others':
+                $_POST['md-in-others-desc'] = wp_strip_all_tags($_POST['md-in-others-desc']);
+                $html .= '<tr>';
+                $html .= ($index + 1 . '. ' . $_POST['md-in-others-desc']);
+                $html .= '</tr>';
+                break;
+            default:
+                break;
+        }
+    }
+
+    $html2 = <<<"CONTACT_US"
                     </tbody>
                 </table>
             </td>
@@ -125,12 +134,15 @@ function massdata_contactus_template()
         <tr>
             <td>Enquiry</td>
             <td>:</td>
-            <td><?php echo $_POST['md-in-enquiry']; ?></td>
+            <td>{$_POST['md-in-enquiry']}</td>
         </tr>
         </tbody>
     </table>
-<?php
-    $a = ob_get_contents();
-    return $a;
-}
+CONTACT_US;
+    $html = $html.$html2;
 
+    wp_mail(get_option('admin_email'), 'Massdata: Contact Us', $html);
+
+    $message = 'Your enquiry has been send to the administrator';
+    return $message;
+}

@@ -67,6 +67,18 @@ function get_post_massdata_reserve($post_id, $user_id){
     }
     return null;
 }
+function get_post_massdata_all_reserve($post_id){
+    $query = new WP_Query(
+        array(
+            'post_type' => 'massdata_reserve',
+            'post_content' => $post_id
+        )
+    );
+    if(!empty($query->posts)){
+        return $query->posts[0];
+    }
+    return null;
+}
 function get_stock_available($product_post_id){
 
     $query = new WP_Query(
@@ -110,4 +122,13 @@ function get_reserved_stock($post_id){
 
     $post_meta = get_post_meta($post_id);
 
+}
+function get_product_variant_meta_query_args($post_id, $children){
+
+     // denormalize
+    $a = array();
+    foreach($children as $index => $id){
+        $a[] = array('key' => $id);
+    }
+    return $args;
 }
