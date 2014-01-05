@@ -96,7 +96,7 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 }
 
 if (!is_null($message)) {
-    echo "<p class='red-remark'>{$message}</p>";
+    echo "<p class='red-remark'> {$message} </p>";
 }
 ?>
 
