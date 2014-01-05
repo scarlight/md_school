@@ -1,11 +1,9 @@
 <?php
 $message = null;
-
 if (!empty($_POST)) {
 
-    wp_mail(get_option('admin_email'), 'Subject', 'Chicken');
     if (isset($_POST['user-login'])) {
-        $_POST['user-login'] = wp_strip_all_tags($_POST['user-login']);
+        $_POST['user-login'] = wp_strip_all_tags($_POST['user_login']);
 
     } else {
         $message = 'Please enter your name';
@@ -21,7 +19,7 @@ if (!empty($_POST)) {
     if (isset($_POST['md-in-group'])) {
         $_POST['md-in-group'] = wp_strip_all_tags($_POST['md-in-group']);
     } else {
-        $message = 'Please enter your role. Agent or Corporate?';
+
     }
 
     if (isset($_POST['md-in-companyname'])) {
@@ -56,20 +54,8 @@ if (!empty($_POST)) {
 
     }
 
-    if (isset($_POST['md-in-address'])) {
-        $_POST['md-in-address'] = wp_strip_all_tags($_POST['md-in-address']);
-    } else {
-        $message = 'Please enter your address';
-    }
-
     if (empty($_POST['md-in-survey'])) {
         $_POST['md-in-survey'] = wp_strip_all_tags($_POST['md-in-survey']);
-
-        if(in_array('others', $_POST['md-in-survey'])){
-            if(!isset($_POST['md-in-others-desc'])){
-                $message = 'Please enter survey section';
-            }
-        }
     } else {
         $message = 'Please enter survey section';
     }
@@ -77,12 +63,15 @@ if (!empty($_POST)) {
     if (isset($_POST['md-in-enquiry'])) {
         $_POST['md-in-enquiry'] = wp_strip_all_tags($_POST['md-in-enquiry']);
     } else {
-        $message = 'Please enter your enquiry';
+
     }
 
-    // throw data into a function and let is email the admin
-    require_once get_template_directory().'/md_email_template_contactus.php';
-    $message = send_admin_email_contact_us();
+    require_once get_template_directory() . '/md_email_template_contactus.php';
+    // send email
+    if (!is_null($message)) {
+        wp_mail(get_option('admin_email'), 'Massdata: Contact Us', massdata_contact_us_template());
+        $message = 'Your enquiry has been send to the administrator';
+    }
 }
 ?>
 
@@ -91,77 +80,71 @@ if (!empty($_POST)) {
 
     <div class="left floatl">
         <?php if (isset($message)) echo '<p>' . $message . '</p>'; ?>
-
-
-        <?php
-            global $wp;
-            $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
-        ?>
         <form action="" method="post">
             <div class="form-group"><label class="control-label" for="name">Full Name <span
-                        class="required">*</span></label> <input class="form-control" id="name" type="text" name="user-login"
+                        class="required">*</span></label> <input class="form-control" id="name" type="text" name="name"
                                                                  placeholder="First and Last Name" required=""/></div>
             <div class="form-group"><label class="control-label" for="email">Email Address <span
                         class="required">*</span></label> <input class="form-control" id="email" type="email"
-                                                                 name="user-email" placeholder="abc@gmail.com" required=""/>
+                                                                 name="email" placeholder="abc@gmail.com" required=""/>
             </div>
-            <div class="form-group classification"><input id="agent" type="radio" name="md-in-group" value="agent"/> <label
+            <div class="form-group classification"><input id="agent" type="radio" name="group" value="agent"/> <label
                     class="control-label aligntop" for="agent">Agent</label> <input id="corporate" type="radio"
-                                                                                    name="md-in-group" value="corporate"/>
+                                                                                    name="group" value="corporate"/>
                 <label class="control-label aligntop" for="corporate">Corporate</label></div>
             <div class="form-group"><label class="control-label" for="companyname">Company name <span
                         class="required">*</span></label> <input class="form-control" id="companyname" type="text"
-                                                                 name="md-in-companyname" placeholder="Name of Your Company"
+                                                                 name="companyname" placeholder="Name of Your Company"
                                                                  required=""/></div>
             <div class="form-group"><label class="control-label" for="registration-no">Co / Bis Reg. no.</label> <input
-                    class="form-control" id="registration-no" type="text" name="md-in-registration-no"/></div>
+                    class="form-control" id="registration-no" type="text" name="registration-no"/></div>
             <div class="form-group"><label class="control-label" for="mobile">Mobile <span
                         class="required">*</span></label> <input class="form-control" id="mobile" type="text"
-                                                                 name="md-in-mobile" placeholder="e.g. 601X XXXXXXX"
+                                                                 name="mobile" placeholder="e.g. 601X XXXXXXX"
                                                                  required=""/></div>
             <div class="form-group"><label class="control-label" for="tel">Tel</label> <input class="form-control"
                                                                                               id="tel" type="text"
-                                                                                              name="md-in-telephone"
+                                                                                              name="tel"
                                                                                               placeholder="e.g. 601X XXXXXXX"/>
             </div>
             <div class="form-group"><label class="control-label" for="fax">Fax</label> <input class="form-control"
                                                                                               id="fax" type="text"
-                                                                                              name="md-in-fax"
+                                                                                              name="fax"
                                                                                               placeholder="e.g. 601X XXXXXXX"/>
             </div>
             <div class="form-group"><label class="control-label aligntop" for="address">Address <span
                         class="required">*</span></label> <textarea class="form-control textarea" id="address" cols="30"
-                                                                    name="md-in-address" required="" rows="4"></textarea>
+                                                                    name="address" required="" rows="4"></textarea>
             </div>
             <div class="form-group"><label class="control-label aligntop" for="">Survey <span class="required">*</span></label>
                 <input id="exhibition" type="checkbox" name="survey" value="exhibition"/> <label
                     class="control-label aligntop" for="exhibition">Exhibition</label> <input id="search-engine"
                                                                                               type="checkbox"
-                                                                                              name="md-in-survey[]"
+                                                                                              name="survey"
                                                                                               value="search-engine"/>
                 <label class="control-label aligntop" for="search-engine">Search Engine</label>
 
-                <div class="classification"><input id="email-survey" type="checkbox" name="md-in-survey[]"
+                <div class="classification"><input id="email-survey" type="checkbox" name="survey"
                                                    value="email-survey"/> <label class="control-label aligntop"
                                                                                  for="email-survey">Email</label> <input
-                        id="friendfamily" type="checkbox" name="md-in-survey[]" value="friendfamily"/> <label
+                        id="friendfamily" type="checkbox" name="survey" value="friendfamily"/> <label
                         class="control-label aligntop" for="friendfamily">Friends &amp; Families</label></div>
-                <div class="classification"><input id="advertisement" type="checkbox" name="md-in-survey[]"
+                <div class="classification"><input id="advertisement" type="checkbox" name="survey"
                                                    value="advertisement"/> <label class="control-label aligntop"
                                                                                   for="advertisement">Advertisement</label>
-                    <input id="facebook" type="checkbox" name="md-in-survey[]" value="facebook"/> <label
+                    <input id="facebook" type="checkbox" name="survey" value="facebook"/> <label
                         class="control-label aligntop" for="facebook">Facebook</label></div>
-                <div class="classification"><input id="others" type="checkbox" name="md-in-survey[]" value="others"/> <label
+                <div class="classification"><input id="others" type="checkbox" name="survey" value="others"/> <label
                         class="control-label aligntop" style="width: 50px;" for="others">Others</label> <input
                         class="form-control floatr" id="others-desc" style="width: 220px; margin-right: 2px;"
-                        type="text" name="md-in-others-desc"/>
+                        type="text" name="others-desc"/>
 
                     <div class="clear"></div>
                 </div>
             </div>
             <div class="form-group"><label class="control-label aligntop" for="enquiry">Enquiry <span
                         class="required">*</span></label> <textarea class="form-control textarea" id="enquiry" cols="3"
-                                                                    name="md-in-enquiry" required="" rows="4"></textarea>
+                                                                    name="enquiry" required="" rows="4"></textarea>
             </div>
             &nbsp;
             <div class="form-group">
