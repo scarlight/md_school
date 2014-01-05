@@ -21,7 +21,7 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
             if (isset($reserve_stock)) { // is reservation count set?
 
                 $reserve_stock= (int)$reserve_stock;
-                if ($reserve_stock > 0 && strlen($reserve_stock) >= 0 && strlen($reserve_stock) < 10) { // if reservation count is valid
+                if ($reserve_stock >= 0 && (strlen($reserve_stock) >= 0 && strlen($reserve_stock) < 10)) { // if reservation count is valid
 
                     if(isset($stock_available_arr[$product->children[$count]])){ // if there are existing reservations.
 
@@ -36,7 +36,7 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
                     }else{ // if there is no existing reservations, get stock count of product
 
                         $product_stock_quantity = get_post_meta($product->children[$count], '_stock', true);
-                        if(isset($product_stock_quantity) && is_int($product_stock_quantity)){
+                        if(isset($product_stock_quantity)){
 
                             if($reserve_stock > $product_stock_quantity){ // if reservation is more than stock quantity
 
@@ -96,7 +96,7 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 }
 
 if (!is_null($message)) {
-    echo "<p>{$message}</p>";
+    echo "<p class='red-remark'>{$message}</p>";
 }
 ?>
 
