@@ -6,7 +6,6 @@ global $post;
 $massdata_quotation_message = null;
 $quote_request = false;
 
-
 // is send from quote when user is logged in???
 if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 
@@ -14,7 +13,6 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
         $post_product = get_post_custom($_POST['__md__']);
         $product_model = $post_product['massdata_product_model'][0];
     } else {
-
         $errors['md-in'][] = 'Product does not exist in the system. Please try a valid product.';
     }
 

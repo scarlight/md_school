@@ -155,189 +155,188 @@ if (!is_null($message)) {
 }
 ?>
 
-<form action="" method="post">
-    <table class="product-stock">
-        <thead>
-        </thead>
-        <tbody>
-        <tr>
-            <th rowspan="2">Product Color</th>
-            <th rowspan="2">Stock Available</th>
-            <?php if (is_user_logged_in()) { ?>
-                <th rowspan="2">Reserved</th>
-            <?php } ?>
-            <th rowspan="2">Reserve</th>
-            <th rowspan="2">Total Stock<br><span class="stock-remark">(Stock Available + Reserved)</span></th>
-            <?php if (is_user_logged_in()) { ?>
-                <th colspan="2" class="sky-blue">Price Table</th>
-            <?php } ?>
-        </tr>
-        <?php if (is_user_logged_in()) { ?>
+    <form action="" method="post">
+        <table class="product-stock">
+            <thead>
+            </thead>
+            <tbody>
             <tr>
-                <td class="sky-blue">Quantity</td>
-                <td class="sky-blue">Price (RM)</td>
+                <th rowspan="2">Product Color</th>
+                <th rowspan="2">Stock Available</th>
+                <?php if (is_user_logged_in()) { ?>
+                    <th rowspan="2">Reserved</th>
+                <?php } ?>
+                <th rowspan="2">Reserve</th>
+                <th rowspan="2">Total Stock<br><span class="stock-remark">(Stock Available + Reserved)</span></th>
+                <?php if (is_user_logged_in()) { ?>
+                    <th colspan="2" class="sky-blue">Price Table</th>
+                <?php } ?>
             </tr>
-        <?php } else { ?>
-            <tr>
-            </tr>
-        <?php } ?>
+            <?php if (is_user_logged_in()) { ?>
+                <tr>
+                    <td class="sky-blue">Quantity</td>
+                    <td class="sky-blue">Price (RM)</td>
+                </tr>
+            <?php } else { ?>
+                <tr>
+                </tr>
+            <?php } ?>
 
-        <?php
+            <?php
 
-        // $stock_available_arr = get_stock_available($post->ID);
+            // $stock_available_arr = get_stock_available($post->ID);
+            if ($product->product_type === 'variable') {
+                $total_variant_stock = 0; // works
+                $current_user_reserved_stock = 0; // works
+                $total_current_user_reserved_stock = 0; //
+                $total_available_stock = 0;
+                $total_all_reserved = 0;
 
-        if ($product->product_type === 'variable') {
-            $total_variant_stock = 0; // works
-            $current_user_reserved_stock = 0; // works
-            $total_current_user_reserved_stock = 0; //
-            $total_available_stock = 0;
-            $total_all_reserved = 0;
+                foreach ($product->children as $index => $product_variant_id) {
 
-            foreach ($product->children as $index => $product_variant_id) {
-                $stock = get_variant_stock($product_variant_id);
-                $reserve = get_post_meta($product_variant_id, '_reserve_stock', true);
-
-                if ($reserve) {
-                    $stock_available = $stock - $reserve;
-                } else {
-                    $stock_available = $stock - 0;
-                }
-                $quantity = get_variant_quantity($product_variant_id);
-                $color = get_variant_color_name($product_variant_id);
-                $variable_name = get_variant_variable_name($product_variant_id);
-
-                if (isset($post_massdata_reserved)) {
-
-                    $id = $post_massdata_reserved->ID;
-                    $current_user_reserved_stock = get_post_meta($id, $product_variant_id, true);
-                } else {
-                    $current_user_reserved_stock = 0;
-                }
-
-                echo "<tr>";
-                echo "<td>{$color}</td>"; //product color
-                echo "<td>{$stock_available}</td>"; //product stock
-                echo "<td>";
-                if (is_user_logged_in()) {
-                    if ($current_user_reserved_stock != 0) { // user reserved stock
-
-                        echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"{$current_user_reserved_stock}\" class=\"form-control\">";
-                    } else if (!is_null($reserved_id)) {
-
-                        $current_user_reserved_stock = get_post_meta($reserved_id, $product_variant_id, true);
-                        echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"{$current_user_reserved_stock}\" class=\"form-control\">";
+                    $stock = get_variant_stock($product_variant_id);
+                    $reserve = get_post_meta($product_variant_id, '_reserve_stock', true);
+                    if ($reserve) {
+                        $stock_available = $stock - $reserve;
                     } else {
-
-                        echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"0\" class=\"form-control\">";
+                        $stock_available = $stock - 0;
                     }
-                } else {
-                    if ($reserve != 0) { // user reserved stock
+                    $quantity = get_variant_quantity($product_variant_id);
+                    $color = get_variant_color_name($product_variant_id);
+                    $variable_name = get_variant_variable_name($product_variant_id);
 
-                        echo "{$reserve}";
+                    if (isset($post_massdata_reserved)) {
+
+                        $id = $post_massdata_reserved->ID;
+                        $current_user_reserved_stock = get_post_meta($id, $product_variant_id, true);
                     } else {
-
-                        echo "0";
+                        $current_user_reserved_stock = 0;
                     }
-                }
-                echo "</td>";
 
-                if (is_user_logged_in()) {
+                    echo "<tr>";
+                    echo "<td>{$color}</td>"; //product color
+                    echo "<td>{$stock_available}</td>"; //product stock
+                    echo "<td>";
+                    if (is_user_logged_in()) {
+                        if ($current_user_reserved_stock != 0) { // user reserved stock
 
-                    if ($product->product_type === 'variable') {
-                        echo "<td>{$reserve}</td>";
+                            echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"{$current_user_reserved_stock}\" class=\"form-control\">";
+                        } else if (!is_null($reserved_id)) {
+
+                            $current_user_reserved_stock = get_post_meta($reserved_id, $product_variant_id, true);
+                            echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"{$current_user_reserved_stock}\" class=\"form-control\">";
+                        } else {
+
+                            echo "<input type=\"text\" id=\"reserve1\" name=\"reserve_{$variable_name}\" value=\"0\" class=\"form-control\">";
+                        }
+                    } else {
+                        if ($reserve != 0) { // user reserved stock
+
+                            echo "{$reserve}";
+                        } else {
+
+                            echo "0";
+                        }
+                    }
+                    echo "</td>";
+
+                    if (is_user_logged_in()) {
+
+                        if ($product->product_type === 'variable') {
+                            echo "<td>{$reserve}</td>";
+                        } else {
+                            echo "<td>0</td>";
+                        }
+                    }
+
+                    if ($stock != 0) {
+                        echo "<td>{$stock}</td>";
                     } else {
                         echo "<td>0</td>";
                     }
-                }
+                    if (is_user_logged_in()) {
+                        if ($product->product_type === "variable") {
+                            $price = get_variant_price($product_variant_id);
+                            echo "<td>{$quantity}</td>"; // product quantity for price
+                            echo "<td>{$price}</td>"; // product price per quantity
+                        } else {
+                            echo "<td></td>";
+                            echo "<td></td>";
+                        }
+                    }
+                    echo '</tr>';
 
-                if ($stock != 0) {
-                    echo "<td>{$stock}</td>";
-                } else {
-                    echo "<td>0</td>";
-                }
-                if (is_user_logged_in()) {
                     if ($product->product_type === "variable") {
-                        $price = get_variant_price($product_variant_id);
-                        echo "<td>{$quantity}</td>"; // product quantity for price
-                        echo "<td>{$price}</td>"; // product price per quantity
-                    } else {
-                        echo "<td></td>";
-                        echo "<td></td>";
+                        $total_variant_stock = $total_variant_stock + $stock;
+                        $total_current_user_reserved_stock = $total_current_user_reserved_stock + $current_user_reserved_stock;
+                        $total_available_stock = $total_available_stock + $stock_available;
+                        $total_all_reserved = $total_all_reserved + $reserve;
                     }
                 }
-                echo '</tr>';
+            } else {
 
-                if ($product->product_type === "variable") {
-                    $total_variant_stock = $total_variant_stock + $stock;
-                    $total_current_user_reserved_stock = $total_current_user_reserved_stock + $current_user_reserved_stock;
-                    $total_available_stock = $total_available_stock + $stock_available;
-                    $total_all_reserved = $total_all_reserved + $reserve;
+                if (is_user_logged_in()) {
+
+                    echo "<tr>";
+                    echo "<td>0</td>"; //product color
+                    echo "<td>0</td>"; //product stock
+                    echo "<td>0</td>";
+                    echo "<td>0</td>";
+                    echo "<td>0</td>";
+                    echo "<td>0</td>";
+                    echo "<td>0</td>";
+                    echo "</tr>";
+                } else {
+
+                    echo "<tr>";
+                    echo "<td>0</td>"; //product color
+                    echo "<td>0</td>"; //product stock
+                    echo "<td>0</td>";
+                    echo "<td>0</td>";
+                    echo "</tr>";
                 }
             }
-        } else {
 
-            if(is_user_logged_in()){
+            ?>
 
-                echo "<tr>";
-                echo "<td>0</td>"; //product color
-                echo "<td>0</td>"; //product stock
-                echo "<td>0</td>";
-                echo "<td>0</td>";
-                echo "<td>0</td>";
-                echo "<td>0</td>";
-                echo "<td>0</td>";
-                echo "</tr>";
-            }else{
+            <tr class="total-stock-count">
+                <td>Total</td>
 
-                echo "<tr>";
-                echo "<td>0</td>"; //product color
-                echo "<td>0</td>"; //product stock
-                echo "<td>0</td>";
-                echo "<td>0</td>";
-                echo "</tr>";
-            }
-        }
+                <?php if ($product->product_type === 'variable') { ?>
+                    <td> <?php echo $total_available_stock; ?> </td>
+                    <td><?php echo $total_all_reserved; ?></td>
+                <?php } else { ?>
+                    <td></td>
+                    <td></td>
+                <?php } ?>
 
-        ?>
+                <?php if (is_user_logged_in()) { ?>
+                    <td></td>
+                <?php } ?>
 
-        <tr class="total-stock-count">
-            <td>Total</td>
+                <?php if ($product->product_type === 'variable') { ?>
+                    <td><?php echo $total_variant_stock; ?></td>
+                <?php } else { ?>
+                    <td></td>
+                <?php } ?>
 
-            <?php if ($product->product_type === 'variable') { ?>
-                <td> <?php echo $total_available_stock; ?> </td>
-                <td><?php echo $total_all_reserved; ?></td>
-            <?php } else { ?>
-                <td></td>
-                <td></td>
-            <?php } ?>
+                <?php if (is_user_logged_in()) { ?>
+                    <td></td>
+                    <td></td>
+                <?php } ?>
 
-            <?php if (is_user_logged_in()) { ?>
-                <td></td>
-            <?php } ?>
-
-            <?php if ($product->product_type === 'variable') { ?>
-                <td><?php echo $total_variant_stock; ?></td>
-            <?php } else { ?>
-                <td></td>
-            <?php } ?>
-
-            <?php if (is_user_logged_in()) { ?>
-                <td></td>
-                <td></td>
-            <?php } ?>
-
-        </tr>
-        </tbody>
-    </table
-    <div class="floatl">
-        <div class="red-remark">*Stock level as at 4pm yesterday</div>
-        <div class="red-remark">*Reserved only valid for 3 days</div>
-    </div>
-    <?php if (is_user_logged_in()) { ?>
-        <div class="floatr">
-            <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
-            <a href="#" class="btn btn-default">View Logo option Charges</a>
+            </tr>
+            </tbody>
+        </table
+        <div class="floatl">
+            <div class="red-remark">*Stock level as at 4pm yesterday</div>
+            <div class="red-remark">*Reserved only valid for 3 days</div>
         </div>
-    <?php } ?>
-    <div class="clear"></div>
-</form>
+        <?php if (is_user_logged_in()) { ?>
+            <div class="floatr">
+                <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
+                <a href="#" class="btn btn-default">View Logo option Charges</a>
+            </div>
+        <?php } ?>
+        <div class="clear"></div>
+    </form>
