@@ -46,8 +46,8 @@ function signup_validator(){
 
             if(isset($_POST['md-in-registration-no'])){
 
-                $_POST['md-in-registration-no'][] = sanitize_text_field($_POST['md-in-registration-no']);
-                if(strlen($_POST['md-in-registration-no'] > 50)){
+                $_POST['md-in-registration-no'] = sanitize_text_field($_POST['md-in-registration-no']);
+                if(strlen($_POST['md-in-registration-no']) > 50){
 
                    $errors['md-in-registration-no'][] = 'Please make the company registration no. field less than 50';
                 }

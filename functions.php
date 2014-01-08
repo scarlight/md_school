@@ -1066,23 +1066,8 @@ function massdata_remove_post_boxes(){
     remove_meta_box('submitdiv', 'massdata_reserve', 'high');
 }
 
-add_action( 'woocommerce_product_options_general_product_data', 'massdata_add_custom_total_stock_field' );
-//add_action( 'woocommerce_process_product_meta', 'massdata_add_custom_total_stock_field_save' );
-//add_action( 'woocommerce_product_after_variable_attributes_js', 'variable_fields_js' );
 add_action( 'woocommerce_process_product_meta_variable', 'variable_fields_process', 10, 1 );
 add_action( 'woocommerce_product_after_variable_attributes', 'variable_fields', 9, 2 );
-function massdata_add_custom_total_stock_field(){
-    global $woocommerce, $post, $product;
-
-    $total_stock_count = get_post_meta($post->ID, '_variant_total_stock', true);
-    if(!is_numeric($total_stock_count)){
-        $html= "<p class=\"form-field product_field_type\"><label for=\"product_field_type\">Total Variant Stock: 0 </label></p>";
-        echo $html;
-    }else{
-        $html= "<p class=\"form-field product_field_type\"><label for=\"product_field_type\">Total Variant Stock: {$total_stock_count}</label></p>";
-        echo $html;
-    }
-}
 function variable_fields( $loop, $variation_data ) {
     ?>
     <tr>
@@ -1122,8 +1107,6 @@ function variable_fields_process( $post_id ) {
         $variable_corporate_price = $_POST['_massdata_corporate_price'];
         $variable_quantity = $_POST['_massdata_quantity'];
 
-        $current_stock = get_post_meta($post_id, '_variant_total_stock', true);
-        $total_stock = 0;
         for ( $i = 0; $i < sizeof( $variable_sku ); $i++ ) :
 
             $variation_id = (int)$variable_post_id[$i];
@@ -1137,21 +1120,14 @@ function variable_fields_process( $post_id ) {
                 update_post_meta( $variation_id, '_massdata_quantity', stripslashes( $variable_quantity[$i] ) );
             }
 
-            $total_stock = $total_stock + get_post_meta($variation_id, '_stock', true);
         endfor;
-
-
-        update_post_meta($post_id, '_variant_total_stock', $total_stock);
     endif;
-
 }
 
 add_filter('manage_edit-massdata_reserve_columns', 'edit_massdata_reserve_columns');
 add_action('manage_massdata_reserve_posts_custom_column', 'edit_massdata_reserve_column_data', 10, 2);
 add_filter('manage_edit-massdata_quotation_columns', 'edit_massdata_quotation_columns');
 add_action('manage_massdata_quotation_posts_custom_column', 'edit_massdata_quotation_column_data');
-//add_filter('post_row_actions', 'quotation_remove_row_actions', 10, 2);
-//add_filter('bulk_actions-edit-massdata_quotation', 'quotation_remove_bulk_actions');
 function edit_massdata_quotation_columns($column_headers)
 {
     unset($column_headers);
@@ -1293,12 +1269,18 @@ function massdata_manager_users_column($columns){
 }
 function massdata_manage_users_custom_columns($value, $column_name, $user_id){
 
+    $queried = new WP_Query(array(
+        'post_type' => 'massdata_reserve',
+        'post_author' => $user_id,
+        'posts_per_page' => -1,
+        'fields' => 'ids'
+    ));
     switch($column_name){
         case 'quote_count':
             return $user_meta_obj = get_user_meta($user_id, 'quote_count', true);
             break;
         case 'reserve_count':
-            return '';
+            return count($queried);
             break;
         default:
             return $value;
@@ -1306,9 +1288,9 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     }
 }
 
-add_action('delete_user', 'massdata_before_user_delete', 10, 1);
-add_action('before_delete_post', 'massdata_reduce_user_quote_count');
-add_action('before_delete_post', 'massdata_before_quotation_delete');
+//add_action('delete_user', 'massdata_before_user_delete', 10, 1);
+//add_action('before_delete_post', 'massdata_reduce_user_quote_count');
+//add_action('before_delete_post', 'massdata_before_quotation_delete');
 function massdata_before_user_delete($user_id){
 
     $quote_count = get_user_meta($user_id, 'quote_count', true);
@@ -1435,10 +1417,6 @@ function custom_wp_mail_from_name( $original_email_from )
 }
 ////////////////////////////END EMAIL STUFFS/////////////////////
 
-
-
-
-
 /// CRON STUFF/// Dont touch.
 add_filter('cron_schedules', 'xxx_cron_every_twelve_hour');
 add_action('wp', 'prefix_setup_schedule');
@@ -1479,3 +1457,206 @@ function cron_delete_massdata_reservation(){
 //function prefix_deactivation() {
 //    wp_clear_scheduled_hook( 'prefix_twelve_hour_event' );
 //}
+
+
+///////////////////////////////// Stock Report /////////////////
+function send_stock_report(){
+    require_once get_template_directory().'/md_email_template_stock_report.php';
+}
+
+add_filter('cron_schedules', 'xxx_cron_every_one_second');
+add_action('wp', 'prefix_setup_stock_report');
+add_action('prefix_one_second_event', 'send_stock_report');
+
+//register_activation_hook( __FILE__, 'prefix_setup_schedule' );
+//register_deactivation_hook( __FILE__, 'prefix_deactivation' );
+
+function xxx_cron_every_one_second( $schedules ) {
+    $schedules['every_one_second'] = array(
+        'interval' => 1, // in seconds
+        'display'  => __('Every 1 second', 'xxx')
+    );
+    return $schedules;
+}
+function prefix_setup_stock_report(){
+    if ( ! wp_next_scheduled( 'prefix_twelve_hour_event' ) ) {
+        wp_schedule_event( time(), 'every_one_second', 'prefix_one_second_event');
+    }
+}
+
+add_action( 'show_user_profile', 'extra_user_profile_fields' );
+add_action( 'edit_user_profile', 'extra_user_profile_fields' );
+function extra_user_profile_fields( $user ) {
+    $user_data = get_userdata($user->ID);
+    $user_meta = get_user_meta($user->ID);
+
+    ?>
+    <h3><?php _e("User registration Information", "blank"); ?></h3>
+
+    <table class="form-table">
+        <tr>
+            <th><label for="md_user_login"><?php _e("Full Name"); ?></label></th>
+            <td>
+                <?php if(isset($user_data->data->user_login)){ ?>
+                    <input type="text" name="md_user_login" id="md_user_login" value="<?php echo esc_attr($user_data->data->user_login); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Full name provided during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_user_login" id="md_user_login" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Full name provided during registration"); ?></span>
+                <?php }?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_user_email"><?php _e("Email"); ?></label></th>
+            <td>
+                <?php if(isset($user_data->data->user_email)){?>
+                    <input type="text" name="md_user_email" id="md_user_email" value="<?php echo esc_attr($user_data->data->user_email); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Email provided during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_user_email" id="md_user_email" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Email provided during registration"); ?></span>
+                <?php }?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_user_role"><?php _e("User Role"); ?></label></th>
+            <td>
+                <?php if(isset($user_data->roles[0])){?>
+                    <input type="text" name="md_user_role" id="md_user_role" value="<?php echo esc_attr( ucfirst($user_data->roles[0]) ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("User role provided during registration"); ?></span>
+                <?php } else { ?>
+                    <input type="text" name="md_user_role" id="md_user_role" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("User role provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_company_name"><?php _e("Company Name"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['companyname'][0])){?>
+                    <input type="text" name="md_company_name" id="md_company_name" value="<?php echo esc_attr( $user_meta['companyname'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Company name provided during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_company_name" id="md_company_name" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Company name provided during registration"); ?></span>
+                <?php }?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_registration_no"><?php _e("Company Registration No."); ?></label></th>
+            <td>
+                <?php if (isset($user_meta['registration_no'][0])) { ?>
+                    <input type="text" name="md_registration_no" id="md_registration_no"
+                           value="<?php echo esc_attr($user_meta['registration_no'][0]); ?>" class="regular-text"
+                           readonly/><br/>
+                    <span
+                        class="description"><?php _e("Company registration no. provided during registration"); ?></span>
+                <?php } else { ?>
+                    <input type="text" name="md_registration_no" id="md_registration_no"
+                           value="<?php echo ' - '; ?>" class="regular-text"
+                           readonly/><br/>
+                    <span
+                        class="description"><?php _e("Company registration no. provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_mobile"><?php _e("Mobile"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['mobile'][0])) { ?>
+                    <input type="text" name="md_mobile" id="md_mobile" value="<?php echo esc_attr( $user_meta['mobile'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Mobile number provided during registration"); ?></span>
+                <?php } else{ ?>
+                    <input type="text" name="md_mobile" id="md_mobile" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Mobile number provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_telephone"><?php _e("Telephone"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['tel'][0])){?>
+                <input type="text" name="md_telephone" id="md_telephone" value="<?php echo esc_attr( $user_meta['tel'][0] ); ?>" class="regular-text" readonly/><br />
+                <span class="description"><?php _e("Telephone number provided during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_telephone" id="md_telephone" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Telephone number provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_fax"><?php _e("Fax"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['fax'][0])){ ?>
+                    <input type="text" name="md_fax" id="md_fax" value="<?php echo esc_attr( $user_meta['fax'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Fax number provided during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_fax" id="md_fax" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Fax number provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_address"><?php _e("Address"); ?></label></th>
+            <td>
+                <?php if (isset($user_meta['address'][0])) { ?>
+                    <input type="text" name="md_address" id="md_address"
+                           value="<?php echo esc_attr($user_meta['address'][0]); ?>" class="regular-text" readonly/>
+                    <br/>
+                    <span class="description"><?php _e("Address provided during registration"); ?></span>
+
+                <?php } else { ?>
+                    <input type="text" name="md_address" id="md_address"
+                           value="<?php echo ' - '; ?>" class="regular-text" readonly/>
+                    <br/>
+                    <span class="description"><?php _e("Address provided during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_survey"><?php _e("Survey"); ?></label></th>
+            <td>
+                <?php if(!empty($user_meta['survey'][0])) { ?>
+                    <input type=text name="address" id="address" value="<?php
+                        foreach (unserialize($user_meta['survey'][0]) as $index => $value){
+                            if($index == (count(unserialize($user_meta['survey'][0]))-1)){
+                                echo ' '.ucfirst($value);
+                                break;
+                            }else{
+                                echo ' '.ucfirst($value) . ',';
+                            }
+                        }
+                    ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Survey field filled during registration"); ?></span>
+                <?php } else { ?>
+                    <input type="text" name="address" id="address" value="<?php echo " - "; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Survey field filled during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_enquiry"><?php _e("Enquiry"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['enquiry'][0])) {?>
+                    <input type="text" name="md_enquiry" id="md_enquiry" value="<?php echo esc_attr( $user_meta['enquiry'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Enquiry of user during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_enquiry" id="md_enquiry" value="<?php echo " - "; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Enquiry of user during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="md_view_pricing"><?php _e("View Stock Pricing"); ?></label></th>
+            <td>
+                <?php if(isset($user_meta['view_pricing'][0])){ ?>
+                    <input type="text" name="md_view_pricing" id="md_view_pricing" value="<?php echo esc_attr( $user_meta['view_pricing'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("User option to view stock pricing during registration"); ?></span>
+                <?php } else {?>
+                    <input type="text" name="md_view_pricing" id="md_view_pricing" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("User option to view stock pricing during registration"); ?></span>
+                <?php } ?>
+            </td>
+        </tr>
+    </table>
+<?php }

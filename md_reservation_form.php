@@ -26,7 +26,7 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
                 if (isset($reserve_stock)) { // is reservation count set?
 
                     $reserve_stock = (int)$reserve_stock;
-                    if ($reserve_stock >= 0 && (strlen($reserve_stock) > 0 && strlen($reserve_stock) < 10)) { // if reservation count is valid
+                    if ($reserve_stock >= 0 && (strlen($reserve_stock) > 0 && strlen($reserve_stock) < 10) && array_sum($_POST) != 0) { // if reservation count is valid
 
                         if (isset($stock_available_arr[$product->children[$count]])) { // if there are existing reservations.
 

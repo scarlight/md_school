@@ -349,5 +349,3 @@ $massdata_quotation_message = null; ?>
 
     </form>
     <div class="clear"></div>
-<!---->
-<?php

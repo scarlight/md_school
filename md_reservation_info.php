@@ -5,7 +5,7 @@ global $post;
 $post_instance = get_post(get_the_ID());
 $post_meta = get_post_meta(get_the_ID());
 $user_inst = get_userdata($post->post_author);
-$user_meta_inst = get_user_meta($post->author);
+$user_meta_inst = get_user_meta($post->post_author);
 
 $query = new WP_Query(
     array(
@@ -69,11 +69,17 @@ foreach($bigarr as $index => $array){
             <tbody>
             <tr>
                 <td style="width:200px;">Product ID</td>
-                <td>345</td>
+                <?php
+                    echo "<td>{$post_instance->post_content}</td>";
+                ?>
             </tr>
             <tr>
-                <td>Product Name</td>
-                <td>FD-SUPER COLOR</td>
+                <td>Product Model</td>
+                <?php
+                    $product_model = get_post_meta($post_instance->post_content, 'massdata_product_model', true);
+                    echo "<td>{$product_model}</td>";
+                    unset($product_model);
+                ?>
             </tr>
             </tbody>
         </table>

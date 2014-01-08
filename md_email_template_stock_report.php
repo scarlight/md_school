@@ -572,7 +572,20 @@ unset($obj_ex);
 
 if(is_readable($report_path)){
     wp_mail(get_option('admin_email'), 'Massdata Stock Report', "Monthly report of massdata system stock reservation. \nPlease open the attachment for the report.", '', $report_path);
-    unlink($report_path);
+
+    $new_report_path = ABSPATH.'wp-content/stock_report';
+
+    if(!is_dir($new_report_path)){
+        mkdir($new_report_path);
+        $new_report_path.=$filename;
+    }else{
+        $new_report_path = $new_report_path .'/'.$filename;
+    }
+    rename($report_path, $new_report_path);
+
+    if(get_directory_size(strstr($new_report_path,$filename, true)) == 1.311e+7){
+        unlink(file);
+    }
 }
 
 function get_cell($current_column, $current_row){
@@ -584,4 +597,34 @@ function get_cell_row_range_by_number($current_column, $current_row, $range){
     $alphabet2 = chr(65+$range+$current_column-1);
 
     return "{$alphabet}{$current_row}:{$alphabet2}{$current_row}";
+}
+function get_directory_size($directory)
+{
+    $dirSize=0;
+    if(!$dh=opendir($directory))
+    {
+        return false;
+    }
+
+    while($file = readdir($dh))
+    {
+        if($file == "." || $file == "..")
+        {
+            continue;
+        }
+
+        if(is_file($directory."/".$file))
+        {
+            $dirSize += filesize($directory."/".$file);
+        }
+
+//        if(is_dir($directory."/".$file))          // checks recursively, i dont need this
+//        {
+//            $dirSize += getDirectorySize($directory."/".$file);
+//        }
+    }
+
+    closedir($dh);
+
+    return $dirSize;
 }
