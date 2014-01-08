@@ -1280,7 +1280,7 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
             return $user_meta_obj = get_user_meta($user_id, 'quote_count', true);
             break;
         case 'reserve_count':
-            return count($queried);
+            return count($queried->posts);
             break;
         default:
             return $value;
@@ -1288,26 +1288,40 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     }
 }
 
-//add_action('delete_user', 'massdata_before_user_delete', 10, 1);
-//add_action('before_delete_post', 'massdata_reduce_user_quote_count');
-//add_action('before_delete_post', 'massdata_before_quotation_delete');
+add_action('before_delete_post', 'massdata_before_user_delete');
 function massdata_before_user_delete($user_id){
 
-    $quote_count = get_user_meta($user_id, 'quote_count', true);
-    if(isset($quote_count) && $quote_count > 0){
-        echo "<script>alert('This user has quotation left in the system. Please delete all quotation from this user before removing the user\\'s account');</script>";
+    $queried = new WP_Query(array(
+        'post_type' => 'massdata_reserve',
+        'post_author' => $user_id,
+        'posts_per_page' => -1,
+        'fields' => 'ids'
+    ));
 
-        //add_query('', '', $_SERVER['HTTP_REFERER']);
-        exit(wp_redirect(admin_url().'users.php'));
+    if(isset($queried->posts)){
+        foreach($queried->posts as $index => $value){
+            wp_delete_post($value, true);
+        }
     }
-}
-function massdata_reduce_user_quote_count($post_id){
 
-}
-function massdata_before_quotation_delete($post_id){
+    $queried = new WP_Query(array(
+        'post_type' => 'massdata_quotation',
+        'post_author' => $user_id,
+        'posts_per_page' => -1,
+        'fields' => 'ids'
+    ));
 
-    if(get_the_ID() == $post_id){
-        massdata_file_unlink($post_id);
+    if(isset($queried->posts)){
+        foreach($queried->posts as $index => $value){
+            $file_meta= get_post_meta($value);
+            if(isset($file_meta['md_in_artwork'])){
+                $temp = unserialize($file_meta['md_in_artwork'][0]);
+                if(is_readable($temp['file'])){
+                    unlink($temp['file']);
+                }
+            }
+            wp_delete_post($value, true);
+        }
     }
 }
 
