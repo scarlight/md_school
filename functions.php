@@ -1360,40 +1360,30 @@ function massdata_file_unlink($post_id)
 }
 function massdata_quotation_upload_directory( $args ) {
 
-    /**
-     * Change Upload Directory for Custom Post-Type
-     *
-     * This will change the upload directory for a custom post-type. Attachments will
-     * now be uploaded to an "uploads" directory within the folder of your plugin. Make
-     * sure you swap out "post-type" in the if-statement with the appropriate value...
-     */
-    global $post;
-    // Check the post-type of the current post
-    if( "product" == get_post_type( $post->ID )) {
-        if((isset($_POST['__md__']) && isset($_POST['md-in-product']))){
+    if((isset($_POST['__md__']) && isset($_POST['md-in-product']))){
 
-            $cwd_arr = getcwd();
-            $cwd_exploded = explode("\\", $cwd_arr);
-            if(isset($cwd_exploded)){
-                $cwd_arr = implode("/", $cwd_exploded);
-            }
+        $cwd_arr = getcwd();
+        $cwd_exploded = explode("\\", $cwd_arr);
+        if(isset($cwd_exploded)){
+            $cwd_arr = implode("/", $cwd_exploded);
+        }
 
-            if(is_dir($cwd_arr.'/wp-content')){
+        if(is_dir($cwd_arr.'/wp-content')){
 
-                $args['path'] = $cwd_arr.'/wp-content'."/quote_design_folder";
-                $args['url']  = content_url()."/quote_design_folder";
-                $args['basedir'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
-                $args['baseurl'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
+            $args['path'] = $cwd_arr.'/wp-content'."/quote_design_folder";
+            $args['url']  = content_url()."/quote_design_folder";
+            $args['basedir'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
+            $args['baseurl'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
 
-                error_log("path={$args['path']}");
-                error_log("url={$args['url']}");
-                error_log("subdir={$args['subdir']}");
-                error_log("basedir={$args['basedir']}");
-                error_log("baseurl={$args['baseurl']}");
-                error_log("error={$args['error']}");
-            }
+            error_log("path={$args['path']}");
+            error_log("url={$args['url']}");
+            error_log("subdir={$args['subdir']}");
+            error_log("basedir={$args['basedir']}");
+            error_log("baseurl={$args['baseurl']}");
+            error_log("error={$args['error']}");
         }
     }
+
     return $args;
 }
 
