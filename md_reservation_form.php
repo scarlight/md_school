@@ -164,9 +164,9 @@ if (!is_null($message)) {
                 <th rowspan="2">Product Color</th>
                 <th rowspan="2">Stock Available</th>
                 <?php if (is_user_logged_in()) { ?>
-                    <th rowspan="2">Reserved</th>
+                    <th rowspan="2">My Reserve</th>
                 <?php } ?>
-                <th rowspan="2">Reserve</th>
+                <th rowspan="2">Reserved</th>
                 <th rowspan="2">Total Stock<br><span class="stock-remark">(Stock Available + Reserved)</span></th>
                 <?php if (is_user_logged_in()) { ?>
                     <th colspan="2" class="sky-blue">Price Table</th>
@@ -335,7 +335,9 @@ if (!is_null($message)) {
         </div>
         <?php if (is_user_logged_in()) { ?>
             <div class="floatr">
+                <?php if(isset($product->product_type) && $product->product_type === 'variable'){ ?>
                 <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
+                <? } ?>
                 <a href="#" class="btn btn-default">View Logo option Charges</a>
             </div>
         <?php } ?>
