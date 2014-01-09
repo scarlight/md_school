@@ -327,7 +327,8 @@ if (!is_null($message)) {
 
             </tr>
             </tbody>
-        </table
+        </table>
+        <br>
         <div class="floatl">
             <div class="red-remark">*Stock level as at 4pm yesterday</div>
             <div class="red-remark">*Reserved only valid for 3 days</div>
