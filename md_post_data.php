@@ -99,11 +99,7 @@ function send_quote($product_id)
                     $_POST['md-in-other-requirement'] = wp_strip_all_tags($_POST['md-in-other-requirement']);
                     update_post_meta($quote_id, 'md_in_other_requirement', $_POST['md-in-other-requirement']);
                 }
-
-                $quote_count = get_user_meta(get_current_user_id(), 'quote_count', true);
-                $quote_count++;
-                update_user_meta(get_current_user_id(), 'quote_count', $quote_count);
-
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product Quotation', 'A quotation by a user:-\n1. User ID: '.(string)get_current_user_id().'\n2. Product Model: '.(string)$product_model.'\n3.Quote ID: '.(string)$quote_id);
             }
         }
 

@@ -1277,7 +1277,18 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     ));
     switch($column_name){
         case 'quote_count':
-            return $user_meta_obj = get_user_meta($user_id, 'quote_count', true);
+
+            $queried = new WP_Query(array(
+                'post_type' => 'massdata_quotation',
+                'post_author' => $user_id,
+                'posts_per_page' => -1,
+                'fields' => 'ids',
+            ));
+            if(isset($queried->posts)){
+                return count($queried->posts);
+            }else{
+                return 0;
+            }
             break;
         case 'reserve_count':
             return count($queried->posts);

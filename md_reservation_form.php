@@ -144,6 +144,8 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 
                 $message = "Product reservation successfully applied";
                 $reserved_id = $reserve_post_id;
+
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product Reservation', 'A reservation was sent/updated:- \n1. Reservation ID: '.(string)$reserve_post_id.'\n2. User ID: '.(string)get_current_user_id().'\n3. Product ID: '.(string)$product->ID);
             }
         }
     }

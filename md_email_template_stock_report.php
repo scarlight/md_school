@@ -159,7 +159,17 @@ if (!empty($popular_pen_drive->posts)) {
             }
         }
     }
-}else{}
+}else{
+
+    $current_column = 0;
+    $current_row = 1;
+    $current_row++;
+
+    $obj_ex->getActiveSheet()->mergeCellsByColumnAndRow($current_column, $current_row , $current_column+4, $current_row);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+    $obj_ex->getActiveSheet()->setCellValueByColumnAndRow($current_column, $current_row, 'Stock count for products under "Popular Pendrive" not found');
+}
 /////////////End Popular Pen Drive Worksheet population
 
 /////////////Start Designer Pen Drive Worksheet population
@@ -291,8 +301,18 @@ if (!empty($designer_pen_drive->posts)) {
             }
         }
     }
-}else{}
-/////////////End Popular Pen Drive Worksheet population
+}else{
+
+    $current_column = 0;
+    $current_row++;
+    $current_row++;
+
+    $obj_ex->getActiveSheet()->mergeCellsByColumnAndRow($current_column, $current_row , $current_column+4, $current_row);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+    $obj_ex->getActiveSheet()->setCellValueByColumnAndRow($current_column, $current_row, 'Stock count for products under "Designer Pendrive" not found');
+}
+/////////////End Designer Pen Drive Worksheet population
 
 /////////////Start Usb Gadget Worksheet population
 $obj_ex->setActiveSheetIndex(2);
@@ -422,7 +442,18 @@ if (!empty($usb_gadget->posts)) {
             }
         }
     }
-}else{}
+}else{
+
+    $current_column = 0;
+    $current_row++;
+    $current_row++;
+
+    $obj_ex->getActiveSheet()->mergeCellsByColumnAndRow($current_column, $current_row , $current_column+4, $current_row);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+    $obj_ex->getActiveSheet()->setCellValueByColumnAndRow($current_column, $current_row, 'Stock count for products under "USB Gadget" not found');
+
+}
 /////////////End USB Gadget Worksheet population
 
 /////////////Start Electronic Gadget Worksheet population
@@ -463,7 +494,6 @@ if (!empty($electronic_gadget->posts)) {
         if (!empty($children)) {
             if (!$top_row_set) {
 
-
                 $current_column = 0;
                 $current_row++;
                 $current_row++;
@@ -489,6 +519,7 @@ if (!empty($electronic_gadget->posts)) {
                 $obj_ex->getActiveSheet()->getStyle(get_cell($current_column, $current_row))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                 $top_row_set = 1;
             }
+
 
             $total_reserved = 0;
             $total_available = 0;
@@ -556,9 +587,17 @@ if (!empty($electronic_gadget->posts)) {
     }
 }else{
 
+    $current_column = 0;
+    $current_row++;
+    $current_row++;
+
+    $obj_ex->getActiveSheet()->mergeCellsByColumnAndRow($current_column, $current_row , $current_column+4, $current_row);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $obj_ex->getActiveSheet()->getStyle(get_cell_row_range_by_number($current_column, $current_row, 5))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_MEDIUM);
+    $obj_ex->getActiveSheet()->setCellValueByColumnAndRow($current_column, $current_row, 'Stock count for products under "Electronic Gadeget" not found');
+
 }
 /////////////End Electronic Gadget Worksheet population
-
 $filename = 'massdata_stock_reservation_report_'.date('Y M d').'.xlsx';
 $filename = sanitize_file_name($filename);
 $report_path = get_template_directory().'/'.$filename;
@@ -577,15 +616,11 @@ if(is_readable($report_path)){
 
     if(!is_dir($new_report_path)){
         mkdir($new_report_path);
-        $new_report_path.=$filename;
+        $new_report_path = $new_report_path . '/'. $filename;
     }else{
         $new_report_path = $new_report_path .'/'.$filename;
     }
     rename($report_path, $new_report_path);
-
-    if(get_directory_size(strstr($new_report_path,$filename, true)) == 1.311e+7){
-        unlink(file);
-    }
 }
 
 function get_cell($current_column, $current_row){
@@ -595,36 +630,5 @@ function get_cell($current_column, $current_row){
 function get_cell_row_range_by_number($current_column, $current_row, $range){
     $alphabet = chr(65+$current_column);
     $alphabet2 = chr(65+$range+$current_column-1);
-
     return "{$alphabet}{$current_row}:{$alphabet2}{$current_row}";
-}
-function get_directory_size($directory)
-{
-    $dirSize=0;
-    if(!$dh=opendir($directory))
-    {
-        return false;
-    }
-
-    while($file = readdir($dh))
-    {
-        if($file == "." || $file == "..")
-        {
-            continue;
-        }
-
-        if(is_file($directory."/".$file))
-        {
-            $dirSize += filesize($directory."/".$file);
-        }
-
-//        if(is_dir($directory."/".$file))          // checks recursively, i dont need this
-//        {
-//            $dirSize += getDirectorySize($directory."/".$file);
-//        }
-    }
-
-    closedir($dh);
-
-    return $dirSize;
 }
