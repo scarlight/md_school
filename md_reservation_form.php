@@ -335,7 +335,7 @@ if (!is_null($message)) {
         </div>
             <div class="floatr">
                 <?php if (is_user_logged_in()){ ?>
-                    <?php if(isset($product->product_type) && $product->product_type === 'variable'){ ?>}
+                    <?php if(isset($product->product_type) && $product->product_type === 'variable'){ ?>
                     <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
                     <?php } ?>
                 <a href="#" class="btn btn-default">View Logo option Charges</a>
