@@ -333,11 +333,13 @@ if (!is_null($message)) {
             <div class="red-remark">*Stock level as at 4pm yesterday</div>
             <div class="red-remark">*Reserved only valid for 3 days</div>
         </div>
-        <?php if (is_user_logged_in() && isset($product->product_type) && $product->product_type === 'variable') { ?>
             <div class="floatr">
-                <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
+                <?php if (is_user_logged_in()){ ?>
+                    <?php if(isset($product->product_type) && $product->product_type === 'variable'){ ?>}
+                    <input type="submit" name="test" style="margin-right:10px;" class="btn btn-default" value="Apply Now">
+                    <?php } ?>
                 <a href="#" class="btn btn-default">View Logo option Charges</a>
+                <?php } ?>
             </div>
-        <?php } ?>
         <div class="clear"></div>
     </form>
