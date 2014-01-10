@@ -36,8 +36,7 @@ if ( 0 == $woocommerce_loop['loop'] % $woocommerce_loop['columns'] )
 	$classes[] = 'last';
 ?>
 
-<?php 
-
+<?php
 	//remove the "product" in li class
 	ob_start();
 	post_class( $classes );
@@ -71,16 +70,30 @@ if ( 0 == $woocommerce_loop['loop'] % $woocommerce_loop['columns'] )
 		<span class="stock-item-name"><?php echo $the_product_custom_fields_type; ?></span>
         <?php if(isset($product->children) && $product->product_type == 'variable'){
             $get_stock_quantity = 0;
-            foreach($product->children as $variable_index => $id){
-                $a = get_post_meta($id, '_stock', true);
+            foreach($product->children as $variable_index => $variable_id){
+                $a = get_post_meta($variable_id, '_stock', true);
                 $get_stock_quantity = $get_stock_quantity + $a;
             }
         ?>
             <span class="stock-quantity">Quantity : <?php echo $get_stock_quantity; ?></span>
+        <?php }else if(is_null($product->children) && $product->product_type == 'variable'){
+
+            $queried = new WP_Query(array(
+                'post_parent' => $product->id,
+                'posts_per_page' => -1,
+                'fields' => 'ids'
+            ));
+            $get_product_quantity = 0;
+            foreach($queried->posts as $index_product => $variable_id){
+                $a = get_post_meta($variable_id, '_stock', true);
+                $get_product_quantity = $get_product_quantity + $a;
+            }
+        ?>
+            <span class="stock-quantity">Quantity : <?php echo $get_product_quantity; ?></span>
         <?php }else{ ?>
             <span class="stock-quantity">Quantity : <?php echo $product->get_stock_quantity(); ?></span>
         <?php } ?>
-		<?php
+        <?php
 			/**
 			 * woocommerce_after_shop_loop_item_title hook
 			 *
