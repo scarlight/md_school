@@ -79,6 +79,7 @@ if ( 0 == $woocommerce_loop['loop'] % $woocommerce_loop['columns'] )
         <?php }else if(is_null($product->children) && $product->product_type == 'variable'){
 
             $queried = new WP_Query(array(
+                'post_type' => "product_variation",
                 'post_parent' => $product->id,
                 'posts_per_page' => -1,
                 'fields' => 'ids'
