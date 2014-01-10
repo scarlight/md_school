@@ -704,8 +704,6 @@ function massdata_product_permalink($permalink, $post_id, $leavename){
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// tOUch tHE cODE bELOW aND tHE uNIVERSE wILL eXPLODE /////////
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-
 add_action('register_post', 'massdata_register_post', 10, 3);
 add_filter('registration_errors', 'massdata_register_error', 10, 3);
 add_action('user_register', 'massdata_user_register');
@@ -1414,13 +1412,25 @@ function massdata_quotation_upload_directory( $args ) {
 
 //contact us
 add_shortcode('massdata_contact_us', 'massdata_contactus_shortcode');
+add_shortcode('massdata_quote', 'massdata_general_quote_shortcode');
 function massdata_contactus_shortcode($atts){
+
     $atts = shortcode_atts(
         array(
         ), $atts
     );
     extract($atts);
     require_once get_template_directory().'/md_template_contact_us.php';
+    return;
+}
+function massdata_general_quote_shortcode($atts){
+
+    $atts = shortcode_atts(
+        array(
+        ), $atts
+    );
+    extract($atts);
+    require_once get_template_directory().'/md_template_general_quote.php';
     return;
 }
 
