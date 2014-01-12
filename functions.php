@@ -72,6 +72,9 @@ function massdata_theme_setup()
     /* A shortcode for massdata event images carousel */
     add_shortcode('md_img', 'massdata_slider_image_shortcode');
 
+    /* A shortcode for massdata pricing option lightbox */
+    add_shortcode('md_pricing', 'massdata_pricing_shortcode');
+
     /* Woocommerce Support */
     add_theme_support('woocommerce');
 
@@ -106,7 +109,7 @@ function massdata_theme_setup()
 function shortcode_empty_paragraph_fix($content)
 {   
     // array of custom shortcodes requiring the fix 
-    $block = join("|",array("col", "md_faq", "md_answer", "md_slider", "md_img", "md_single_request_quote"));
+    $block = join("|",array("col", "md_faq", "md_answer", "md_slider", "md_img", "md_single_request_quote", "md_pricing"));
     //EG: $block = join("|",array("col","shortcode2","shortcode3"));
  
     // opening tag
@@ -269,6 +272,35 @@ function massdata_slider_shortcode($atts, $content){
     return "";
 }
 
+/* A shortcode for massdata pricing option lightbox */
+function massdata_pricing_shortcode($atts, $content){
+    $atts = shortcode_atts(
+        array(
+            'item' => 0,
+            'title' => "",
+            'group' => "price",
+            'content' => !empty($content) ? $content : NULL
+        ), $atts
+    );
+
+    extract($atts);
+
+    $item = absint($item);
+    if(isset($item) && !empty($item) ){
+
+        $img_url = wp_get_attachment_image_src($item, "full");
+
+        $concatenate = '<a href="'.$img_url[0].'" class="view-charges-img" title="'.$title.'" rel=lightbox-'.$group.'></a>';
+            
+        return $concatenate;
+
+    } else {
+
+        return "";
+        
+    }
+}
+
 /* A shortcode for massdata event image carousel */
 function massdata_slider_image_shortcode($atts, $content){
     $atts = shortcode_atts(
@@ -348,13 +380,15 @@ function massdata_default_product_tabs( $tabs = array() ) {
             'callback' => 'woocommerce_product_description_tab'
         );
 
-    // Additional information tab - shows attributes
-    if ( $MASSDATA_CURRENT_TEMPLATE_FILE != "single-product-currentstock.php" && $product->has_attributes() || ( get_option( 'woocommerce_enable_dimension_product_attributes' ) == 'yes' && ( $product->has_dimensions() || $product->has_weight() ) ) )
-        $tabs['additional_information'] = array(
-            'title'    => __( 'Additional Information', 'woocommerce' ),
-            'priority' => 20,
-            'callback' => 'woocommerce_product_additional_information_tab'
-        );
+    if(false){ //dont need this to be shown
+        // Additional information tab - shows attributes
+        if ( $MASSDATA_CURRENT_TEMPLATE_FILE != "single-product-currentstock.php" && $product->has_attributes() || ( get_option( 'woocommerce_enable_dimension_product_attributes' ) == 'yes' && ( $product->has_dimensions() || $product->has_weight() ) ) )
+            $tabs['additional_information'] = array(
+                'title'    => __( 'Additional Information', 'woocommerce' ),
+                'priority' => 20,
+                'callback' => 'woocommerce_product_additional_information_tab'
+            );
+    }
 
     // Reviews tab - shows comments
     if ( comments_open() )
