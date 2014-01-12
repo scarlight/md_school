@@ -103,6 +103,9 @@ function massdata_theme_setup()
     add_filter('post_link', 'massdata_product_permalink', 10, 3);
     add_filter('post_type_link', 'massdata_product_permalink', 10, 3);
 
+
+    /* add an action for massdata header breadcrumb */
+    add_action( "md_header_breadcrumb", "massdata_template_header_breadcrumb", 10, 1);
 }
 
 /* Fixes shortcode using wpautop that inserts additional p and br tag; */
@@ -155,7 +158,7 @@ function massdata_load_css_files() {
     wp_register_style( 'massdata_fonts_googleapis', 'http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700', array(), 'screen' );
     wp_register_style( 'massdata_css_bootstrap', MASSDATA_THEMEROOT.'/css/bootstrap.min.css', array(), '1.0', 'screen' );
     wp_register_style( 'massdata_css_theme', MASSDATA_THEMEROOT.'/css/theme.min.css', array('massdata_css_bootstrap'), '1.0', 'screen' );
-    wp_register_style( 'massdata_css_template', MASSDATA_THEMEROOT.'/css/a_template.css', array('massdata_css_bootstrap'), '1.0', 'screen' );
+    wp_register_style( 'massdata_css_template', MASSDATA_THEMEROOT.'/css/template.min.css', array('massdata_css_bootstrap'), '1.0', 'screen' );
     wp_register_style( 'massdata_css_superfish', MASSDATA_THEMEROOT.'/css/superfish.min.css', array(), '1.0', 'screen' );
     wp_register_style( 'massdata_font_awesome', MASSDATA_THEMEROOT.'/css/font-awesome.min.css', array(), '3.2.1', 'screen' );
     wp_register_style( 'massdata_font_awesome_ie', MASSDATA_THEMEROOT.'/css/font-awesome-ie7.min.css', array('massdata-font-awesome'), '3.2.1', 'screen' );
@@ -372,13 +375,15 @@ function massdata_default_product_tabs( $tabs = array() ) {
         );
     }
 
-    // Description tab - shows product content
-    if ( $post->post_content )
-        $tabs['description'] = array(
-            'title'    => __( 'Description', 'woocommerce' ),
-            'priority' => 10,
-            'callback' => 'woocommerce_product_description_tab'
-        );
+    if(false){ //dont need this to be shown
+        // Description tab - shows product content
+        if ( $post->post_content )
+            $tabs['description'] = array(
+                'title'    => __( 'Description', 'woocommerce' ),
+                'priority' => 10,
+                'callback' => 'woocommerce_product_description_tab'
+            );
+    }
 
     if(false){ //dont need this to be shown
         // Additional information tab - shows attributes
@@ -733,11 +738,55 @@ function massdata_product_permalink($permalink, $post_id, $leavename){
     
 }
 
+/* add an action for massdata header breadcrumb */
+function massdata_template_header_breadcrumb($args){
+
+    if ( function_exists( 'breadcrumb_trail' ) ){
+
+        breadcrumb_trail(
+            array(
+                'show_on_front'=> false,
+                'separator' => '&gt;',
+                'show_browse' => false
+            )
+        );
+    }
+
+}
+
+
+if ( ! function_exists( 'massdata_search_paging_nav' ) ) :
+    function massdata_search_paging_nav() {
+        global $wp_query;
+
+        // Don't print empty markup if there's only one page.
+        if ( $wp_query->max_num_pages < 2 )
+            return;
+        ?>
+        <nav class="navigation paging-navigation" role="navigation">
+            <h1 class="screen-reader-text"><?php _e( 'Posts navigation', 'massdata' ); ?></h1>
+            <div class="nav-links">
+
+                <?php if ( get_next_posts_link() ) : ?>
+                <div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older posts', 'massdata' ) ); ?></div>
+                <?php endif; ?>
+
+                <?php if ( get_previous_posts_link() ) : ?>
+                <div class="nav-next"><?php previous_posts_link( __( 'Newer posts <span class="meta-nav">&rarr;</span>', 'massdata' ) ); ?></div>
+                <?php endif; ?>
+
+            </div><!-- .nav-links -->
+        </nav><!-- .navigation -->
+        <?php
+    }
+endif;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// tOUch tHE cODE bELOW aND tHE uNIVERSE wILL eXPLODE /////////
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+
 add_action('register_post', 'massdata_register_post', 10, 3);
 add_filter('registration_errors', 'massdata_register_error', 10, 3);
 add_action('user_register', 'massdata_user_register');

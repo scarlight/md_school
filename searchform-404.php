@@ -9,7 +9,7 @@
 ?>
 
 <div id="for-404">
-    <form role="search" action="#" method="get" id="searchform-404" action="<?php echo home_url( '/' ); ?>">
+    <form method="get" id="searchform-404" action="<?php bloginfo('url'); ?>">
         <div class="input-group">
             <div class="input-group-btn">
                 <button class="btn btn-default" type="submit">
@@ -17,6 +17,8 @@
                 </button>
             </div>
             <input type="text" class="form-control" placeholder="Search" name="s" id="s-404">
+
+            <input type="hidden" name="post_type" value="product" />
         </div>
     </form>
 </div>

@@ -221,13 +221,15 @@ hr.stiched {
   color: red;
 }
 pre.invalid-fields {
+  display: inline-block;
+  width: 97%;
   font-weight: 100;
   color: red;
 }
 #tab-request_quote .highlight-invalid {
-  outline-style: solid;
-  outline-width: 1px;
-  outline-color: #ff9180;
+  border-style: solid;
+  border-width: 3px;
+  border-color: #FF8282;
 }
 html,
 body {
@@ -2024,6 +2026,52 @@ div#custom_list_five ul#item-categories-menu li.current-menu-item a {
   padding: 5px 25px;
   height: 65px;
   font-size: 20px;
+}
+ol.search-list {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  counter-reset: counter;
+  list-style: none;
+}
+ol.search-list li {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  counter-increment: counter;
+  text-align: justify;
+  color: #fb8411;
+}
+ol.search-list li h5 {
+  background: transparent url(../images/hr-dotted.png) repeat-x 0px bottom scroll;
+}
+ol.search-list li blockquote.entry-summary p {
+  font-size: 13px;
+  font-style: italic;
+  color: #858585;
+}
+ol.search-list li .entry-thumbnail img.attachment-post-thumbnail {
+  width: 200px;
+  height: 130px;
+  border: 1px solid #d8d8d8;
+}
+ol.search-list li:before {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  float: left;
+  top: 4px;
+  margin-right: 12px;
+  content: counter(counter, decimal) ".";
+  font-size: 16px;
+  font-weight: 600;
 }
 div.pp_woocommerce div.ppt {
   position: relative;

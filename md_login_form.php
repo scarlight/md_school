@@ -20,7 +20,6 @@
     <div class="clear"></div>
     <?php get_search_form(); ?>
 
-
 <?php
 $status = null;
 $message = null;

@@ -7,8 +7,7 @@
  *
  */
 ?>
-
-<form role="search" action="#" method="get" id="searchform" action="<?php echo home_url( '/' ); ?>">
+<form method="get" id="searchform" action="<?php bloginfo('url') ?>">
     <div class="input-group">
         <div class="input-group-btn">
             <button class="btn btn-default" type="submit">
@@ -16,5 +15,13 @@
             </button>
         </div>
         <input type="text" class="form-control" placeholder="Search" name="s" id="s">
+        
+        <input type="hidden" name="post_type" value="product" />
+
+        <?php
+        //if(is_woocommerce()){
+            //echo '<input type="hidden" name="post_type" value="product" />';
+        //}
+        ?>
     </div>
 </form>
