@@ -327,6 +327,7 @@ $massdata_quotation_message = null; ?>
         <div style="width:185px; margin: 0px auto;">
 
             <?php
+
             $post_product = get_post_custom($post->ID);
             $product_model = $post_product['massdata_product_model'][0];
             ?>
@@ -348,5 +349,4 @@ $massdata_quotation_message = null; ?>
     </div>
 
     </form>
-    <div class="clear"></div>
-
+<div class="clear"></div>

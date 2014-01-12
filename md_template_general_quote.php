@@ -1,64 +1,30 @@
-<?php
-require_once 'md_validator.php';
-require_once 'md_post_data.php';
+<div id="browser-wrapper">
+<div id="main-wrapper">
+<div id="viewport-wrapper">
+<div id="powerista-body-wrp">
+<div id="powerista-body">
+<div id="sidebar">
+    <ul>
+        <li><a class="sidebar-quote" href="#">Quote</a></li>
+        <li><a class="sidebar-p" href="#">Popular Pen Drives</a></li>
+        <li><a class="sidebar-c" href="#">Current Stock</a></li>
+        <li><a class="sidebar-d" href="#">Designer Pen Drive</a></li>
+        <li><a class="sidebar-u" href="#">USB Gadget</a></li>
+        <li><a class="sidebar-e" href="#">Electronic Gadget</a></li>
+    </ul>
+</div>
 
-global $post;
-$massdata_quotation_message = null;
-$quote_request = false;
+<div id="powerista-body2">
+<br>
 
-// is send from quote when user is logged in???
-if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
-
-    if (is_numeric($_POST['__md__'])) {
-        $post_product = get_post_custom($_POST['__md__']);
-        $product_model = $post_product['massdata_product_model'][0];
-    } else {
-        $errors['md-in'][] = 'Product does not exist in the system. Please try a valid product.';
-    }
-
-    if (isset($_POST['__md__']) && isset($_POST['md-in-product']) && $_POST['md-in-product'] === $product_model) {
-        $quote_request = true;
-        $errors = quote_validator();
-
-        foreach ($errors as $error => $fields) {
-            foreach ($fields as $field => $message) {
-                if (!empty($message)) {
-                    $massdata_quotation_message = $message[0];
-                }
-            }
-            if (!is_null($massdata_quotation_message)) {
-                break;
-            }
-        }
-        if (is_null($massdata_quotation_message)) {
-
-            $result = send_quote($_POST['md-in-product']);
-            if (empty($result) && $quote_request == true) {
-                $massdata_quotation_message = "Quotation is successfully sent";
-            }
-        }
-
-    } else {
-
-        $massdata_quotation_message = 'An error has occured. Please reopen tab, and try again';
-
-    }
-
-
-} else if (isset($_GET['status']) && $_GET['status'] === 'submit') {
-
-    if (isset($_GET['message'])) {
-        $massdata_quotation_message = $_GET['message'];
-    }
-}
-
-?>
-<?php if ($massdata_quotation_message != null) ;
-echo "<p><strong>{$massdata_quotation_message}</strong></p>";
-$massdata_quotation_message = null; ?>
+<div id="orange-quote">
 <form action="<?php if (!is_user_logged_in()) echo wp_registration_url(); ?>"
       method='post' <?php do_action('post_edit_form_tag'); ?>>
 <div class="left-form">
+    <div class="form-group">
+        <label for="product" class="control-label">Product <span class="required">*</span></label>
+        <input type="text" class="form-control" id="product" name="md_product" placeholder="" required>
+    </div>
     <div class="form-group">
         <label for="quantity" class="control-label">Quantity <span class="required">*</span></label>
         <input type="text" class="form-control" id="quantity" name="md-in-quantity" placeholder=""
@@ -204,7 +170,6 @@ $massdata_quotation_message = null; ?>
 </div>
 
 <!-- separator -->
-
 <?php if (!is_user_logged_in()) { ?>
     <div class="right-form">
         <div class="form-group">
@@ -327,6 +292,7 @@ $massdata_quotation_message = null; ?>
     <div style="width:185px; margin: 0px auto;">
 
         <?php
+
         $post_product = get_post_custom($post->ID);
         $product_model = $post_product['massdata_product_model'][0];
         ?>
@@ -349,3 +315,8 @@ $massdata_quotation_message = null; ?>
 
 </form>
 <div class="clear"></div>
+</div>
+</div>
+</div>
+
+
