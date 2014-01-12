@@ -754,7 +754,7 @@ function massdata_template_header_breadcrumb($args){
 
 }
 
-
+// not using it anywhere cause its not working
 if ( ! function_exists( 'massdata_search_paging_nav' ) ) :
     function massdata_search_paging_nav() {
         global $wp_query;
