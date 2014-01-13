@@ -666,7 +666,7 @@ h1.title-bar .breadcrumbs a {
   border: 0;
   width: 0px;
   height: 0px;
-  top: 400px;
+  top: 397px;
   left: 30px;
   border: solid 15px transparent;
   border-bottom-width: 20px;
@@ -690,7 +690,11 @@ h1.title-bar .breadcrumbs a {
   margin: 0;
   padding: 0;
   border: 0;
-  border: solid 1px #d8d8d8;
+}
+.massdata-slides-wrapper {
+  -webkit-box-shadow: 0px 20px 12px -14px #686868;
+  box-shadow: 0px 20px 12px -14px #686868;
+  border-bottom: solid 1px #999999;
 }
 #massdata-slides-thumbnail {
   position: relative;
