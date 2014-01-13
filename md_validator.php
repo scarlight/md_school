@@ -447,3 +447,299 @@ function quote_validator(){
 
     return array($errors);
 }
+
+function general_quote_validator(){
+
+    $errors = array(
+        'md-in' => array(),
+        'md-in-product-name' => array(),
+        'md-in-quantity' => array(),
+        'md-in-capacity' => array(),
+        'md-in-product-color' => array(),
+        'md-in-logo-front' => array(),
+        'md-in-logo-front-color' => array(),
+        'md-in-logo-back' => array(),
+        'md-in-logo-back-color' => array(),
+        'md-in-artwork' => array(),
+        'md-in-accessories-type' => array(),
+        'md-in-packaging-type' => array(),
+        'md-in-print-packaging' => array(),
+        'md-in-budget' => array(),
+        'md-in-deadline' => array(),
+        'md-in-other-requirement' => array()
+    );
+
+    try{
+
+        if (empty($_POST['md-in-product-name'])) {
+
+            $errors['md-in-product-name'][] = 'Product name is empty. Please try again';
+        }else {
+
+            $_POST['md-in-product-name'] = sanitize_text_field($_POST['md-in-product-name']);
+            if (strlen($_POST['md-in-product-name']) <= 0 or strlen($_POST['md-in-product-name']) > 20) {
+
+                $errors['md-in-product-name'][] = 'Product name invalid. Please enter valid product name';
+            }
+        }
+
+        if (empty($_POST['md-in-quantity'])) {
+
+            $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
+        }else {
+
+            $_POST['md-in-quantity'] = sanitize_text_field($_POST['md-in-quantity']);
+            if (strlen($_POST['md-in-quantity']) <= 0 or strlen($_POST['md-in-quantity']) > 10) {
+
+                $errors['md-in-quantity'][] = 'Product quantity is overlimit. Please reduce limit and try again';
+            }
+            else if (!is_numeric($_POST['md-in-quantity'])){
+
+                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+            }
+            else if(is_float($_POST['md-in-quantity'])){
+
+                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+            }
+        }
+
+
+
+        if (empty($_POST['md-in-capacity'])) {
+
+            $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
+        } else {
+
+            $_POST['md-in-capacity'] = sanitize_text_field($_POST['md-in-capacity']);
+            $capacity = array('2', '4', '8', '16', '2000', '4000', '5000', '10000');
+            if (!in_array($_POST['md-in-capacity'], $capacity)) {
+
+                $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
+            }
+        }
+
+
+        if(isset($_POST['md-in-product-color'])){
+
+            $_POST['md-in-product-color'] = sanitize_text_field($_POST['md-in-product-color']);
+            if(strlen($_POST['md-in-product-color']) > 30){
+
+                $errors['md-in-product-color'][] = 'Product color field is too long. Color field must be within 30 characters';
+            }
+        }
+
+        if(empty($_POST['md-in-logo-front'])){
+
+            $errors['md-in-logo-front'][] = 'Select front logo option';
+        }else{
+
+            $_POST['md-in-logo-front'] = sanitize_text_field($_POST['md-in-logo-front']);
+            $logo_option = array('none', 'printing', 'laser-engraving', 'emboss');
+            if(!in_array($_POST['md-in-logo-front'], $logo_option)){
+
+                $errors['md-in-logo-front'][] = 'Select front logo option';
+            }
+        }
+        if(in_array($_POST['md-in-logo-front'], array('printing', 'laser-graving', 'emboss'))){
+            if(empty($_POST['md-in-logo-front-color'])){
+
+                $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
+            }else{
+
+                $_POST['md-in-logo-front-color'] = sanitize_text_field($_POST['md-in-logo-front-color']);
+                if($_POST['md-in-logo-front-color'] < 0 or $_POST['md-in-logo-front-color'] > 10){
+
+                    $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
+                }
+                else if(!is_numeric($_POST['md-in-logo-front-color'])){
+
+                    $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
+                }
+                else if(is_float($_POST['md-in-logo-front-color'])){
+
+                    $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
+                }
+            }
+        }
+
+
+
+        if(empty($_POST['md-in-logo-back'])){
+
+            $errors['md-in-logo-back'][] = 'Select back logo option';
+        }else{
+
+            $_POST['md-in-logo-back'] = sanitize_text_field($_POST['md-in-logo-back']);
+            $back_logo_option =  array('none', 'printing', 'laser-engraving', 'emboss');
+            if(!in_array($_POST['md-in-logo-back'], $back_logo_option)){
+
+                $errors['md-in-logo-back'][] = 'Select back logo option';
+            }
+        }
+        if(in_array($_POST['md-in-logo-back'], array('printing', 'laser-graving', 'emboss'))){
+            if(empty($_POST['md-in-logo-back-color'])){
+
+                $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
+            }else{
+
+                $_POST['md-in-logo-back-color'] = sanitize_text_field($_POST['md-in-logo-back-color']);
+                if ($_POST['md-in-logo-back-color'] < 1 or $_POST['md-in-logo-back-color'] > 10) {
+
+                    $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
+                } else if (!is_numeric($_POST['md-in-logo-back-color'])) {
+
+                    $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
+                } else if (is_float($_POST['md-in-logo-back-color'])) {
+
+                    $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
+                }
+            }
+        }
+
+
+        if(isset($_FILES['md-in-artwork']['error'])){
+
+            $err_msg = $_FILES['md-in-artwork']['error'];
+            if($err_msg == UPLOAD_ERR_INI_SIZE){
+                $errors['md-in-artwork'][] = 'Uploads file is too big. Maximum allowed is 20MB. Please try again';
+            }else if($err_msg == UPLOAD_ERR_FORM_SIZE){
+                $errors['md-in-artwork'][] = 'The uploaded file exceeds max file upload. Please try again';
+            }else if($err_msg == UPLOAD_ERR_PARTIAL){
+                $errors['md-in-artwork'][] = 'The uploaded file was interrupted. Please try again';
+//                }else if($err_msg == UPLOAD_ERR_NO_FILE){
+//                    $errors['md-in-artwork'][] = 'No file was uploaded. Please try again';
+            }else if($err_msg == UPLOAD_ERR_NO_TMP_DIR){
+                $errors['md-in-artwork'][] = 'Failed to store your file. Please try again';
+            }else if($err_msg == UPLOAD_ERR_CANT_WRITE){
+                $errros['md-in-artwork'][] = 'Failed to store your file to server. Please try again';
+            }else if($err_msg == UPLOAD_ERR_EXTENSION){
+                $errors['md-in-artwork'][] = 'The file stopped uploading. Please try again';
+            }
+        }
+        else if(isset($_FILES['md-in-artwork']['name'])){
+
+            $supported_patterns = array('/(.pdf)$/', '/(.png)$/', '/(.jpg)$/', '/(.jpeg)$/', '/(.bmp)$/', '/(.ai)$/', '/(.psd)$/');
+            $match = 0;
+
+            $_FILES['md-in-artwork']['name'] = sanitize_file_name($_FILES['md-in-artwork']['name']);
+            foreach($supported_patterns as $index => $pattern){
+
+                $match = preg_match($pattern, $_FILES['md-in-artwork']['name']);
+                if($match == 1) break;
+            }
+            if($match !== 1){
+                $errors['md-in-artwork'][] = 'The filetype of upload content is invalid. Accepted types are png, jpeg, bmp, ai, and psd';
+            }
+        }
+
+        $accessory_type = array('none', 'lanyard', 'key-ring');
+        if(empty($_POST['md-in-accessories-type'])){
+
+            $errors['md-in-accessories-type'][] = 'Select an accessory';
+        }else{
+
+            $_POST['md-in-accessories-type'] = sanitize_text_field($_POST['md-in-accessories-type']);
+            if(!in_array($_POST['md-in-accessories-type'], $accessory_type)){
+
+                $errors['md-in-accessories-type'][] = 'Select an accessory';
+            }
+        }
+
+        $packaging_type = array('none', 'plastic-box', 'tin-box', 'mini-tin-box', 'white-paper-box', 'recycle-paper-box', 'mini-recycle-paper-box');
+        if(empty($_POST['md-in-packaging-type'])){
+
+            $errors['md-in-packaging-type'][] = 'Select a packaging';
+        }else{
+
+
+            if(!in_array($_POST['md-in-packaging-type'], $packaging_type)){
+
+                $errors['md-in-packaging-type'][] = 'Select a packaging';
+            }
+        }
+
+        $packaging_print_type = array('none', 'printing', 'laser-engraving');
+        if(isset($_POST['md-in-print-packaging'])){
+
+            if (!in_array($_POST['md-in-print-packaging'], $packaging_print_type)) {
+
+                $errors['md-in-print-packaging'][] = 'Select a valid option for print of packaging';
+            } else if (in_array($_POST['md-in-print-packaging'], array('printing', 'laser-engraving'))) {
+
+                if (empty($_POST['md-in-print-packaging-color'])) {
+
+                    $errors['md-in-print-packaging-color'][] = 'Enter number of color for print of packaging';
+                } else {
+
+                    $_POST['md-in-print-packaging-color'] = sanitize_text_field($_POST['md-in-print-packaging-color']);
+                    if ($_POST['md-in-print-packaging-color'] < 1 or $_POST['md-in-print-packaging-color'] > 10) {
+
+                        $errors['md-in-print-packaging-color'][] = "Enter number of color for print of packaging within 10";
+                    } else if (!is_numeric($_POST['md-in-print-packaging-color']) or is_float($_POST['md-in-print-packaging-color'])) {
+
+                        $errors['md-in-print-packaging-color'][] = 'Enter number of color for print of packaging';
+                    }
+
+                }
+
+            }
+        }
+
+        if(isset($_POST['md-in-budget'])){
+
+            $_POST['md-in-budget'] = sanitize_text_field($_POST['md-in-budget']);
+            if(strlen($_POST['md-in-budget']) > 30){
+
+                $errors['md-in-budget'][] = "Enter your budget within 30 characters";
+            }
+        }
+
+        if(isset($_POST['md-in-deadline'])){
+            $_POST['md-in-deadline'] = sanitize_text_field($_POST['md-in-deadline']);
+        }
+        if(isset($_POST['md-in-deadline']) && strlen($_POST['md-in-deadline']) > 1){
+
+            $arr_date = (explode('/', $_POST['md-in-deadline']));
+
+            if(count($arr_date) === 3){
+                $validate_number = array();
+                foreach($arr_date as $key => $value){
+
+                    if(!is_numeric($value)){
+
+                        $validate_number[$key] = 'no';
+                    }else if(is_float($value) or $value < 1){
+
+                        $validate_number[$key] = 'no';
+                    }else{
+
+                        $validate_number[$key] = 'yes';
+                    }
+                }
+                if(in_array('no', $validate_number)){
+                    $errors['md-in-deadline'][] = 'Invalid date format. Enter date for deadline';
+                }
+                else if(!checkdate($arr_date[1], $arr_date[0], $arr_date[2])){
+
+                    $errors['md-in-deadline'][] = 'Invalid date format. Enter date for deadline';
+                }
+
+
+            }
+
+        }
+
+        if(isset($_POST['md-in-other-requirement'])){
+
+            $_POST['md-in-other-requirement'] = sanitize_text_field($_POST['md-in-other-requirement']);
+            if(strlen($_POST['md-in-other-requirement']) > 500){
+                $errors['md-in-other-requirement'][] = 'Enter your other requirement within 500 characters';
+            }
+        }
+
+    }catch(Exception $e){
+        $errors['md-in'][] = 'An error has occured, please try again';
+    }
+
+    return array($errors);
+}

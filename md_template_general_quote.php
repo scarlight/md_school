@@ -1,3 +1,45 @@
+<?php
+require_once 'md_validator.php';
+require_once 'md_post_data.php';
+
+global $post;
+$massdata_quotation_message = null;
+$quote_request = false;
+// is send from quote when user is logged in???
+if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
+
+        $quote_request = true;
+        $errors = general_quote_validator();
+
+        foreach ($errors as $error => $fields) {
+            foreach ($fields as $field => $message) {
+                if (!empty($message)) {
+                    $massdata_quotation_message = $message[0];
+                }
+            }
+            if (!is_null($massdata_quotation_message)) {
+                break;
+            }
+        }
+        if (is_null($massdata_quotation_message)) {
+
+            $result = send_general_quote();
+            var_dump($result);
+            if (empty($result) && $quote_request == true) {
+                $massdata_quotation_message = "Quotation is successfully sent";
+            }else{
+                $massdata_quotation_message = $result[0];
+            }
+        }
+
+} else if (isset($_GET['status']) && $_GET['status'] === 'submit') {
+
+    if (isset($_GET['message'])) {
+        $massdata_quotation_message = $_GET['message'];
+    }
+}
+
+?>
 <div id="browser-wrapper">
 <div id="main-wrapper">
 <div id="viewport-wrapper">
@@ -18,12 +60,15 @@
 <br>
 
 <div id="orange-quote">
+<?php if ($massdata_quotation_message != null) ;
+echo "<p><strong>{$massdata_quotation_message}</strong></p>";
+$massdata_quotation_message = null; ?>
 <form action="<?php if (!is_user_logged_in()) echo wp_registration_url(); ?>"
       method='post' <?php do_action('post_edit_form_tag'); ?>>
 <div class="left-form">
     <div class="form-group">
         <label for="product" class="control-label">Product <span class="required">*</span></label>
-        <input type="text" class="form-control" id="product" name="md_product" placeholder="" required>
+        <input type="text" class="form-control" id="product" name="md-in-product-name" placeholder="" required>
     </div>
     <div class="form-group">
         <label for="quantity" class="control-label">Quantity <span class="required">*</span></label>
@@ -291,13 +336,6 @@
 
     <div style="width:185px; margin: 0px auto;">
 
-        <?php
-
-        $post_product = get_post_custom($post->ID);
-        $product_model = $post_product['massdata_product_model'][0];
-        ?>
-        <input type="hidden" name="md-in-product" value="<?php echo $product_model; ?>"/>
-        <input type="hidden" name="__md__" value="<?php echo $post->ID; ?>"/>
         <input type="reset" class="floatr btn btn-default" name='reset' value="Reset">
         <?php if (!is_user_logged_in()) do_action('register_form'); ?>
         <input type="submit" class="floatr btn btn-default" name="<?php if (is_user_logged_in()) {
