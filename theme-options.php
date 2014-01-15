@@ -103,7 +103,7 @@ function theme_options_do_page() {
 
         <form method="post" action="options.php">
 			<?php settings_fields( 'massdata_option_settings' ); ?>
-			<?php $options = get_option( 'massdata_theme_options' ); ?>
+			<?php $options = get_option( 'massdata_theme_options' ); ?>            
 
             <h2>Sidebar</h2>
             <table class="widefat fixed">
@@ -159,6 +159,61 @@ function theme_options_do_page() {
                         <td>
                             <div>
                                 <input style="width:100%;" id="massdata_theme_options[affix_electronic_gadget]" class="regular-text" type="text" name="massdata_theme_options[affix_electronic_gadget]" value="<?php esc_attr_e( $options['affix_electronic_gadget'] ); ?>" placeholder="http://"/>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- /************************************************************************************************/ -->
+
+            <br>
+            <h2>Single Images - Home Page</h2>
+            <table class="widefat fixed">
+                <thead>
+                <tr>
+                    <th class="manage-column" style="width:230px;">Theme Location</th>
+                    <th class="manage-column">Assign URL</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong><label for="massdata_theme_options[image_popular_pendrive]"><?php echo "Popular Pen Drives [Size:265x154]"; ?></label></strong></td>
+                        <td>
+                            <div>
+                                <input style="width:100%;" id="massdata_theme_options[image_popular_pendrive]" class="regular-text" type="text" name="massdata_theme_options[image_popular_pendrive]" value="<?php esc_attr_e( $options['image_popular_pendrive'] ); ?>" placeholder="http://"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><label for="massdata_theme_options[image_current_stock]"><?php echo "Current Stock [Size:265x154]"; ?></label></strong></td>
+                        <td>
+                            <div>
+                                <input style="width:100%;" id="massdata_theme_options[image_current_stock]" class="regular-text" type="text" name="massdata_theme_options[image_current_stock]" value="<?php esc_attr_e( $options['image_current_stock'] ); ?>" placeholder="http://"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><label for="massdata_theme_options[image_designer_pendrive]"><?php echo "Designer Pendrive [Size:265x154]"; ?></label></strong></td>
+                        <td>
+                            <div>
+                                <input style="width:100%;" id="massdata_theme_options[image_designer_pendrive]" class="regular-text" type="text" name="massdata_theme_options[image_designer_pendrive]" value="<?php esc_attr_e( $options['image_designer_pendrive'] ); ?>" placeholder="http://"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><label for="massdata_theme_options[image_usb_gadget]"><?php echo "USB Gadget [Size:111x77]"; ?></label></strong></td>
+                        <td>
+                            <div>
+                                <input style="width:100%;" id="massdata_theme_options[image_usb_gadget]" class="regular-text" type="text" name="massdata_theme_options[image_usb_gadget]" value="<?php esc_attr_e( $options['image_usb_gadget'] ); ?>" placeholder="http://"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><label for="massdata_theme_options[image_electronic_gadget]"><?php echo "Electronic Gadget [Size:111x77]"; ?></label></strong></td>
+                        <td>
+                            <div>
+                                <input style="width:100%;" id="massdata_theme_options[image_electronic_gadget]" class="regular-text" type="text" name="massdata_theme_options[image_electronic_gadget]" value="<?php esc_attr_e( $options['image_electronic_gadget'] ); ?>" placeholder="http://"/>
                             </div>
                         </td>
                     </tr>
@@ -273,6 +328,41 @@ function theme_options_do_page() {
 function theme_options_validate( $input ) {
 
 	/**
+    * For Homepage single image
+    */
+
+    // Text option must be safe text with no HTML tags
+    $input['image_popular_pendrive'] = wp_filter_nohtml_kses( $input['image_popular_pendrive'] );
+    if($input['image_popular_pendrive'] == "" || $input['image_popular_pendrive'] == " "){
+        $input['image_popular_pendrive'] = "#";
+    }
+
+    // Text option must be safe text with no HTML tags
+    $input['image_current_stock'] = wp_filter_nohtml_kses( $input['image_current_stock'] );
+    if($input['image_current_stock'] == "" || $input['image_current_stock'] == " "){
+        $input['image_current_stock'] = "#";
+    }
+
+    // Text option must be safe text with no HTML tags
+    $input['image_designer_pendrive'] = wp_filter_nohtml_kses( $input['image_designer_pendrive'] );
+    if($input['image_designer_pendrive'] == "" || $input['image_designer_pendrive'] == " "){
+        $input['image_designer_pendrive'] = "#";
+    }
+
+    // Text option must be safe text with no HTML tags
+    $input['image_usb_gadget'] = wp_filter_nohtml_kses( $input['image_usb_gadget'] );
+    if($input['image_usb_gadget'] == "" || $input['image_usb_gadget'] == " "){
+        $input['image_usb_gadget'] = "#";
+    }
+
+    // Text option must be safe text with no HTML tags
+    $input['image_electronic_gadget'] = wp_filter_nohtml_kses( $input['image_electronic_gadget'] );
+    if($input['image_electronic_gadget'] == "" || $input['image_electronic_gadget'] == " "){
+        $input['image_electronic_gadget'] = "#";
+    }
+
+
+    /**
 	* For Affix
 	*/
 
