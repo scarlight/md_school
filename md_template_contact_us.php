@@ -24,7 +24,6 @@ if (!empty($_POST)) {
     }
 
     if (isset($_POST['md-in-companyname'])) {
-
         $_POST['md-in-companyname'] = wp_strip_all_tags($_POST['md-in-companyname']);
     } else {
         $message = 'Please enter your company name';
@@ -91,10 +90,9 @@ if (!empty($_POST)) {
     <div class="left floatl">
         <?php if (isset($message)) echo '<p>' . $message . '</p>'; ?>
 
-
         <?php
-            global $wp;
-            $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
+        global $wp;
+        $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
         ?>
         <form action="" method="post">
             <div class="form-group"><label class="control-label" for="name">Full Name <span

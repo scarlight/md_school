@@ -1453,7 +1453,7 @@ function quotation_post_edit_form_tag()
     if (!$post) return;
 
     $post_type = get_post_type($post->ID);
-//    if ('product' != $post_type or is_null($_POST['md-in-product-name'])) return;
+    if ('product' != $post_type or get_current_user_id() != 1) return;
     echo 'enctype="multipart/form-data" encoding="multipart/form-data"';
 }
 add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );

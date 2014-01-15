@@ -250,7 +250,21 @@ function send_user_data($user_id){
             update_user_meta($user_id, 'fax', $_POST['md-in-fax']);
         }
         update_user_meta($user_id, 'address', $_POST['md-in-address']);
-        update_user_meta($user_id, 'survey', $_POST['md-in-survey']);
+
+        $survey_post = array();
+        if(in_array('others', $_POST['md-in-survey']) && isset($_POST['md-in-others-desc'])){
+            foreach($_POST['md-in-survey'] as $index => $value){
+
+                if($value == 'others'){
+                    $survey_post[$index] = $_POST['md-in-others-desc'];
+                }else{
+                    $survey_post[$index] = $value;
+                }
+            }
+            update_user_meta($user_id, 'survey', $survey_post);
+        }else{
+            update_user_meta($user_id, 'survey', $_POST['md-in-survey']);
+        }
         if(isset($_POST['md-in-enquiry'])){
             update_user_meta($user_id, 'enquiry', $_POST['md-in-enquiry']);
         }
