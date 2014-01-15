@@ -58,7 +58,6 @@ $message = null;
         <br>
         <a class="blue-text-signup" href=""><i>Not a member yet? Sign up Now!</i></a>
         <div class="clear"></div>
-        <a class="blue-text-reset-password" href="<?php echo wp_lostpassword_url();?>"><i>Reset Your Password</i></a>
     </div>
 </div>
 

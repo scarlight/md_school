@@ -503,8 +503,6 @@ function general_quote_validator(){
             }
         }
 
-
-
         if (empty($_POST['md-in-capacity'])) {
 
             $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
@@ -517,7 +515,6 @@ function general_quote_validator(){
                 $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
             }
         }
-
 
         if(isset($_POST['md-in-product-color'])){
 

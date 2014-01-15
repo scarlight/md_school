@@ -3,7 +3,6 @@ $message = null;
 
 if (!empty($_POST)) {
 
-    wp_mail(get_option('admin_email'), 'Subject', 'Chicken');
     if (isset($_POST['user-login'])) {
         $_POST['user-login'] = wp_strip_all_tags($_POST['user-login']);
 

@@ -906,7 +906,7 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
 
         $productquote_massdata_quotation_message = null;
         $productquote_errors = signup_validator();
-        $productquote_errors = quote_validator();
+        $productquote_errors = general_quote_validator();
 
         foreach ($errors as $error => $fields) {
             foreach ($fields as $field => $message) {
@@ -957,7 +957,18 @@ function massdata_user_register($user_id, $password = "", $meta = array())
                 exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
             }
 
-        } else {
+        }else if(isset($_POST['md-in-product-name'])){
+
+            $post_error = send_user_data($user_id);
+            // check hidden field for product id, and also verify product id exist in the system.
+            $post_error = send_general_quote();
+            if (empty($post_error)) {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully sent")), $url_status_failed)));
+            } else {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
+            }
+
+        }else {
 
             exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("An error has occured. Please reopen tab, and try again")), $url_status_failed)));
         }
@@ -1362,11 +1373,16 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
             $queried = new WP_Query(array(
                 'post_type' => 'massdata_quotation',
                 'post_author' => $user_id,
-                'posts_per_page' => -1,
-                'fields' => 'ids',
+                'posts_per_page' => -1
             ));
             if(isset($queried->posts)){
-                return count($queried->posts);
+                $quote_countation = 0;
+                foreach($queried->posts as $index => $posts){
+                    if($posts->post_author == $user_id){
+                        $quote_countation++;
+                    }
+                }
+                return $quote_countation;
             }else{
                 return 0;
             }
@@ -1440,7 +1456,6 @@ function quotation_post_edit_form_tag()
 //    if ('product' != $post_type or is_null($_POST['md-in-product-name'])) return;
     echo 'enctype="multipart/form-data" encoding="multipart/form-data"';
 }
-
 add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );
 add_filter('upload_mimes', 'custom_upload_mimes');
 function custom_upload_mimes ( $existing_mimes = array() ) {

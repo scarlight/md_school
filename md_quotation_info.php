@@ -260,7 +260,6 @@ $post_meta = get_post_meta( get_the_ID() );
                         if(isset($post_meta['md_in_artwork'])){
 
                             $temp = unserialize($post_meta['md_in_artwork'][0]);
-                            var_dump($temp);
                             echo "<a href=\"{$temp['url']}\">Artwork Design file</a>";
 
                         }else{

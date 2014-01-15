@@ -100,7 +100,16 @@ function send_quote($product_id)
                     $_POST['md-in-other-requirement'] = wp_strip_all_tags($_POST['md-in-other-requirement']);
                     update_post_meta($quote_id, 'md_in_other_requirement', $_POST['md-in-other-requirement']);
                 }
-                wp_mail(get_option('admin_email'), 'Masssdata System: Product Quotation', 'A quotation by a user:-<br>1. User ID: '.(string)get_current_user_id().'<br>2. Product Model: '.(string)$product_model.'<br>3.Quote ID: '.(string)$quote_id);
+                $email_user_id = (string)get_current_user_id();
+                $email_product = (string)$product_model;
+                $email_quote_id = (string)$quote_id;
+                $email_message = <<<"HEREDOC"
+A general quotation by a user:-
+1. User ID: {$email_user_id}
+2. Product Model: {$email_product}
+3.Quote ID: {$email_quote_id}
+HEREDOC;
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product Quotation', $email_message);
             }
         }
 
@@ -152,7 +161,6 @@ function send_general_quote()
                     update_post_meta($quote_id, 'md_in_logo_back', array($_POST['md-in-logo-back'], $_POST['md-in-logo-back-color']), true);
                 }
 
-            echo "checking upload........";
                 if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name'])) {
 
                     if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -167,7 +175,6 @@ function send_general_quote()
                             $post_error[] = 'Failed to store design file. Please try to  upload again.'; // error to create upload folder
                         }
                     } else {
-                        echo "uploading....";
                         update_post_meta($quote_id, 'md_in_artwork', $upload, true);
                     }
                 }
@@ -202,7 +209,17 @@ function send_general_quote()
                     $_POST['md-in-other-requirement'] = wp_strip_all_tags($_POST['md-in-other-requirement']);
                     update_post_meta($quote_id, 'md_in_other_requirement', $_POST['md-in-other-requirement']);
                 }
-                wp_mail(get_option('admin_email'), 'Masssdata System: Product General Quotation', 'A general quotation by a user:-<br/>1. User ID: '.(string)get_current_user_id().'<br/>2. Product Model: '.(string)$_POST['md-in-product-name'].'<br/>3.Quote ID: '.(string)$quote_id);
+
+                $email_user_id = (string)get_current_user_id();
+                $email_product = (string)$_POST['md-in-product-name'];
+                $email_quote_id = (string)$quote_id;
+                $email_message = <<<"HEREDOC"
+A general quotation by a user:-
+1. User ID: {$email_user_id}
+2. Product Model: {$email_product}
+3.Quote ID: {$email_quote_id}
+HEREDOC;
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product General Quotation', $email_message);
             }
 
     }catch(Exception $ex){

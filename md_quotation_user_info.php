@@ -52,8 +52,8 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['registration-no'])) {
-                                echo $user_meta_inst['registration-no'][0];
+                        if (isset($user_meta_inst['registration_no'])) {
+                                echo $user_meta_inst['registration_no'][0];
                             } else {
                                 echo ' - ';
                             }
@@ -160,6 +160,25 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                     </div>
                 </td>
             </tr>
+            <?php if(isset($user_meta_inst['enquiry'])){?>
+                <tr>
+                    <td><strong>Enquiry</strong></td>
+                    <td><strong>:</strong></td>
+                    <td>
+                        <div>
+                            <?php
+                            if(isset($user_meta_inst['enquiry'])){
+
+                                echo $user_meta_inst['enquiry'][0];
+                            }else{
+                                echo '  - ';
+                            }
+                            ?>
+                        </div>
+                    </td>
+                </tr>
+
+            <?php }?>
             <tr>
                 <td><strong>Access Current Stock Price</strong></td>
                 <td><strong>:</strong></td>

@@ -24,7 +24,6 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
         if (is_null($massdata_quotation_message)) {
 
             $result = send_general_quote();
-            var_dump($result);
             if (empty($result) && $quote_request == true) {
                 $massdata_quotation_message = "Quotation is successfully sent";
             }else{

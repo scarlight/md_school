@@ -19,11 +19,11 @@ function send_admin_email_contact_us()
 
     $html = <<<"CONTACT_US"
     <h3>A user has send enquiry from the contact form.</h3>
-    <table>
+    <table border='1px'>
         <thead>
         <tr>
             <td>Subject</td>
-            <td>|</td>
+            <td></td>
             <td>Description</td>
         </tr>
         </thead>
