@@ -1437,11 +1437,20 @@ function quotation_post_edit_form_tag()
     if (!$post) return;
 
     $post_type = get_post_type($post->ID);
-    if ('product' != $post_type) return;
+//    if ('product' != $post_type or is_null($_POST['md-in-product-name'])) return;
     echo 'enctype="multipart/form-data" encoding="multipart/form-data"';
 }
 
 add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );
+add_filter('upload_mimes', 'custom_upload_mimes');
+function custom_upload_mimes ( $existing_mimes = array() ) {
+    $existing_mimes['gif'] = 'image/gif';
+    $existing_mimes['psd'] = 'application/octet-stream';
+    $existing_mimes['ai'] = 'application/illustrator';
+    $existing_mimes['pdf'] = 'application/pdf';
+    return $existing_mimes;
+}
+
 function massdata_file_unlink($post_id)
 {
     $artwork_arr = get_post_meta($post_id, 'md_in_artwork');
@@ -1476,10 +1485,32 @@ function massdata_quotation_upload_directory( $args ) {
 
         if(is_dir($cwd_arr.'/wp-content')){
 
-            $args['path'] = $cwd_arr.'/wp-content'."/quote_design_folder";
-            $args['url']  = content_url()."/quote_design_folder";
-            $args['basedir'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
-            $args['baseurl'] = $cwd_arr.'/wp-content' . "/quote_design_folder";
+            $args['path'] = $cwd_arr.'/wp-content'."/quote_design";
+            $args['url']  = content_url()."/quote_design";
+            $args['basedir'] = $cwd_arr.'/wp-content' . "/quote_design";
+            $args['baseurl'] = $cwd_arr.'/wp-content' . "/quote_design";
+
+            error_log("path={$args['path']}");
+            error_log("url={$args['url']}");
+            error_log("subdir={$args['subdir']}");
+            error_log("basedir={$args['basedir']}");
+            error_log("baseurl={$args['baseurl']}");
+            error_log("error={$args['error']}");
+        }
+    }else if(isset($_POST['md-in-product-name'])){
+
+        $cwd_arr = getcwd();
+        $cwd_exploded = explode("\\", $cwd_arr);
+        if(isset($cwd_exploded)){
+            $cwd_arr = implode("/", $cwd_exploded);
+        }
+
+        if(is_dir($cwd_arr.'/wp-content')){
+
+            $args['path'] = $cwd_arr.'/wp-content'."/general_quote_design";
+            $args['url']  = content_url()."/general_quote_design";
+            $args['basedir'] = $cwd_arr.'/wp-content' . "/general_quote_design";
+            $args['baseurl'] = $cwd_arr.'/wp-content' . "/general_quote_design";
 
             error_log("path={$args['path']}");
             error_log("url={$args['url']}");
@@ -1489,7 +1520,6 @@ function massdata_quotation_upload_directory( $args ) {
             error_log("error={$args['error']}");
         }
     }
-
     return $args;
 }
 

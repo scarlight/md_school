@@ -356,5 +356,3 @@ $massdata_quotation_message = null; ?>
 </div>
 </div>
 </div>
-
-

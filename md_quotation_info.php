@@ -73,8 +73,9 @@ $post_meta = get_post_meta( get_the_ID() );
                 <td>
                     <div>
                         <?php
-                        if (isset($product_instance)) {
-                                echo $product_instance->post_content;
+
+                        if (isset($post_instance->post_content)) {
+                                echo $post_instance->post_content;
                             } else {
                                 echo ' - ';
                             }
@@ -176,7 +177,12 @@ $post_meta = get_post_meta( get_the_ID() );
 
                         if(isset($front_temp[0])){
 
-                            echo ucfirst($front_temp[0]);
+                            $front_temp[0] = explode('-', $front_temp[0]);
+                            foreach($front_temp[0] as $index => $string){
+                                $front_temp[0][$index] = ucfirst($front_temp[0][$index]);
+                            }
+                            $front_temp[0] = implode(' ', $front_temp[0]);
+                            echo $front_temp[0];
 
                         }else{
 
@@ -213,8 +219,13 @@ $post_meta = get_post_meta( get_the_ID() );
                         $back_temp = unserialize($post_meta['md_in_logo_back'][0]);
 
                         if(isset($back_temp[0])){
+                            $back_temp[0] = explode('-', $back_temp[0]);
+                            foreach($back_temp[0] as $index => $string){
+                                $back_temp[0][$index] = ucfirst($back_temp[0][$index]);
+                            }
+                            $back_temp[0] = implode(' ', $back_temp[0]);
+                            echo $back_temp[0];
 
-                            echo ucfirst($back_temp[0]);
                         }else{
 
                             echo ' - ';
@@ -246,10 +257,10 @@ $post_meta = get_post_meta( get_the_ID() );
                 <td>
                     <div>
                         <?php
-
                         if(isset($post_meta['md_in_artwork'])){
 
                             $temp = unserialize($post_meta['md_in_artwork'][0]);
+                            var_dump($temp);
                             echo "<a href=\"{$temp['url']}\">Artwork Design file</a>";
 
                         }else{
@@ -268,7 +279,17 @@ $post_meta = get_post_meta( get_the_ID() );
                         <?php
                         if(isset($post_meta['md_in_accessories_type'])){
 
-                            echo $post_meta['md_in_accessories_type'][0];
+                            $temp = explode('-', $post_meta['md_in_accessories_type'][0]);
+                            if(is_array($temp)){
+
+                                foreach($temp as $index => $string){
+                                    $temp[$index] = ucfirst($string);
+                                }
+                                $post_meta['md_in_accessories_type'][0] = implode(' ', $temp);
+                                echo $post_meta['md_in_accessories_type'][0];
+                            }else{
+                                echo $post_meta['md_in_accessories_type'][0];
+                            }
                         }else{
 
                             echo ' - ';
@@ -283,9 +304,19 @@ $post_meta = get_post_meta( get_the_ID() );
                 <td>
                     <div>
                         <?php
-                        if(isset($post_meta['md_in_packaging_type'])){
+                        if(isset($post_meta['md_in_packaging_type'][0])){
 
-                            echo $post_meta['md_in_packaging_type'][0];
+                            $temp = explode('-', $post_meta['md_in_packaging_type'][0]);
+                            if(is_array($temp)){
+
+                                foreach($temp as $index => $string){
+                                    $temp[$index] = ucfirst($string);
+                                }
+                                $post_meta['md_in_packaging_type'][0] = implode(' ', $temp);
+                                echo $post_meta['md_in_packaging_type'][0];
+                            }else{
+                                echo $post_meta['md_in_packaging_type'][0];
+                            }
                         }else{
 
                             echo ' - ';
@@ -302,22 +333,29 @@ $post_meta = get_post_meta( get_the_ID() );
                         <?php
                            if(isset($post_meta['md_in_print_packaging'])){
 
-                              $temp = unserialize($post_meta['md_in_print_packaging'][0]);
+                               $temp = unserialize($post_meta['md_in_print_packaging'][0]);
+                               if(isset($temp[0]) && $temp[0] != 'none'){
 
-                               if(isset($temp[0]) && $temp == 'none'){
+                                   $temp[0] = explode('-', $temp[0]);
+                                   foreach($temp[0] as $index => $string){
+                                       $temp[0][$index] = ucfirst($string);
+                                   }
+                                   $temp[0] = implode(' ', $temp[0]);
+                                   echo 'Print type: '.$temp[0];
+                                   echo '<br/>';
 
-                                   echo 'Print type: - ';
-                               }else{
+                                   if(isset($temp[1])){
 
-                                   echo 'Print type: - ';
+                                       echo 'Number of colors: '.$temp[1];
+                                   }else{
+                                       echo 'Number of colors: - ';
+                                   }
+                               }else if(isset($temp[0]) && $temp[0] == 'none'){
+
+                                   echo ucfirst($temp[0]);
                                }
                                echo '<br/>';
-                               if(isset($temp[1]) && $temp[1] != 'none'){
 
-                                   echo 'Number of colors: '.$temp[1];
-                               }else{
-                                   echo 'Number of colors: - ';
-                               }
                         }else{
 
                             echo ' - ';

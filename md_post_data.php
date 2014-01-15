@@ -56,7 +56,9 @@ function send_quote($product_id)
 
 
                     $upload = wp_upload_bits(md5(time()).$_FILES['md-in-artwork']['name'], null, file_get_contents($_FILES['md-in-artwork']['tmp_name']));
+
                     if (isset($upload['error']) && $upload['error'] != 0) {
+
 
                         if ( isset($upload['file']) && is_readable($upload['file'])) { //$upload['file'], $upload['url'], $upload['error']
                             $post_error[] = unlink($upload['file']);
@@ -64,7 +66,6 @@ function send_quote($product_id)
                             $post_error[] = 'Failed to store design file. Please try to  upload again.'; // error to create upload folder
                         }
                     } else {
-
                         update_post_meta($quote_id, 'md_in_artwork', $upload, true);
                     }
                 }
@@ -99,7 +100,7 @@ function send_quote($product_id)
                     $_POST['md-in-other-requirement'] = wp_strip_all_tags($_POST['md-in-other-requirement']);
                     update_post_meta($quote_id, 'md_in_other_requirement', $_POST['md-in-other-requirement']);
                 }
-                wp_mail(get_option('admin_email'), 'Masssdata System: Product Quotation', 'A quotation by a user:-\n1. User ID: '.(string)get_current_user_id().'\n2. Product Model: '.(string)$product_model.'\n3.Quote ID: '.(string)$quote_id);
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product Quotation', 'A quotation by a user:-<br>1. User ID: '.(string)get_current_user_id().'<br>2. Product Model: '.(string)$product_model.'<br>3.Quote ID: '.(string)$quote_id);
             }
         }
 
@@ -116,7 +117,6 @@ function send_general_quote()
 {
     $post_error = array();
     try{
-
         if(isset($_POST) && !empty($_POST)){
 
             $_POST['md-in-product-name'] = wp_strip_all_tags($_POST['md-in-product-name']);
@@ -152,13 +152,12 @@ function send_general_quote()
                     update_post_meta($quote_id, 'md_in_logo_back', array($_POST['md-in-logo-back'], $_POST['md-in-logo-back-color']), true);
                 }
 
+            echo "checking upload........";
                 if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name'])) {
 
                     if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
 //                    $_FILES['md-in-artwork']['name'] = md5(time()).$_FILES['md-in-artwork']['name'];
 //                    $upload = wp_handle_upload($_FILES['md-in-artwork'], array('test_form' => false));
-
-
                     $upload = wp_upload_bits(md5(time()).$_FILES['md-in-artwork']['name'], null, file_get_contents($_FILES['md-in-artwork']['tmp_name']));
                     if (isset($upload['error']) && $upload['error'] != 0) {
 
@@ -168,7 +167,7 @@ function send_general_quote()
                             $post_error[] = 'Failed to store design file. Please try to  upload again.'; // error to create upload folder
                         }
                     } else {
-
+                        echo "uploading....";
                         update_post_meta($quote_id, 'md_in_artwork', $upload, true);
                     }
                 }
@@ -203,7 +202,7 @@ function send_general_quote()
                     $_POST['md-in-other-requirement'] = wp_strip_all_tags($_POST['md-in-other-requirement']);
                     update_post_meta($quote_id, 'md_in_other_requirement', $_POST['md-in-other-requirement']);
                 }
-                wp_mail(get_option('admin_email'), 'Masssdata System: Product General Quotation', 'A general quotation by a user:-\n1. User ID: '.(string)get_current_user_id().'\n2. Product Model: '.(string)$_POST['md-in-product-name'].'\n3.Quote ID: '.(string)$quote_id);
+                wp_mail(get_option('admin_email'), 'Masssdata System: Product General Quotation', 'A general quotation by a user:-<br/>1. User ID: '.(string)get_current_user_id().'<br/>2. Product Model: '.(string)$_POST['md-in-product-name'].'<br/>3.Quote ID: '.(string)$quote_id);
             }
 
     }catch(Exception $ex){
@@ -241,7 +240,6 @@ function send_user_data($user_id){
         update_user_meta($user_id, 'view_pricing', $_POST['md-in-view-pricing']);
 
 
-        update_user_meta($user_id, 'quote_count', 0);
         //get current user id and his user login and password
 
         wp_set_current_user($user_id);
