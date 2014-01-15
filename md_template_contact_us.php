@@ -179,9 +179,9 @@ if (!empty($_POST)) {
 
         <hr class="dotted" style="width: 330px;"/>
 
-        No. 17-1, Lorong 6A/91,
-        Taman Shamelin Perkasa, Cheras,
-        56100 Kuala Lumpur
+        No. 17-1, Lorong 6A/91, <br>
+        Taman Shamelin Perkasa, <br>
+        56100 Kuala Lumpur <br><br>
         <table>
             <tbody>
             <tr>
@@ -194,7 +194,7 @@ if (!empty($_POST)) {
             </tr>
             <tr>
                 <td style="width: 60px;"><strong>Email :</strong></td>
-                <td>desmond@powerista.com.my</td>
+                <td>partner@powerista.com.my</td>
             </tr>
             </tbody>
         </table>
