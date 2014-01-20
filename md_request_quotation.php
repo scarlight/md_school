@@ -34,7 +34,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 
             $result = send_quote($_POST['md-in-product']);
             if (empty($result) && $quote_request == true) {
-                $massdata_quotation_message = "Quotation is successfully sent";
+                $massdata_quotation_message = "Quotation is successfully";
             }else{
                 $massdata_quotation_message = $result[0];
             }

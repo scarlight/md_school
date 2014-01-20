@@ -6,10 +6,11 @@ function signup_validator()
     $errors = array(
         'md-in-group' => array(),
         'md-in-companyname' => array(),
-        'md-registration-no' => array(),
+        'md-in-registration-no' => array(),
         'md-in-mobile' => array(),
         'md-in-telephone' => array(),
         'md-in-fax' => array(),
+        'md-in-address' => array(),
         'md-in-survey' => array(),
         'md-in-others-desc' => array(),
         'md-in-enquiry' => array(),
@@ -25,127 +26,147 @@ function signup_validator()
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('signup')), $_SERVER['HTTP_REFERER']);
 
-
-        if ($_POST['md-in-group'] != 'agent' or $_POST['md-in-group'] != 'corporate') {
+        if ($_POST['md-in-group'] != 'agent' && $_POST['md-in-group'] != 'corporate') {
 
             $errors['md-in-group'][] = 'Please register as corporate or agent';
         }
 
-        $_POST['md-in-companyname'] = array_filter($_POST['md-in-companyname']);
-        if (!isset($_POST['md-in-companyname'])) {
+        if (isset($_POST['md-in-companyname'])) {
 
             $_POST['md-in-companyname'] = sanitize_text_field($_POST['md-in-companyname']);
-            $errors['md-in-companyname'][] = 'You must enter your company name';
-        } else {
-            if (strlen($_POST['md-in-companyname'] > 50)) {
+            if(!empty($_POST['md-in-companyname'])){
+                if (strlen($_POST['md-in-companyname'] > 50)) {
 
-                $errors['md-in-companyname'][] = 'Please make the company name field less than 50';
+                    $errors['md-in-companyname'][] = 'Please make the company name field less than 50';
+                }
+            }else{
+                $errors['md-in-companyname'][] = 'You must enter your company name';
             }
+        } else {
+            $errors['md-in-companyname'][] = 'You must enter your company name';
         }
 
-        $_POST['md-in-registration-no'] = array_filter($_POST['md-in-registration-no']);
-        if (isset($_POST['md-in-registration-no'])) {
+        if (isset($_POST['md-in-registration-no']) ) {
 
             $_POST['md-in-registration-no'] = sanitize_text_field($_POST['md-in-registration-no']);
-            if (strlen($_POST['md-in-registration-no']) > 50) {
+            if(!empty($_POST['md-in-registration-no'])){
 
-                $errors['md-in-registration-no'][] = 'Please make the company registration no. field less than 50';
+                if (strlen($_POST['md-in-registration-no']) > 50) {
+                    $errors['md-in-registration-no'][] = 'Please make the company registration no. field less than 50';
+                }
+
+            }else{
+                unset($_POST['md-in-registration-no']);
             }
         }
 
-        $_POST['md-in-mobile'] = array_filter($_POST['md-in-mobile']);
-        if (empty($_POST['md-in-mobile'])) {
-
-            $errors['md-in-mobile'][] = 'You must include your mobile number';
-        } else {
+        if (isset($_POST['md-in-mobile'])) {
 
             $_POST['md-in-mobile'] = sanitize_text_field($_POST['md-in-mobile']);
-            $pattern = '/[0-9]{10, 13}/';
-            if (preg_match($pattern, $_POST['md-in-mobile'], $match) && is_numeric($_POST['md-in-mobile'])) {
+            if(!empty($_POST['md-in-mobile'])){
 
-                $errors['md-in-mobile'][] = 'Invalid mobile number, please enter numbers between 10 and 13 numbers';
+                $pattern = '/[0-9]{10, 13}/';
+                if (preg_match($pattern, $_POST['md-in-mobile'], $match) && is_numeric($_POST['md-in-mobile'])) {
+                    $errors['md-in-mobile'][] = 'Invalid mobile number, please enter numbers between 10 and 13 numbers';
+                }
+            }else{
+                $errors['md-in-mobile'][] = 'You must include your mobile number';
             }
+        } else {
+            $errors['md-in-mobile'][] = 'You must include your mobile number';
         }
 
-        $_POST['md-in-telephone'] = array_filter($_POST['md-in-telephone']);
         if (isset($_POST['md-in-telephone'])) {
 
             $_POST['md-in-telephone'] = sanitize_text_field($_POST['md-in-telephone']);
-            $pattern = '/[0-9]{10, 13}/';
-            if (preg_match($pattern, $_POST['md-in-telephone'], $match) && is_numeric($_POST['md-in-telephone'])) {
+            if(!empty($_POST['md-in-telephone'])){
 
-                $errors['md-in-telephone'][] = 'Invalid telephone number, please enter numbers between 10 and 13 numbers';
+                $pattern = '/[0-9]{10, 13}/';
+                if (preg_match($pattern, $_POST['md-in-telephone'], $match) && is_numeric($_POST['md-in-telephone'])) {
+
+                    $errors['md-in-telephone'][] = 'Invalid telephone number, please enter numbers between 10 and 13 numbers';
+                }
+
+            }else if(empty($_POST['md-in-telephone'])){
+                unset($_POST['md-in-telephone']);
             }
         }
 
-        $_POST['md-in-fax'] = array_filter($_POST['md-in-fax']);
         if (isset($_POST['md-in-fax'])) {
 
             $_POST['md-in-fax'] = sanitize_text_field($_POST['md-in-fax']);
-            $pattern = '/[0-9]{13}/';
-            if (preg_match($pattern, $_POST['md-in-fax'], $match) && is_numeric($_POST['md-in-fax'])) {
+            if(!empty($_POST['md-in-fax'])){
 
-                $errors['md-in-fax'][] = 'Invalid fax number, please enter numbers within 13 numbers';
+                $pattern = '/[0-9]{13}/';
+                if (preg_match($pattern, $_POST['md-in-fax'], $match) && is_numeric($_POST['md-in-fax'])) {
+
+                    $errors['md-in-fax'][] = 'Invalid fax number, please enter numbers within 13 numbers';
+                }
+            }else if(empty($_POST['md-in-fax'])){
+                unset($_POST['md-in-fax']);
             }
         }
 
-        $_POST['md-in-address'] = array_filter($_POST['md-in-address']);
-        if (empty($_POST['md-in-address'])) {
-
-            $errors['md-in-address'][] = 'you must include your company address';
-        } else {
+        if (isset($_POST['md-in-address'])) {
 
             $_POST['md-in-address'] = sanitize_text_field($_POST['md-in-address']);
-            if (strlen($_POST['md-in-address']) > 500) {
+            if(!empty($_POST['md-in-address'])){
+                if (strlen($_POST['md-in-address']) > 500) {
 
-                $errors['md-in-address'][] = 'Company address must be within 500 characters';
+                    $errors['md-in-address'][] = 'Company address must be within 500 characters';
+                }
+            }else{
+                $errors['md-in-address'][] = 'you must include your company address';
             }
+        } else {
+            $errors['md-in-address'][] = 'you must include your company address';
         }
 
+        if(isset($_POST['md-in-survey'])){
 
-        $_POST['md-in-survey'] = array_filter($_POST['md-in-survey']);
-        $survey_box = array('exhibition', 'search-engine', 'email-survey', 'friendfamily', 'advertisement', 'facebook', 'others');
-        if (empty($_POST['md-in-survey'])) {
+            $survey_box = array('exhibition', 'search-engine', 'email-survey', 'friendfamily', 'advertisement', 'facebook', 'others');
+            if(!empty($_POST['md-in-survey'])){
 
-            $errors['md-in-survey'][] = 'Please fill in the survey checkbox';
-        } else if (!in_array('exhibition', $_POST['md-in-survey']) && !in_array('search-engine', $_POST['md-in-survey']) && !in_array('email-survey', $_POST['md-in-survey'])
-            && !in_array('friendfamily', $_POST['md-in-survey']) && !in_array('advertisement', $_POST['md-in-survey']) && !in_array('facebook', $_POST['md-in-survey'])
-            && !in_array('others', $_POST['md-in-survey'])
-        ) {
-
-            $errors['md-in-survey'][] = 'Please fill in the survey checkbox';
-        } else {
-
-            if (in_array('others', $_POST['md-in-survey'])) {
-                $_POST['md-in-others-desc'] = array_filter($_POST['md-in-others-desc']);
-                if (empty($_POST['md-in-others-desc'])) {
-
-                    $errors['md-in-others-desc'][] = 'Please fill in the survey checkbox';
-                } else {
+                if (in_array('others', $_POST['md-in-survey'])) {
 
                     $_POST['md-in-others-desc'] = sanitize_text_field($_POST['md-in-others-desc']);
-                    if (strlen($_POST['md-in-others-desc']) > 15) {
+                    if (!empty($_POST['md-in-others-desc'])) {
 
-                        $errors['md-in-others-desc'][] = 'Please fill in the survey checkbox, Others field in less than 15 characters';
+                        if (strlen($_POST['md-in-others-desc']) > 15) {
+                            $errors['md-in-others-desc'][] = 'Please fill in the survey checkbox, Others field in less than 15 characters';
+                        }
+                    } else {
+                        $errors['md-in-others-desc'][] = 'Please fill in the survey checkbox';
                     }
                 }
+
+            }else if (!in_array('exhibition', $_POST['md-in-survey']) && !in_array('search-engine', $_POST['md-in-survey']) && !in_array('email-survey', $_POST['md-in-survey'])
+                && !in_array('friendfamily', $_POST['md-in-survey']) && !in_array('advertisement', $_POST['md-in-survey']) && !in_array('facebook', $_POST['md-in-survey'])
+                && !in_array('others', $_POST['md-in-survey'])
+            ) {
+                $errors['md-in-survey'][] = 'Please fill in the survey checkbox';
             }
+
+        }else{
+            $errors['md-in-survey'][] = 'Please fill in the survey checkbox';
         }
 
-        $_POST['md-in-enquiry'] = array_filter($_POST['md-in-enquiry']);
         if (isset($_POST['md-in-enquiry'])) {
 
-            $_POST['md-in-view-enquiry'] = sanitize_text_field($_POST['md-in-enquiry']);
-            if (strlen($_POST['md-in-enquiry']) > 500) {
+            $_POST['md-in-enquiry'] = sanitize_text_field($_POST['md-in-enquiry']);
+            if(!empty($_POST['md-in-enquiry'])){
+                if (strlen($_POST['md-in-enquiry']) > 500) {
 
+                    $errors['md-in-enquiry'][] = 'You must include your enquiry within 500 characters';
+                }
+            }else{
                 $errors['md-in-enquiry'][] = 'You must include your enquiry within 500 characters';
             }
         }
 
-        $_POST['md-in-view-pricing'] = sanitize_text_field($_POST['md-in-view-pricing']);
         if ($_POST['md-in-view-pricing'] != 'yes' and $_POST['md-in-view-pricing'] != 'no') {
-
-                $errors['md-in-view-pricing'][] = 'You moust include yes or no for viewing stock price';
+            $_POST['md-in-view-pricing'] = sanitize_text_field($_POST['md-in-view-pricing']);
+            $errors['md-in-view-pricing'][] = 'You must include yes or no for viewing stock price';
          }
 
     } catch (Exception $e) {
@@ -191,38 +212,42 @@ function quote_validator()
             }
         }
 
-        if (empty($_POST['md-in-quantity'])) {
-
-            $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
-        } else {
+        if(isset($_POST['md-in-quantity'])){
 
             $_POST['md-in-quantity'] = sanitize_text_field($_POST['md-in-quantity']);
-            if (strlen($_POST['md-in-quantity']) <= 0 or strlen($_POST['md-in-quantity']) > 10) {
+            if (!empty($_POST['md-in-quantity'])) {
+                if (strlen($_POST['md-in-quantity']) <= 0 or strlen($_POST['md-in-quantity']) > 10) {
 
-                $errors['md-in-quantity'][] = 'Product quantity is overlimit. Please reduce limit and try again';
-            } else if (!is_numeric($_POST['md-in-quantity'])) {
+                    $errors['md-in-quantity'][] = 'Product quantity is overlimit. Please reduce limit and try again';
+                } else if (!is_numeric($_POST['md-in-quantity'])) {
 
-                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
-            } else if (is_float($_POST['md-in-quantity'])) {
+                    $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                } else if (is_float($_POST['md-in-quantity'])) {
 
-                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                    $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                }
+            } else {
+                $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
             }
+        }else{
+            $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
         }
 
-
-        if (empty($_POST['md-in-capacity'])) {
-
-            $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
-        } else {
+        if(isset($_POST['md-in-capacity'])){
 
             $_POST['md-in-capacity'] = sanitize_text_field($_POST['md-in-capacity']);
-            $capacity = array('2', '4', '8', '16', '2000', '4000', '5000', '10000');
-            if (!in_array($_POST['md-in-capacity'], $capacity)) {
+            if (!empty($_POST['md-in-capacity'])) {
+                $capacity = array('2', '4', '8', '16', '2000', '4000', '5000', '10000');
+                if (!in_array($_POST['md-in-capacity'], $capacity)) {
+                    $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
+                }
 
+            } else {
                 $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
             }
+        }else{
+            $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
         }
-
 
         if (isset($_POST['md-in-product-color'])) {
 
@@ -265,7 +290,6 @@ function quote_validator()
             }
         }
 
-
         if (empty($_POST['md-in-logo-back'])) {
 
             $errors['md-in-logo-back'][] = 'Select back logo option';
@@ -298,8 +322,7 @@ function quote_validator()
             }
         }
 
-
-        if (isset($_FILES['md-in-artwork']['error'])) {
+        if (isset($_FILES['md-in-artwork']['error']) && $_FILES['md-in-artwork']['error'] != 0) {
 
             $err_msg = $_FILES['md-in-artwork']['error'];
             if ($err_msg == UPLOAD_ERR_INI_SIZE) {
@@ -317,7 +340,7 @@ function quote_validator()
             } else if ($err_msg == UPLOAD_ERR_EXTENSION) {
                 $errors['md-in-artwork'][] = 'The file stopped uploading. Please try again';
             }
-        } else if (isset($_FILES['md-in-artwork']['name'])) {
+        } else if (isset($_FILES['md-in-artwork']['name']) && $_FILES['md-in-artwork']['error'] == 0) {
 
             $supported_patterns = array('/(.pdf)$/', '/(.png)$/', '/(.jpg)$/', '/(.jpeg)$/', '/(.bmp)$/', '/(.ai)$/', '/(.psd)$/');
             $match = 0;
@@ -329,7 +352,7 @@ function quote_validator()
                 if ($match == 1) break;
             }
             if ($match !== 1) {
-                $errors['md-in-artwork'][] = 'The filetype of upload content is invalid. Accepted types are png, jpeg, bmp, ai, and psd';
+                $errors['md-in-artwork'][] = 'The filetype of upload content is invalid. Accepted types are png, jpeg, bmp, pdf, ai, and psd';
             }
         }
 
@@ -467,48 +490,56 @@ function general_quote_validator()
     );
 
     try {
-
-        if (empty($_POST['md-in-product-name'])) {
-
-            $errors['md-in-product-name'][] = 'Product name is empty. Please try again';
-        } else {
+        if(isset($_POST['md-in-product-name'])){
 
             $_POST['md-in-product-name'] = sanitize_text_field($_POST['md-in-product-name']);
-            if (strlen($_POST['md-in-product-name']) <= 0 or strlen($_POST['md-in-product-name']) > 20) {
+            if(!empty($_POST['md-in-product-name'])){
+                if (strlen($_POST['md-in-product-name']) <= 0 or strlen($_POST['md-in-product-name']) > 20) {
 
-                $errors['md-in-product-name'][] = 'Product name invalid. Please enter valid product name';
+                    $errors['md-in-product-name'][] = 'Product name invalid. Please enter valid product name';
+                }
+            }else{
+                $errors['md-in-product-name'][] = 'Product name is empty. Please try again';
             }
+        }else{
+            $errors['md-in-product-name'][] = 'Product name is empty. Please try again';
         }
 
-        if (empty($_POST['md-in-quantity'])) {
-
-            $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
-        } else {
+        if(isset($_POST['md-in-quantity'])){
 
             $_POST['md-in-quantity'] = sanitize_text_field($_POST['md-in-quantity']);
-            if (strlen($_POST['md-in-quantity']) <= 0 or strlen($_POST['md-in-quantity']) > 10) {
+            if (!empty($_POST['md-in-quantity'])) {
+                if (strlen($_POST['md-in-quantity']) <= 0 or strlen($_POST['md-in-quantity']) > 10) {
 
-                $errors['md-in-quantity'][] = 'Product quantity is overlimit. Please reduce limit and try again';
-            } else if (!is_numeric($_POST['md-in-quantity'])) {
+                    $errors['md-in-quantity'][] = 'Product quantity is overlimit. Please reduce limit and try again';
+                } else if (!is_numeric($_POST['md-in-quantity'])) {
 
-                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
-            } else if (is_float($_POST['md-in-quantity'])) {
+                    $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                } else if (is_float($_POST['md-in-quantity'])) {
 
-                $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                    $errors['md-in-quantity'][] = 'Product quantity invalid. Enter product quantity in numbers';
+                }
+            } else {
+                $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
             }
+        }else{
+            $errors['md-in-quantity'][] = 'Product quantity is empty. Please try again';
         }
 
-        if (empty($_POST['md-in-capacity'])) {
-
-            $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
-        } else {
+        if(isset($_POST['md-in-capacity'])){
 
             $_POST['md-in-capacity'] = sanitize_text_field($_POST['md-in-capacity']);
-            $capacity = array('2', '4', '8', '16', '2000', '4000', '5000', '10000');
-            if (!in_array($_POST['md-in-capacity'], $capacity)) {
+            if (!empty($_POST['md-in-capacity'])) {
+                $capacity = array('2', '4', '8', '16', '2000', '4000', '5000', '10000');
+                if (!in_array($_POST['md-in-capacity'], $capacity)) {
+                    $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
+                }
 
+            } else {
                 $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
             }
+        }else{
+            $errors['md-in-capacity'][] = 'Select product capacity. Please try again';
         }
 
         if (isset($_POST['md-in-product-color'])) {
@@ -532,6 +563,7 @@ function general_quote_validator()
                 $errors['md-in-logo-front'][] = 'Select front logo option';
             }
         }
+
         if (in_array($_POST['md-in-logo-front'], array('printing', 'laser-graving', 'emboss'))) {
             if (empty($_POST['md-in-logo-front-color'])) {
 
@@ -552,7 +584,6 @@ function general_quote_validator()
             }
         }
 
-
         if (empty($_POST['md-in-logo-back'])) {
 
             $errors['md-in-logo-back'][] = 'Select back logo option';
@@ -565,6 +596,7 @@ function general_quote_validator()
                 $errors['md-in-logo-back'][] = 'Select back logo option';
             }
         }
+
         if (in_array($_POST['md-in-logo-back'], array('printing', 'laser-graving', 'emboss'))) {
             if (empty($_POST['md-in-logo-back-color'])) {
 
@@ -585,8 +617,7 @@ function general_quote_validator()
             }
         }
 
-
-        if (isset($_FILES['md-in-artwork']['error'])) {
+        if (isset($_FILES['md-in-artwork']['error']) && $_FILES['md-in-artwork']['error'] != 0) {
 
             $err_msg = $_FILES['md-in-artwork']['error'];
             if ($err_msg == UPLOAD_ERR_INI_SIZE) {
@@ -604,7 +635,7 @@ function general_quote_validator()
             } else if ($err_msg == UPLOAD_ERR_EXTENSION) {
                 $errors['md-in-artwork'][] = 'The file stopped uploading. Please try again';
             }
-        } else if (isset($_FILES['md-in-artwork']['name'])) {
+        } else if (isset($_FILES['md-in-artwork']['name']) && $_FILES['md-in-artwork']['error'] == 0) {
 
             $supported_patterns = array('/(.pdf)$/', '/(.png)$/', '/(.jpg)$/', '/(.jpeg)$/', '/(.bmp)$/', '/(.ai)$/', '/(.psd)$/');
             $match = 0;
@@ -616,19 +647,17 @@ function general_quote_validator()
                 if ($match == 1) break;
             }
             if ($match !== 1) {
-                $errors['md-in-artwork'][] = 'The filetype of upload content is invalid. Accepted types are png, jpeg, bmp, ai, and psd';
+                $errors['md-in-artwork'][] = 'The filetype of upload content is invalid. Accepted types are png, jpeg, bmp, pdf, ai, and psd';
             }
         }
 
         $accessory_type = array('none', 'lanyard', 'key-ring');
         if (empty($_POST['md-in-accessories-type'])) {
-
             $errors['md-in-accessories-type'][] = 'Select an accessory';
         } else {
 
             $_POST['md-in-accessories-type'] = sanitize_text_field($_POST['md-in-accessories-type']);
             if (!in_array($_POST['md-in-accessories-type'], $accessory_type)) {
-
                 $errors['md-in-accessories-type'][] = 'Select an accessory';
             }
         }
@@ -638,10 +667,7 @@ function general_quote_validator()
 
             $errors['md-in-packaging-type'][] = 'Select a packaging';
         } else {
-
-
             if (!in_array($_POST['md-in-packaging-type'], $packaging_type)) {
-
                 $errors['md-in-packaging-type'][] = 'Select a packaging';
             }
         }
@@ -676,17 +702,18 @@ function general_quote_validator()
         if (isset($_POST['md-in-budget'])) {
 
             $_POST['md-in-budget'] = sanitize_text_field($_POST['md-in-budget']);
-            if (strlen($_POST['md-in-budget']) > 30) {
-
-                $errors['md-in-budget'][] = "Enter your budget within 30 characters";
+            if(!empty($_POST['md-in-budget'])){
+                if (strlen($_POST['md-in-budget']) > 30) {
+                    $errors['md-in-budget'][] = "Enter your budget within 30 characters";
+                }
+            }else{
+                unset($_POST['md-in-budget']);
             }
         }
 
-        if (isset($_POST['md-in-deadline'])) {
-            $_POST['md-in-deadline'] = sanitize_text_field($_POST['md-in-deadline']);
-        }
         if (isset($_POST['md-in-deadline']) && strlen($_POST['md-in-deadline']) > 1) {
 
+            $_POST['md-in-deadline'] = sanitize_text_field($_POST['md-in-deadline']);
             $arr_date = (explode('/', $_POST['md-in-deadline']));
 
             if (count($arr_date) === 3) {
@@ -719,8 +746,13 @@ function general_quote_validator()
         if (isset($_POST['md-in-other-requirement'])) {
 
             $_POST['md-in-other-requirement'] = sanitize_text_field($_POST['md-in-other-requirement']);
-            if (strlen($_POST['md-in-other-requirement']) > 500) {
-                $errors['md-in-other-requirement'][] = 'Enter your other requirement within 500 characters';
+            if(!empty($_POST['md-in-other-requirement'])){
+
+                if (strlen($_POST['md-in-other-requirement']) > 500) {
+                    $errors['md-in-other-requirement'][] = 'Enter your other requirement within 500 characters';
+                }
+            }else{
+                unset($_POST['md-in-other-requirement']);
             }
         }
 
@@ -728,5 +760,5 @@ function general_quote_validator()
         $errors['md-in'][] = 'An error has occured, please try again';
     }
 
-    return array($errors);
+    return $errors;
 }

@@ -790,9 +790,9 @@ endif;
 add_action('register_post', 'massdata_register_post', 10, 3);
 add_filter('registration_errors', 'massdata_register_error', 10, 3);
 add_action('user_register', 'massdata_user_register');
+add_filter('user_registration_email', 'disable_user_registration_email');
 function massdata_register_post($sanitized_user_login, $user_email, $errors)
 {
-
 
     if (is_user_logged_in()) {
         exit(wp_redirect(site_url()));
@@ -802,9 +802,6 @@ function massdata_register_post($sanitized_user_login, $user_email, $errors)
         $_SERVER['HTTP_REFERER'] = $refer;
     }
 
-    $sanitized_user_login = sanitize_text_field($_POST['user_login']);
-    $user_email = sanitize_text_field($_POST['user_email']);
-
     if (isset($_POST['md-signup']) && $_POST['md-signup'] == 'Submit') {
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('signup')), $_SERVER['HTTP_REFERER']);
     } else if (isset($_POST['md-submit']) && $_POST['md-submit'] == 'Submit') {
@@ -812,17 +809,15 @@ function massdata_register_post($sanitized_user_login, $user_email, $errors)
     }
 
     if (empty($sanitized_user_login)) {
-        $errors->add('error', '<strong>ERROR</strong>: You must include your full name.');
         exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include your full name')), $url_status_failed)));
     } else {
 
         if (!validate_username($sanitized_user_login)) {
 
-            $errors->add('error', '<strong>ERROR</strong>: You must include a valid full name.');
             wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include a valid full name')), $url_status_failed));
             exit;
 
-        } else if (strlen($sanitized_user_login) >= 50) {
+        }else if (strlen($sanitized_user_login) >= 50) {
 
             $errors->add('error', '<strong>ERROR</strong>: Username must be within 50 characters.');
             exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('Username must be within 50 characters.')), $url_status_failed)));
@@ -843,7 +838,7 @@ function massdata_register_post($sanitized_user_login, $user_email, $errors)
     if (empty($user_email)) {
 
         $errors->add('error', '<strong>ERROR</strong>: You must include your email address.');
-        exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include your email address')), $url_status_failed)));
+        exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($user_email)), $url_status_failed)));
 
     } else {
 
@@ -883,43 +878,104 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('signup')), $_SERVER['HTTP_REFERER']);
 
-        $productquote_massdata_quotation_message = null;
-        $productquote_errors = signup_validator();
+        $product_quote_massdata_quotation_message = null;
+        $product_quote_errors = array();
+        $product_quote_errors = signup_validator();
 
-        foreach ($errors as $error => $fields) {
+        foreach ($product_quote_errors as $error => $fields) {
             foreach ($fields as $field => $message) {
                 if (!empty($message)) {
                     $product_quote_massdata_quotation_message = $message[0];
                 }
             }
-            if (!is_null($productquote_massdata_quotation_message)) {
+            if (!is_null($product_quote_massdata_quotation_message)) {
                 break;
             }
         }
-        if (!is_null($productquote_massdata_quotation_message)) {
-            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($productquote_massdata_quotation_message)), $url_status_failed)));
+        if (!is_null($product_quote_massdata_quotation_message)) {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($product_quote_massdata_quotation_message, true))), $url_status_failed));
         }
 
-    } else if (isset($_POST['md-submit']) && $_POST['md-submit'] == 'Submit') {
+    } else if (isset($_POST['md-submit']) && $_POST['md-submit'] == 'Submit' && isset($_POST['md-in-product-name'])) {
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
 
-        $productquote_massdata_quotation_message = null;
-        $productquote_errors = signup_validator();
-        $productquote_errors = general_quote_validator();
+        $product_quote_massdata_quotation_message = null;
+        $product_quote_errors = array();
+        $product_quote_errors = signup_validator();
 
-        foreach ($errors as $error => $fields) {
+        foreach ($product_quote_errors as $error => $fields) {
             foreach ($fields as $field => $message) {
-                if (!empty($message)) {
-                    $product_quote_massdata_quotation_message = $message[0];
-                }
+                $product_quote_massdata_quotation_message = $message;
             }
-            if (!is_null($productquote_massdata_quotation_message)) {
+            if (!is_null($product_quote_massdata_quotation_message)) {
                 break;
             }
         }
-        if (!is_null($productquote_massdata_quotation_message)) {
-            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($productquote_massdata_quotation_message)), $url_status_failed)));
+
+        if (!is_null($product_quote_massdata_quotation_message)) {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($product_quote_massdata_quotation_message)), $url_status_failed)));
+        }
+
+        $product_quote_massdata_quotation_message = null;
+        $product_quote_errors = array();
+        $product_quote_errors = general_quote_validator();
+        foreach ($product_quote_errors as $error => $fields) {
+            foreach ($fields as $field => $message) {
+                $product_quote_massdata_quotation_message = $message;
+            }
+            if (!is_null($product_quote_massdata_quotation_message)) {
+                break;
+            }
+        }
+
+        if (!is_null($product_quote_massdata_quotation_message)) {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($product_quote_massdata_quotation_message)), $url_status_failed)));
+        }
+
+    }else if(isset($_POST['md-submit']) && $_POST['md-send'] === 'Submit' && isset($_POST['__md__']) && isset($_POST['massdata_product_model'])){
+
+        $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
+
+        if (is_numeric($_POST['__md__'])) {
+            $post_product = get_post_custom($_POST['__md__']);
+            $product_model = $post_product['massdata_product_model'][0];
+        } else {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('Product does not exist in the system. Please try a valid product')), $url_status_failed)));
+        }
+
+        if (isset($_POST['__md__']) && isset($_POST['md-in-product']) && $_POST['md-in-product'] === $product_model) {
+            $product_quote_massdata_quotation_message = null;
+            $product_quote_errors = signup_validator();
+
+            foreach ($product_quote_errors as $error => $fields) {
+                foreach ($fields as $field => $message) {
+                    $product_quote_massdata_quotation_message = $message;
+                }
+                if (!is_null($product_quote_massdata_quotation_message)) {
+                    break;
+                }
+            }
+            if (!is_null($product_quote_massdata_quotation_message)) {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($product_quote_massdata_quotation_message)), $url_status_failed)));
+            }
+
+            $product_quote_massdata_quotation_message = null;
+            $product_quote_errors = quote_validator();
+            foreach ($product_quote_errors as $error => $fields) {
+                foreach ($fields as $field => $message) {
+                    $product_quote_massdata_quotation_message = $message;
+                }
+                if (!is_null($product_quote_massdata_quotation_message)) {
+                    break;
+                }
+            }
+            if (!is_null($product_quote_massdata_quotation_message)) {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($product_quote_massdata_quotation_message)), $url_status_failed)));
+            }
+
+        } else {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('An error has occured. Please reopen tab, and try again')), $url_status_failed)));
         }
     }
 
@@ -942,7 +998,7 @@ function massdata_user_register($user_id, $password = "", $meta = array())
         } else {
             exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
         }
-    } else if (isset($_POST['md-submit']) && $_POST['md-submit'] === 'Submit') {
+    } else if (isset($_POST['md-submit']) && $_POST['md-submit'] === 'Submit' && isset($_POST['__md__']) && isset($_POST['md-in-product'])) {
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
 
@@ -952,7 +1008,7 @@ function massdata_user_register($user_id, $password = "", $meta = array())
             // check hidden field for product id, and also verify product id exist in the system.
             $post_error = send_quote($_POST['__md__']);
             if (empty($post_error)) {
-                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully sent")), $url_status_failed)));
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully sent__normal_sent")), $url_status_failed)));
             } else {
                 exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
             }
@@ -963,7 +1019,7 @@ function massdata_user_register($user_id, $password = "", $meta = array())
             // check hidden field for product id, and also verify product id exist in the system.
             $post_error = send_general_quote();
             if (empty($post_error)) {
-                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully sent")), $url_status_failed)));
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully sent__general_sent")), $url_status_failed)));
             } else {
                 exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
             }
@@ -975,10 +1031,13 @@ function massdata_user_register($user_id, $password = "", $meta = array())
     }
 
 }
+function disable_user_registration_email($user_email){
+    return $user_email;
+}
 
 add_action('wp_login_failed', 'massdata_login_failed');
 add_filter('login_redirect', 'massdata_login_redirect', 10, 3);
-add_filter('authenticate', 'massdata_authenticate_username_password', 15, 3); //default of wordpress core, default is 20
+//add_filter('authenticate', 'massdata_authenticate_username_password', 15, 3);
 function massdata_login_failed($username)
 {
     $referrer = $_SERVER['HTTP_REFERER'];
@@ -1011,10 +1070,10 @@ function massdata_authenticate_username_password($user, $username, $password){
     if (!empty($referer) && !strstr($referer, 'wp-login') && !strstr($referer, 'wp-admin')) {
         if (empty($username)) {
             $url = add_query_arg(urlencode('status'), urlencode('signin'), $referer);
-            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed, asd Try again. Reset your password if you have forgotten it.'), $url)));
+            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed, Try again. Reset your password if you have forgotten it.'), $url)));
         } else if (empty($password)) {
             $url = add_query_arg(urlencode('status'), urlencode('signin'), $referer);
-            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. asd Try again. Reset your password if you have forgotten it.'), $url)));
+            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. Try again. Reset your password if you have forgotten it.'), $url)));
         }
     }
     if (empty($username) || empty($password)) {
@@ -1253,7 +1312,6 @@ function edit_massdata_quotation_column_data($column_headers)
             echo $user->data->user_login;
             break;
         case 'massdata_products':
-
             echo $post->post_content;
             break;
         case 'massdata_quantity':
@@ -1271,15 +1329,17 @@ function edit_massdata_quotation_column_data($column_headers)
 
 }
 function edit_massdata_reserve_columns($column_headers){
-
     $temp = $column_headers['cb'];
     unset($column_headers);
+
     $column_headers['cb'] = $temp;
     $column_headers['md_title'] = 'Reservation ID';
     $column_headers['massdata_reserved_product'] = 'Product ID';
     $column_headers['massdata_reserved_stock'] ="Stock Reserved";
     $column_headers['massdata_reserver'] = 'User ID';
     $column_headers['reservation_date'] = 'Reserve Date';
+    $column_headers['date'] = 'Last Modified';
+    $column_headers['reservation_status'] = 'Reserve Status';
 
     return $column_headers;
 }
@@ -1318,9 +1378,95 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
 
             echo  $post->post_date_gmt;
             break;
+        case 'reservation_modified_time':
+            break;
+        case 'reservation_status':
+            md_input_reserve_status_button();
+            break;
         default:
             break;
      endswitch;
+}
+
+function md_input_reserve_status_button(){
+    echo '<form action="#" method="post" id="md_reserve_status_form">';
+    echo '<input id="md_reserve_status_approve" class="button-primary" type="button" value="Approve"/>';
+    echo '<input id="md_reserve_status_cancel" class="button" type="button" value="Cancel"/>';
+    echo '</form>';
+}
+add_action('admin_enqueue_scripts', 'md_load_reserve_script');
+add_action('wp_ajax_get_approve_status', 'md_ajax_approve_reservation');
+add_action('wp_ajax_get_cancel_status', 'md_ajax_cancel_reservation');
+function md_load_reserve_script($hook){
+
+    if($hook != 'edit.php'){
+        echo $hook;
+        return;
+    }
+    wp_register_script('massdata_reservation_button_ajaxify', MASSDATA_THEMEROOT.'/js/reservation_button_ajaxify.js', array('jquery'));
+    wp_enqueue_script('massdata_reservation_button_ajaxify');
+}
+function md_ajax_approve_reservation(){
+
+    $data = &$_POST;
+    if(isset($data["product_id"]) && isset($data['reserve_id']) && isset($data['user_id'])){
+
+        $reserved_meta = get_post_meta($data['reserve_id']);
+        unset($reserved_meta['_edit_lock']);
+
+        $reservation_status = true;
+        $new_stock_array = array();
+        if(isset($reserved_meta)){
+            foreach($reserved_meta as $variable_ids => $variable_reserved){
+                $variable_stock = get_post_meta($variable_ids, '_stock', true);
+
+                if(isset($variable_stock) && is_numeric($variable_stock)){
+                    $new_variable_stock = $variable_stock - $variable_reserved[0];
+                    if(isset($new_variable_stock) && $new_variable_stock >= 0){
+
+                        $new_stock_array[$variable_ids] = $new_variable_stock;
+                    }else if(isset($new_variable_stock) && $new_variable_stock < 0){
+
+                        $reservation_status = 500;
+                        break;
+                    }
+                }
+            }
+            if($reservation_status === true){
+                foreach($new_stock_array as $variable_id => $new_stock){
+                    update_post_meta($variable_id, '_stock', $new_stock);
+                }
+                wp_delete_post($data['reserve_id']);
+                echo 1;
+            }else{
+                echo $reservation_status;
+            }
+        }else{
+            echo 404;
+        }
+    }
+
+    die();
+}
+function md_ajax_cancel_reservation(){
+
+    require_once( dirname( dirname( dirname( dirname( __FILE__ )))) . '/wp-load.php' );
+
+    if(isset($_POST["product_id"]) && isset($_POST['reserve_id']) && isset($_POST['user_id'])){
+//
+//        $queried = new WP_Query(
+//            array(
+//                'post_type' => 'massdata_reserve',
+//                'posts_per_page' => -1
+//            )
+//        );
+//        wp_trash_post((int)$_POST['reserve_id'], true);
+        $reserve_id = (int)$_POST['reserve_id'];
+        wp_trash_post($reserve_id);
+        wp_delete_post($reserve_id, true);
+        echo 'Reservation cancelled';
+    }
+    die();
 }
 
 function quotation_remove_row_actions($actions, $post)
@@ -1453,15 +1599,19 @@ function quotation_post_edit_form_tag()
     if (!$post) return;
 
     $post_type = get_post_type($post->ID);
-    if ('product' != $post_type or get_current_user_id() != 1) return;
+    if ('product' != $post_type) return;
     echo 'enctype="multipart/form-data" encoding="multipart/form-data"';
 }
 add_filter( 'upload_dir', 'massdata_quotation_upload_directory' );
 add_filter('upload_mimes', 'custom_upload_mimes');
 function custom_upload_mimes ( $existing_mimes = array() ) {
-    $existing_mimes['gif'] = 'image/gif';
+
     $existing_mimes['psd'] = 'application/octet-stream';
-    $existing_mimes['ai'] = 'application/illustrator';
+    $existing_mimes['ai'] = 'application/postscript';
+    $existing_mimes['png'] = 'image/png';
+    $existing_mimes['bmp'] = 'image/bmp';
+    $existing_mimes['jpg'] = 'image/jpeg';
+    $existing_mimes['jpeg'] = 'image/jpeg';
     $existing_mimes['pdf'] = 'application/pdf';
     return $existing_mimes;
 }
@@ -1610,8 +1760,6 @@ function cron_delete_massdata_reservation(){
 //function prefix_deactivation() {
 //    wp_clear_scheduled_hook( 'prefix_twelve_hour_event' );
 //}
-
-
 ///////////////////////////////// Stock Report /////////////////
 function send_stock_report(){
     require_once get_template_directory().'/md_email_template_stock_report.php';

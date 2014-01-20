@@ -217,7 +217,7 @@ function send_general_quote()
 A general quotation by a user:-
 1. User ID: {$email_user_id}
 2. Product Model: {$email_product}
-3.Quote ID: {$email_quote_id}
+3. Quote ID: {$email_quote_id}
 HEREDOC;
                 wp_mail(get_option('admin_email'), 'Masssdata System: Product General Quotation', $email_message);
             }
@@ -237,7 +237,8 @@ function send_user_data($user_id){
     try{
 
         //if other is checked, ignore others
-        wp_update_user( array ('ID' => $user_id, 'role' => $_POST['md-in-group'] ) );
+        $password= wp_generate_password(12, true);
+        wp_update_user( array ('ID' => $user_id, 'role' => $_POST['md-in-group'] , 'user_pass' => $password) );
         update_user_meta($user_id, 'companyname', $_POST['md-in-companyname']);
         if(isset($_POST['md-in-registration-no'])){
             update_user_meta($user_id, 'registration_no', $_POST['md-in-registration-no']);
@@ -270,12 +271,41 @@ function send_user_data($user_id){
         }
         update_user_meta($user_id, 'view_pricing', $_POST['md-in-view-pricing']);
 
-
         //get current user id and his user login and password
-
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id);
 
+        $user_obj = get_userdata($user_id);
+        $user_email = $user_obj->data->user_email;
+        $user_password = $password;
+        $site = site_url();
+        $email_message = <<<"User_register"
+Thank you for signing up to Massdata.
+
+Your username is your email  : {$user_email}
+Your password                : {$password}
+You can now login into Massdata, {$site}
+User_register;
+        wp_mail($user_email, 'Masssdata System: User Registration Email', $email_message);
+
+        $email_user_id = (string)get_current_user_id();
+        $email_username = (string)$_POST['user_login'];
+        $email_role = (string)$_POST['md-in-group'];
+        $email_address = (string)$_POST['md-in-address'];
+        $email_companyname = (string)$_POST['md-in-companyname'];
+        $email_mobile = (string)$_POST['md-in-mobile'];
+        $email_message = <<<"HEREDOC"
+
+A new user has registered into the Massdata System:
+
+ User ID : {$email_user_id}
+ Username : {$email_username}
+ Role : {$email_role}
+ Mobile no. : {$email_mobile}
+ Company name : {$email_companyname}
+ Address : {$email_address}
+HEREDOC;
+        wp_mail(get_option('admin_email'), 'Masssdata System: New User Registration Notification', $email_message);
 
     }catch(Exception $ex){
 

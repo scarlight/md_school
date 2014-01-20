@@ -25,7 +25,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 
             $result = send_general_quote();
             if (empty($result) && $quote_request == true) {
-                $massdata_quotation_message = "Quotation is successfully sent";
+                $massdata_quotation_message = "Quotation is successfully";
             }else{
                 $massdata_quotation_message = $result[0];
             }
@@ -63,7 +63,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 echo "<p><strong>{$massdata_quotation_message}</strong></p>";
 $massdata_quotation_message = null; ?>
 <form action="<?php if (!is_user_logged_in()) echo wp_registration_url(); ?>"
-      method='post' <?php do_action('post_edit_form_tag'); ?>>
+      method='post' enctype="multipart/form-data" encoding="multipart/form-data">
 <div class="left-form">
     <div class="form-group">
         <label for="product" class="control-label">Product <span class="required">*</span></label>
