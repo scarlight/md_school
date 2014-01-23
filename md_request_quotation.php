@@ -23,7 +23,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
         foreach ($errors as $error => $fields) {
             foreach ($fields as $field => $message) {
                 if (!empty($message)) {
-                    $massdata_quotation_message = $message[0];
+                    $massdata_quotation_message = $message;
                 }
             }
             if (!is_null($massdata_quotation_message)) {
@@ -55,9 +55,12 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 }
 
 ?>
-<?php if ($massdata_quotation_message != null) ;
-echo "<p><strong>{$massdata_quotation_message}</strong></p>";
-$massdata_quotation_message = null; ?>
+<?php
+if ($massdata_quotation_message != null && !is_array($massdata_quotation_message)){
+    echo "<p><strong>{$massdata_quotation_message}</strong></p>";
+}
+$massdata_quotation_message = null;
+?>
     <form action="<?php if (!is_user_logged_in()) echo wp_registration_url(); ?>" method='post' <?php do_action('post_edit_form_tag'); ?>>
     <div class="left-form">
         <div class="form-group">

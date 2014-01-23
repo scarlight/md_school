@@ -104,7 +104,7 @@ function send_quote($product_id)
                 $email_product = (string)$product_model;
                 $email_quote_id = (string)$quote_id;
                 $email_message = <<<"HEREDOC"
-A general quotation by a user:-
+A quotation was sent by a user:-
 1. User ID: {$email_user_id}
 2. Product Model: {$email_product}
 3.Quote ID: {$email_quote_id}
@@ -214,7 +214,7 @@ function send_general_quote()
                 $email_product = (string)$_POST['md-in-product-name'];
                 $email_quote_id = (string)$quote_id;
                 $email_message = <<<"HEREDOC"
-A general quotation by a user:-
+A general quotation was sent by a user:-
 1. User ID: {$email_user_id}
 2. Product Model: {$email_product}
 3. Quote ID: {$email_quote_id}
@@ -245,7 +245,7 @@ function send_user_data($user_id){
         }
         update_user_meta($user_id, 'mobile', $_POST['md-in-mobile']);
         if(isset($_POST['md-in-telephone'])){
-            update_user_meta($user_id, 'tel', $_POST['md-in-telephone']);
+            update_user_meta($user_id, 'telephone', $_POST['md-in-telephone']);
         }
         if(isset($_POST['md-in-fax'])){
             update_user_meta($user_id, 'fax', $_POST['md-in-fax']);
@@ -286,7 +286,7 @@ Your username is your email  : {$user_email}
 Your password                : {$password}
 You can now login into Massdata, {$site}
 User_register;
-        wp_mail($user_email, 'Masssdata System: User Registration Email', $email_message);
+        wp_mail($user_email, 'Massdata System: User Registration Email', $email_message);
 
         $email_user_id = (string)get_current_user_id();
         $email_username = (string)$_POST['user_login'];
@@ -305,7 +305,7 @@ A new user has registered into the Massdata System:
  Company name : {$email_companyname}
  Address : {$email_address}
 HEREDOC;
-        wp_mail(get_option('admin_email'), 'Masssdata System: New User Registration Notification', $email_message);
+        wp_mail(get_option('admin_email'), 'Massdata System: New User Registration Notification', $email_message);
 
     }catch(Exception $ex){
 

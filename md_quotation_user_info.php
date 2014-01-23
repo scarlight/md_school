@@ -16,6 +16,22 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
             </thead>
             <tbody>
             <tr>
+                <td><strong>User Name</strong></td>
+                <td><strong>:</strong></td>
+                <td>
+                    <div>
+                        <?php
+                        if (isset($user_inst)) {
+
+                            echo $user_inst->user_login;
+                        } else {
+                            echo ' - ';
+                        }
+                        ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <td><strong>Email Address</strong></td>
                 <td><strong>:</strong></td>
                 <td>
@@ -37,7 +53,7 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['companyname'])) {
+                        if (isset($user_meta_inst['companyname'][0])) {
                             echo $user_meta_inst['companyname'][0];
                         } else {
                             echo ' - ';
@@ -52,7 +68,7 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['registration_no'])) {
+                        if (isset($user_meta_inst['registration_no'][0])) {
                                 echo $user_meta_inst['registration_no'][0];
                             } else {
                                 echo ' - ';
@@ -67,7 +83,7 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['mobile'])) {
+                        if (isset($user_meta_inst['mobile'][0])) {
                             echo $user_meta_inst['mobile'][0];
                         } else {
                             echo ' - ';
@@ -82,9 +98,9 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['tel'])) {
+                        if (isset($user_meta_inst['telephone'][0])) {
 
-                            echo $user_meta_inst['tel'][0];
+                            echo $user_meta_inst['telephone'][0];
                         } else {
                             echo ' - ';
                         }
@@ -160,34 +176,15 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                     </div>
                 </td>
             </tr>
-            <?php if(isset($user_meta_inst['enquiry'])){?>
-                <tr>
-                    <td><strong>Enquiry</strong></td>
-                    <td><strong>:</strong></td>
-                    <td>
-                        <div>
-                            <?php
-                            if(isset($user_meta_inst['enquiry'])){
-
-                                echo $user_meta_inst['enquiry'][0];
-                            }else{
-                                echo '  - ';
-                            }
-                            ?>
-                        </div>
-                    </td>
-                </tr>
-
-            <?php }?>
             <tr>
                 <td><strong>Access Current Stock Price</strong></td>
                 <td><strong>:</strong></td>
                 <td>
                     <div>
                         <?php
-                        if(isset($user_meta_inst['view-pricing'])){
+                        if(isset($user_meta_inst['view_pricing'][0])){
 
-                            echo $user_meta_inst['view-pricing'][0];
+                            echo $user_meta_inst['view_pricing'][0];
                         }else{
                             echo '  - ';
                         }

@@ -1336,8 +1336,8 @@ function edit_massdata_reserve_columns($column_headers){
     $column_headers['md_title'] = 'Reservation ID';
     $column_headers['massdata_reserved_product'] = 'Product ID';
     $column_headers['massdata_reserved_stock'] ="Stock Reserved";
-    $column_headers['massdata_reserver'] = 'User ID';
-    $column_headers['reservation_date'] = 'Reserve Date';
+    $column_headers['massdata_reserver'] = 'User ID: User Name';
+    $column_headers['reservation_date'] = 'Reserve Date ( GMT )';
     $column_headers['date'] = 'Last Modified';
     $column_headers['reservation_status'] = 'Reserve Status';
 
@@ -1388,12 +1388,6 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
      endswitch;
 }
 
-function md_input_reserve_status_button(){
-    echo '<form action="#" method="post" id="md_reserve_status_form">';
-    echo '<input id="md_reserve_status_approve" class="button-primary" type="button" value="Approve"/>';
-    echo '<input id="md_reserve_status_cancel" class="button" type="button" value="Cancel"/>';
-    echo '</form>';
-}
 add_action('admin_enqueue_scripts', 'md_load_reserve_script');
 add_action('wp_ajax_get_approve_status', 'md_ajax_approve_reservation');
 add_action('wp_ajax_get_cancel_status', 'md_ajax_cancel_reservation');
@@ -1406,28 +1400,39 @@ function md_load_reserve_script($hook){
     wp_register_script('massdata_reservation_button_ajaxify', MASSDATA_THEMEROOT.'/js/reservation_button_ajaxify.js', array('jquery'));
     wp_enqueue_script('massdata_reservation_button_ajaxify');
 }
+function md_input_reserve_status_button(){
+//    echo '<form action="#" method="post" id="md_reserve_status_form">';
+    echo '<input class="md_reserve_status_approve button-primary" type="button" value="Approve"/>';
+    echo '<input class="md_reserve_status_cancel button" type="button" value="Cancel"/>';
+//    echo '</form>';
+}
 function md_ajax_approve_reservation(){
 
-    $data = &$_POST;
-    if(isset($data["product_id"]) && isset($data['reserve_id']) && isset($data['user_id'])){
+    if(isset($_POST["product_id"]) && isset($_POST['reserve_id']) && isset($_POST['user_id'])){
 
-        $reserved_meta = get_post_meta($data['reserve_id']);
+        $reserved_meta = get_post_meta($_POST['reserve_id']);
         unset($reserved_meta['_edit_lock']);
+
+        $response  = null;
+        $total_reserved = 0;
 
         $reservation_status = true;
         $new_stock_array = array();
         if(isset($reserved_meta)){
-            foreach($reserved_meta as $variable_ids => $variable_reserved){
-                $variable_stock = get_post_meta($variable_ids, '_stock', true);
+            foreach($reserved_meta as $reserve_id => $variable_reserved){
+                
+                $variable_stock = get_post_meta($reserve_id, '_stock', true);
+                $reserved_meta = get_post_meta($_POST['reserve_id']);
+                unset($reserved_meta['_edit_lock']);
 
                 if(isset($variable_stock) && is_numeric($variable_stock)){
                     $new_variable_stock = $variable_stock - $variable_reserved[0];
                     if(isset($new_variable_stock) && $new_variable_stock >= 0){
 
-                        $new_stock_array[$variable_ids] = $new_variable_stock;
+                        $new_stock_array[$reserve_id] = $new_variable_stock;
                     }else if(isset($new_variable_stock) && $new_variable_stock < 0){
 
-                        $reservation_status = 500;
+                        echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 500));
                         break;
                     }
                 }
@@ -1436,37 +1441,79 @@ function md_ajax_approve_reservation(){
                 foreach($new_stock_array as $variable_id => $new_stock){
                     update_post_meta($variable_id, '_stock', $new_stock);
                 }
-                wp_delete_post($data['reserve_id']);
-                echo 1;
+                wp_delete_post($_POST['reserve_id']);
+                echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
             }else{
-                echo $reservation_status;
+                echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => -1));
             }
+
         }else{
-            echo 404;
+            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 0));
         }
     }
+    if($response === 1){
+        $email_current_user = wp_get_current_user();
+        $email_reserver_user = get_userdata($_POST['user_id']);
+        $email_current_product = get_post_meta($_POST['product_id'], 'massdata_product_model', true);
 
+        $email_message = <<<"HERE"
+The user {$email_current_user->data->user_login}, ID: {$email_current_user->data->ID} has approved a reservation.
+Reservation ID: {$_POST['reserve_id']}
+Reserved By: {$email_reserver_user->data->user_login}
+Product Model: {$email_current_product}
+Stock Reserved: {$total_reserved}
+HERE;
+        wp_mail(get_option('admin_email'), "Massdata Reservation Approval", $email_message);
+    }
     die();
 }
 function md_ajax_cancel_reservation(){
 
     require_once( dirname( dirname( dirname( dirname( __FILE__ )))) . '/wp-load.php' );
 
+    $total_reserved = 0;
+    $response = null;
     if(isset($_POST["product_id"]) && isset($_POST['reserve_id']) && isset($_POST['user_id'])){
-//
-//        $queried = new WP_Query(
-//            array(
-//                'post_type' => 'massdata_reserve',
-//                'posts_per_page' => -1
-//            )
-//        );
-//        wp_trash_post((int)$_POST['reserve_id'], true);
-        $reserve_id = (int)$_POST['reserve_id'];
-        wp_trash_post($reserve_id);
-        wp_delete_post($reserve_id, true);
-        echo 'Reservation cancelled';
+
+        $reserved_meta = get_post_meta($_POST['reserve_id']);
+        unset($reserved_meta['_edit_lock']);
+
+
+        if(isset($reserved_meta)){
+            foreach($reserved_meta as $reserved_index => $reserve){
+
+                $global_reserve = get_post_meta($reserved_index, '_reserve_stock', true);
+                $global_reserve = $global_reserve - $reserve[0];
+
+                $total_reserved = $total_reserved + $reserve[0];
+                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
+            }
+            wp_delete_post((int)$_POST['reserve_id'], true);
+
+            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
+
+        }else{
+            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 0));
+        }
+    }
+
+    if($response === 1){
+                    $email_current_user = wp_get_current_user();
+            $email_reserver_user = get_userdata($_POST['user_id']);
+            $email_current_product = get_post_meta($_POST['product_id'], 'massdata_product_model', true);
+
+$email_message = <<<"HERE"
+The user {$email_current_user->data->user_login}, ID: {$email_current_user->data->ID} has cancelled a reservation.
+Reservation ID: {$_POST['reserve_id']}
+Reserved By: {$email_reserver_user->data->user_login}
+Product Model: {$email_current_product}
+Stock Reserved: {$total_reserved}
+HERE;
+            wp_mail(get_option('admin_email'), "Massdata Reservation Cancellation", $email_message);
     }
     die();
+
+
 }
 
 function quotation_remove_row_actions($actions, $post)
@@ -1506,13 +1553,6 @@ function massdata_manager_users_column($columns){
     return $columns;
 }
 function massdata_manage_users_custom_columns($value, $column_name, $user_id){
-
-    $queried = new WP_Query(array(
-        'post_type' => 'massdata_reserve',
-        'post_author' => $user_id,
-        'posts_per_page' => -1,
-        'fields' => 'ids'
-    ));
     switch($column_name){
         case 'quote_count':
 
@@ -1534,7 +1574,23 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
             }
             break;
         case 'reserve_count':
-            return count($queried->posts);
+
+            $queried = new WP_Query(array(
+                'post_type' => 'massdata_reserve',
+                'post_author' => $user_id,
+                'posts_per_page' => -1
+            ));
+            if(isset($queried->posts)){
+                $reserve_countation = 0;
+                foreach($queried->posts as $index => $posts){
+                    if($posts->post_author == $user_id){
+                        $reserve_countation++;
+                    }
+                }
+                return $reserve_countation;
+            }else{
+                return 0;
+            }
             break;
         default:
             return $value;
@@ -1542,7 +1598,8 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     }
 }
 
-add_action('before_delete_post', 'massdata_before_user_delete');
+//add_action('before_delete_post', 'massdata_before_user_delete');
+add_action( 'delete_user', 'massdata_before_user_delete' );
 function massdata_before_user_delete($user_id){
 
     $queried = new WP_Query(array(
@@ -1687,7 +1744,6 @@ function massdata_quotation_upload_directory( $args ) {
     }
     return $args;
 }
-
 //contact us
 add_shortcode('massdata_contact_us', 'massdata_contactus_shortcode');
 add_shortcode('massdata_quote', 'massdata_general_quote_shortcode');
