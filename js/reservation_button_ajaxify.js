@@ -12,18 +12,16 @@ jQuery(document).ready(function(){
         user_id = user_id.split(':');
 
         data = {
-            action : 'get_approve_status',
-            data : {
+                action : 'get_approve_status',
                 reserve_id : reserve_id[1],
                 product_id : product_id,
                 user_id : user_id[0]
-            }
         };
 
         if(md_reserve_approve_confirm == true){
-            jQuery.post(ajaxurl, data, function(response){
-                response = jQuery(parseJSON(response));
 
+            jQuery.post(ajaxurl, data, function(response){
+                response = jQuery.parseJSON(response);
 
                 if(response.response_status == 500){
                     alert('Could not approve this reservation. Reservation exceeds stock count.');
@@ -46,7 +44,7 @@ jQuery(document).ready(function(){
                 }else if(response.response_status === 0){
                     alert('Reservation does not exist. May have been cancelled');
                 }else{
-                    alert('Something went wrong. Thats all I know');
+                    alert(response.response_status);
                 }
             });
         }

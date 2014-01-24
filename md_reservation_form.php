@@ -8,10 +8,9 @@ require_once get_template_directory() . '/md_reservation_functions.php';
 
 global $product;
 $reservation = get_post_massdata_reserve($product->id, get_current_user_id()); // checks whether this product the user has reserved, id yes return the post data, else null.
+$available_stock_arr = get_stock_available($product->id);
 $message = null;
 $global_reserved_id = null;
-$available_stock_arr = get_stock_available($product->id);
-
 
 if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 
@@ -68,8 +67,6 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 
             if (isset($reservation)) {
 
-                var_dump('isset($reservation)');
-                var_dump($reservation);
                 foreach ($reservation_arr as $id => $global_reserved_stock) {
                     update_post_meta($reservation->ID, $id, $global_reserved_stock);
                 }
@@ -101,9 +98,6 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 
             } else {
 
-                var_dump('!isset($reservation)');
-                var_dump($reservation);
-
                 $global_reserve_post_args = array(
                     'post_type' => 'massdata_reserve',
                     'post_author' => get_current_user_id(),
@@ -123,7 +117,6 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
                     update_post_meta($global_reserve_post_id, $id, $global_reserved_stock);
                 }
 
-                var_dump($global_reserve_post_id);
                 // putting data in
                 // get reserved stock of all reservation for variable of this product, and update _reserve_stock quantity of product_variant
                 $args = array(

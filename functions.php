@@ -786,7 +786,6 @@ endif;
 /////////////////////////////// tOUch tHE cODE bELOW aND tHE uNIVERSE wILL eXPLODE /////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-
 add_action('register_post', 'massdata_register_post', 10, 3);
 add_filter('registration_errors', 'massdata_register_error', 10, 3);
 add_action('user_register', 'massdata_user_register');
@@ -1392,9 +1391,7 @@ add_action('admin_enqueue_scripts', 'md_load_reserve_script');
 add_action('wp_ajax_get_approve_status', 'md_ajax_approve_reservation');
 add_action('wp_ajax_get_cancel_status', 'md_ajax_cancel_reservation');
 function md_load_reserve_script($hook){
-
     if($hook != 'edit.php'){
-        echo $hook;
         return;
     }
     wp_register_script('massdata_reservation_button_ajaxify', MASSDATA_THEMEROOT.'/js/reservation_button_ajaxify.js', array('jquery'));
@@ -1408,50 +1405,38 @@ function md_input_reserve_status_button(){
 }
 function md_ajax_approve_reservation(){
 
+    require_once( dirname( dirname( dirname( dirname( __FILE__ )))) . '/wp-load.php' );
+
+    $total_reserved = 0;
+    $response = null;
+
     if(isset($_POST["product_id"]) && isset($_POST['reserve_id']) && isset($_POST['user_id'])){
 
         $reserved_meta = get_post_meta($_POST['reserve_id']);
         unset($reserved_meta['_edit_lock']);
 
-        $response  = null;
-        $total_reserved = 0;
-
-        $reservation_status = true;
-        $new_stock_array = array();
         if(isset($reserved_meta)){
-            foreach($reserved_meta as $reserve_id => $variable_reserved){
-                
-                $variable_stock = get_post_meta($reserve_id, '_stock', true);
-                $reserved_meta = get_post_meta($_POST['reserve_id']);
-                unset($reserved_meta['_edit_lock']);
+            foreach($reserved_meta as $reserved_index => $reserve){
 
-                if(isset($variable_stock) && is_numeric($variable_stock)){
-                    $new_variable_stock = $variable_stock - $variable_reserved[0];
-                    if(isset($new_variable_stock) && $new_variable_stock >= 0){
+                $global_reserve = get_post_meta($reserved_index, '_reserve_stock', true);
+                $global_reserve = $global_reserve - $reserve[0];
+                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
 
-                        $new_stock_array[$reserve_id] = $new_variable_stock;
-                    }else if(isset($new_variable_stock) && $new_variable_stock < 0){
+                $total_reserved = $total_reserved + $reserve[0];
 
-                        echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 500));
-                        break;
-                    }
-                }
+                $global_stock = get_post_meta($reserved_index, '_stock', true);
+                $global_stock = $global_stock - $reserve[0];
+                update_post_meta($reserved_index, '_stock', $global_stock);
             }
-            if($reservation_status === true){
-                foreach($new_stock_array as $variable_id => $new_stock){
-                    update_post_meta($variable_id, '_stock', $new_stock);
-                }
-                wp_delete_post($_POST['reserve_id']);
-                echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
-            }else{
-                echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => -1));
-            }
+            wp_delete_post((int)$_POST['reserve_id'], true);
 
+            $response = 1;
+            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
         }else{
             echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 0));
         }
     }
-    if($response === 1){
+    if($response == 1){
         $email_current_user = wp_get_current_user();
         $email_reserver_user = get_userdata($_POST['user_id']);
         $email_current_product = get_post_meta($_POST['product_id'], 'massdata_product_model', true);
@@ -1484,12 +1469,13 @@ function md_ajax_cancel_reservation(){
 
                 $global_reserve = get_post_meta($reserved_index, '_reserve_stock', true);
                 $global_reserve = $global_reserve - $reserve[0];
+                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
 
                 $total_reserved = $total_reserved + $reserve[0];
-                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
             }
             wp_delete_post((int)$_POST['reserve_id'], true);
 
+            $response = 1;
             echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
 
         }else{
@@ -1516,6 +1502,8 @@ HERE;
 
 }
 
+add_filter('bulk_actions-edit-massdata_quotation','quotation_remove_bulk_actions');
+add_filter('bulk_actions-edit-massdata_reserve','reservation_remove_bulk_actions');
 function quotation_remove_row_actions($actions, $post)
 {
 
@@ -1531,8 +1519,13 @@ function quotation_remove_row_actions($actions, $post)
 function quotation_remove_bulk_actions($actions)
 {
     unset($actions['edit']);
-    global $post;
-    return $actions;
+    return $actions ;
+}
+function reservation_remove_bulk_actions($actions)
+{
+    unset($actions['trash']);
+    unset($actions['edit']);
+    return $actions ;
 }
 
 add_filter('manage_users_columns', 'massdata_manager_users_column', 90, 1);
@@ -1598,7 +1591,7 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     }
 }
 
-//add_action('before_delete_post', 'massdata_before_user_delete');
+//add_action('before_delete_post', 'massdata_before_post_delete');
 add_action( 'delete_user', 'massdata_before_user_delete' );
 function massdata_before_user_delete($user_id){
 
@@ -1635,6 +1628,10 @@ function massdata_before_user_delete($user_id){
         }
     }
 }
+//function massdata_before_post_delete($reservation_id){
+//
+//    return;
+//}
 
 add_action('user_contactmethods', 'massdata_custom_user_fields', 10, 1);
 function massdata_custom_user_fields($profilefields){

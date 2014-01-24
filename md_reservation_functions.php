@@ -60,29 +60,17 @@ function get_post_massdata_reserve($product_id, $user_id){
     $query = new WP_Query(
         array(
             'post_type' => 'massdata_reserve',
-            'post_author' => $user_id,
             'post_status' => 'private',
+            'post_author' => $user_id,
             's' => $product_id
         )
     );
-    if(!empty($query->posts)){
-        return $query->posts[0];
+    foreach($query->posts as $post_index => $post){
+        if(!empty($post) && $post->post_author == $user_id && $post->post_content == $product_id){
+            return $post;
+        }
     }
     return null;
-}
-function has_reserved($product_id, $user_id){
-
-    $queried = new WP_Query(
-        array(
-            'post_type' => 'massdata_reserve',
-            'post_author' => $user_id,
-            'post_content' => $product_id,
-            'fields' => 'ids',
-            'posts_per_page' => -1
-        )
-    );
-    $queried = $queried->posts;
-    return $queried;
 }
 function get_stock_available($product_post_id){
 
@@ -135,13 +123,14 @@ function get_available_stock($stock, $reserve)
         return $stock_available = $stock - 0;
     }
 }
-function get_my_reserve($post_massdata_reserved, $product_variant_id)
+function get_my_reserve($reservation, $product_variant_id)
 {
-    if (isset($post_massdata_reserved)) {
+    if (isset($reservation)) {
 
-        $id = $post_massdata_reserved->ID;
+        $id = $reservation->ID;
         return $current_user_reserved_stock = get_post_meta($id, $product_variant_id, true);
     } else {
+
         return $current_user_reserved_stock = 0;
     }
 }
