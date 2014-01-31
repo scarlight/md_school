@@ -161,7 +161,7 @@ foreach($bigarr as $index => $array){
 
                         if (isset($user_inst)) {
 
-                            echo $user_inst->user_email;
+                            echo $user_inst->user_login;
                         } else {
                             echo ' - ';
                         }
@@ -206,8 +206,8 @@ foreach($bigarr as $index => $array){
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['registration-no'])) {
-                            echo $user_meta_inst['registration-no'][0];
+                        if (isset($user_meta_inst['registration_no'])) {
+                            echo $user_meta_inst['registration_no'][0];
                         } else {
                             echo ' - ';
                         }
@@ -320,9 +320,9 @@ foreach($bigarr as $index => $array){
                 <td>
                     <div>
                         <?php
-                        if(isset($user_meta_inst['view-pricing'])){
+                        if(isset($user_meta_inst['view_pricing'])){
 
-                            echo $user_meta_inst['view-pricing'][0];
+                            echo $user_meta_inst['view_pricing'][0];
                         }else{
                             echo '  - ';
                         }

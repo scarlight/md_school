@@ -41,24 +41,36 @@ if (isset($_POST['test']) && $_POST['test'] == 'Apply Now') {
 
                         if (isset($reservation)) { // if there are existing reservations.
 
-                            if ($my_reserve <= $available_stock) { // if my_reserve is less than or equal as stock available
+                            $available_stock_threshold = ($available_stock + get_post_meta($reservation->ID, $product_variant_id, true)) - $my_reserve;
+                            if ($available_stock_threshold >= 0) { // if my_reserve is less than or equal as stock available
 
                                 $reservation_arr[$product_variant_id] = $my_reserve;
                             } else { // if reservation is more than stock available
 
-                                $message = 'Product stock reservation cannot exceed the available stock';
+                                $message = 'Product stock reservation cannot exceed the total stock';
                                 break;
                             }
                         } else { // if there is no existing reservations, get stock count of product
 
+                            if($my_reserve <= $available_stock){
+
                                 $reservation_arr[$product_variant_id] = $my_reserve;
+                            }else{
+
+                                $message = 'Product stock reservation cannot exceed the available stock';
+                                break;
+                            }
                         }
 
                     } else { // if reservation count is not valid
 
-                        $message = 'Please enter a valid number for product stock reservation';
+                        $message = 'Product stock reservation cannot exceed the available stock';
                         break;
                     }
+                }else{
+
+                    $message = 'Product stock reservation cannot exceed the available stock';
+                    break;
                 }
             }
         }

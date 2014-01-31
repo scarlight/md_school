@@ -98,9 +98,9 @@ $user_meta_inst = get_user_meta(get_post(get_the_ID())->post_author);
                 <td>
                     <div>
                         <?php
-                        if (isset($user_meta_inst['telephone'][0])) {
+                        if (isset($user_meta_inst['tel'][0])) {
 
-                            echo $user_meta_inst['telephone'][0];
+                            echo $user_meta_inst['tel'][0];
                         } else {
                             echo ' - ';
                         }

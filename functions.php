@@ -1224,7 +1224,7 @@ function variable_fields( $loop, $variation_data ) {
         <td>
             <div>
                 <label>Quantity (Price per Quantity)</label>
-                <input type="number" size="5" name="_massdata_quantity[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_quantity'][0])){ echo $variation_data['_massdata_quantity'][0]; }?>"/>
+                <input type="text" size="5" name="_massdata_quantity[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_quantity'][0])){ echo $variation_data['_massdata_quantity'][0]; }?>"/>
             </div>
         </td>
     </tr>
@@ -1232,7 +1232,7 @@ function variable_fields( $loop, $variation_data ) {
         <td>
             <div>
                 <label>Agent's Price</label>
-                <input type="number" size="5" name="_massdata_agent_price[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_agent_price'][0])){ echo $variation_data['_massdata_agent_price'][0]; }?>"/>
+                <input type="text" size="5" name="_massdata_agent_price[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_agent_price'][0])){ echo $variation_data['_massdata_agent_price'][0]; }?>"/>
             </div>
         </td>
     </tr>
@@ -1240,7 +1240,7 @@ function variable_fields( $loop, $variation_data ) {
         <td>
             <div>
                 <label>Corporate's Price</label>
-                <input type="number" size="5" name="_massdata_corporate_price[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_corporate_price'][0])){ echo $variation_data['_massdata_corporate_price'][0]; }?>"/>
+                <input type="text" size="5" name="_massdata_corporate_price[<?php echo $loop; ?>]" value="<?php if(isset($variation_data['_massdata_corporate_price'][0])){ echo $variation_data['_massdata_corporate_price'][0]; }?>"/>
             </div>
         </td>
     </tr>
@@ -1416,16 +1416,34 @@ function md_ajax_approve_reservation(){
         unset($reserved_meta['_edit_lock']);
 
         if(isset($reserved_meta)){
+
+            $global_reserve_arr = array();
+            $global_stock_arr = array();
             foreach($reserved_meta as $reserved_index => $reserve){
 
                 $global_reserve = get_post_meta($reserved_index, '_reserve_stock', true);
                 $global_reserve = $global_reserve - $reserve[0];
-                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
-
-                $total_reserved = $total_reserved + $reserve[0];
 
                 $global_stock = get_post_meta($reserved_index, '_stock', true);
                 $global_stock = $global_stock - $reserve[0];
+
+                $total_reserved = $total_reserved + $reserve[0];
+
+                if(isset($global_stock) && $global_stock >= 0){
+                    $global_stock_arr[$reserved_index] = $global_stock;
+                    $global_reserve_arr[$reserved_index] = $global_reserve;
+                }else{
+
+                    echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 500));
+                    die();
+                    break;
+                }
+            }
+
+            foreach($global_reserve_arr as $reserved_index => $global_reserve){
+                update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
+            }
+            foreach($global_stock_arr as $reserved_index => $global_stock){
                 update_post_meta($reserved_index, '_stock', $global_stock);
             }
             wp_delete_post((int)$_POST['reserve_id'], true);
@@ -1433,7 +1451,9 @@ function md_ajax_approve_reservation(){
             $response = 1;
             echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 1));
         }else{
-            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 0));
+
+            echo json_encode(array("reserve_id" => $_POST['reserve_id'], "response_status" => 404));
+            die();
         }
     }
     if($response == 1){
@@ -1765,78 +1785,6 @@ function massdata_general_quote_shortcode($atts){
     return;
 }
 
-/////////////////////////////EMAIL STUFFS////////////////////////
-add_filter( 'wp_mail_from_name', 'custom_wp_mail_from_name' );
-function custom_wp_mail_from_name( $original_email_from )
-{
-    return 'Massdata Email System';
-}
-////////////////////////////END EMAIL STUFFS/////////////////////
-
-/// CRON STUFF/// Dont touch.
-add_filter('cron_schedules', 'xxx_cron_every_twelve_hour');
-add_action('wp', 'prefix_setup_schedule');
-add_action('prefix_twelve_hour_event', 'cron_delete_massdata_reservation');
-
-//register_activation_hook( __FILE__, 'prefix_setup_schedule' );
-//register_deactivation_hook( __FILE__, 'prefix_deactivation' );
-
-function xxx_cron_every_twelve_hour( $schedules ) {
-    $schedules['every_twelve_hour'] = array(
-        'interval' => 43200, // in seconds
-        'display'  => __('Every 12 hours', 'xxx')
-    );
-    return $schedules;
-}
-function prefix_setup_schedule(){
-    if ( ! wp_next_scheduled( 'prefix_twelve_hour_event' ) ) {
-        wp_schedule_event( time(), 'every_twelve_hour', 'prefix_twelve_hour_event');
-    }
-}
-function cron_delete_massdata_reservation(){
-    $args = array(
-        'post_type' => 'massdata_reserve',
-        'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
-        'fields' => 'ids',
-        'date_query' => array(
-            'column' => 'post_date_gmt',
-            'before' => '3 days ago'
-        )
-    );
-    $date = new WP_Query($args);
-    if(isset($date->posts)){
-        foreach($date->posts as $index => $post){
-            wp_delete_post($post->ID);
-        }
-    }
-}
-//function prefix_deactivation() {
-//    wp_clear_scheduled_hook( 'prefix_twelve_hour_event' );
-//}
-///////////////////////////////// Stock Report /////////////////
-function send_stock_report(){
-    require_once get_template_directory().'/md_email_template_stock_report.php';
-}
-
-add_filter('cron_schedules', 'xxx_cron_every_one_second');
-add_action('wp', 'prefix_setup_stock_report');
-add_action('prefix_one_second_event', 'send_stock_report');
-
-//register_activation_hook( __FILE__, 'prefix_setup_schedule' );
-//register_deactivation_hook( __FILE__, 'prefix_deactivation' );
-
-function xxx_cron_every_one_second( $schedules ) {
-    $schedules['every_one_second'] = array(
-        'interval' => 1, // in seconds
-        'display'  => __('Every 1 second', 'xxx')
-    );
-    return $schedules;
-}
-function prefix_setup_stock_report(){
-    if ( ! wp_next_scheduled( 'prefix_twelve_hour_event' ) ) {
-        wp_schedule_event( time(), 'every_one_second', 'prefix_one_second_event');
-    }
-}
 
 add_action( 'show_user_profile', 'extra_user_profile_fields' );
 add_action( 'edit_user_profile', 'extra_user_profile_fields' );
@@ -1930,8 +1878,8 @@ function extra_user_profile_fields( $user ) {
             <th><label for="md_telephone"><?php _e("Telephone"); ?></label></th>
             <td>
                 <?php if(isset($user_meta['tel'][0])){?>
-                <input type="text" name="md_telephone" id="md_telephone" value="<?php echo esc_attr( $user_meta['tel'][0] ); ?>" class="regular-text" readonly/><br />
-                <span class="description"><?php _e("Telephone number provided during registration"); ?></span>
+                    <input type="text" name="md_telephone" id="md_telephone" value="<?php echo esc_attr( $user_meta['tel'][0] ); ?>" class="regular-text" readonly/><br />
+                    <span class="description"><?php _e("Telephone number provided during registration"); ?></span>
                 <?php } else {?>
                     <input type="text" name="md_telephone" id="md_telephone" value="<?php echo ' - '; ?>" class="regular-text" readonly/><br />
                     <span class="description"><?php _e("Telephone number provided during registration"); ?></span>
@@ -1972,14 +1920,14 @@ function extra_user_profile_fields( $user ) {
             <td>
                 <?php if(!empty($user_meta['survey'][0])) { ?>
                     <input type=text name="address" id="address" value="<?php
-                        foreach (unserialize($user_meta['survey'][0]) as $index => $value){
-                            if($index == (count(unserialize($user_meta['survey'][0]))-1)){
-                                echo ' '.ucfirst($value);
-                                break;
-                            }else{
-                                echo ' '.ucfirst($value) . ',';
-                            }
+                    foreach (unserialize($user_meta['survey'][0]) as $index => $value){
+                        if($index == (count(unserialize($user_meta['survey'][0]))-1)){
+                            echo ' '.ucfirst($value);
+                            break;
+                        }else{
+                            echo ' '.ucfirst($value) . ',';
                         }
+                    }
                     ?>" class="regular-text" readonly/><br />
                     <span class="description"><?php _e("Survey field filled during registration"); ?></span>
                 <?php } else { ?>
@@ -2014,3 +1962,72 @@ function extra_user_profile_fields( $user ) {
         </tr>
     </table>
 <?php }
+/////////////////////////////EMAIL STUFFS////////////////////////
+add_filter( 'wp_mail_from_name', 'custom_wp_mail_from_name' );
+function custom_wp_mail_from_name( $original_email_from )
+{
+    return 'Massdata Email System';
+}
+////////////////////////////END EMAIL STUFFS/////////////////////
+
+///////////////////////////////// Stock Report /////////////////
+add_filter('cron_schedules', 'six_hours');
+function six_hours( $schedules ) {
+    $schedules['six_hours'] = array(
+        'interval' => 21600, // in seconds
+        'display'  => __('Every 6 hours')
+    );
+    return $schedules;
+}
+
+add_action('wp', 'activate_custom_event');
+add_action('stock_report_event', 'send_stock_report');
+add_action('reservation_event', 'clear_reservation');
+
+function activate_custom_event(){
+    wp_mail('tech.stonehouse@gmail.com', 'This works', 'working');
+    if( !wp_next_scheduled('stock_report_event') ){
+        wp_schedule_event(time(), 'six_hours', 'stock_report_event');
+    }
+    if( !wp_next_scheduled('reservation_event') ){
+//        wp_schedule_event(time(), 'six_hours', 'reservation_event');
+        wp_schedule_event(mktime(12, 48, 0, date('m'), date('d'), date('Y')), 'daily', 'reservation_event');
+    }
+}
+function send_stock_report(){
+    wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', 'function called stock reservation');
+    if(gmdate('t') == gmdate('d')){
+        require_once(get_template_directory().'/md_email_template_stock_report.php');
+    }
+}
+function clear_reservation(){
+    wp_mail('tech.stonehouse@gmail.com', 'Clearing reservation', 'function called clear reservation');
+    $args = array(
+        'post_type' => 'massdata_reserve',
+        'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
+        'fields' => 'ids',
+        'date_query' => array(
+            'column' => 'post_date_gmt',
+            'before' => '3 days ago'
+        )
+    );
+    $date = new WP_Query($args);
+
+    if(isset($date->posts)){
+        foreach($date->posts as $index => $post){
+            $reserved_meta = get_post_meta($post->ID);
+            unset($reserved_meta['_edit_lock']);
+
+            if(isset($reserved_meta)){
+                foreach($reserved_meta as $reserved_index => $reserve){
+
+                    $global_reserve = get_post_meta($reserved_index, '_reserve_stock', true);
+                    $global_reserve = $global_reserve - $reserve[0];
+                    update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
+
+                }
+                wp_delete_post($post->ID, true);
+            }
+        }
+    }
+}

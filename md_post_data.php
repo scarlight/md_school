@@ -245,7 +245,7 @@ function send_user_data($user_id){
         }
         update_user_meta($user_id, 'mobile', $_POST['md-in-mobile']);
         if(isset($_POST['md-in-telephone'])){
-            update_user_meta($user_id, 'telephone', $_POST['md-in-telephone']);
+            update_user_meta($user_id, 'tel', $_POST['md-in-telephone']);
         }
         if(isset($_POST['md-in-fax'])){
             update_user_meta($user_id, 'fax', $_POST['md-in-fax']);
