@@ -1971,11 +1971,11 @@ function custom_wp_mail_from_name( $original_email_from )
 ////////////////////////////END EMAIL STUFFS/////////////////////
 
 ///////////////////////////////// Stock Report /////////////////
-add_filter('cron_schedules', 'six_hours');
-function six_hours( $schedules ) {
-    $schedules['six_hours'] = array(
-        'interval' => 21600, // in seconds
-        'display'  => __('Every 6 hours')
+add_filter('cron_schedules', 'fourteen_hours');
+function fourteen_hours( $schedules ) {
+    $schedules['fourteen_hours'] = array(
+        'interval' => 50400, // in seconds
+        'display'  => __('Every 14 hours')
     );
     return $schedules;
 }
@@ -1985,23 +1985,23 @@ add_action('stock_report_event', 'send_stock_report');
 add_action('reservation_event', 'clear_reservation');
 
 function activate_custom_event(){
-    wp_mail('tech.stonehouse@gmail.com', 'This works', 'working');
+
     if( !wp_next_scheduled('stock_report_event') ){
-        wp_schedule_event(time(), 'six_hours', 'stock_report_event');
+        wp_schedule_event(time(), 'fourteen_hours', 'stock_report_event');
     }
     if( !wp_next_scheduled('reservation_event') ){
 //        wp_schedule_event(time(), 'six_hours', 'reservation_event');
-        wp_schedule_event(mktime(12, 48, 0, date('m'), date('d'), date('Y')), 'daily', 'reservation_event');
+        wp_schedule_event(mktime(12, 0, 0, date('m'), date('d'), date('Y')), 'daily', 'reservation_event');
     }
 }
 function send_stock_report(){
-    wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', 'function called stock reservation');
     if(gmdate('t') == gmdate('d')){
+        wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', 'Today is the last day of the month. Sent stock report');
         require_once(get_template_directory().'/md_email_template_stock_report.php');
     }
 }
 function clear_reservation(){
-    wp_mail('tech.stonehouse@gmail.com', 'Clearing reservation', 'function called clear reservation');
+    wp_mail('tech.stonehouse@gmail.com', 'Clearing reservation', '14 hours has passed, clearing old reservation');
     $args = array(
         'post_type' => 'massdata_reserve',
         'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),

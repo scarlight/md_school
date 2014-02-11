@@ -22,11 +22,7 @@ function get_variant_price($product_variant_id){
     } else if ($get_current_user_role == 'corporate') {
         $price = get_post_meta($product_variant_id, '_massdata_corporate_price', true);
     }
-    if(!empty($price)){
-        if(!is_float($price)){
-            $price = $price.'.00';
-        }
-    }else{
+    if(empty($price)){
         $price = ' - ';
     }
     return $price;
