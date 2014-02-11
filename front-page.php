@@ -35,13 +35,13 @@ endif;
     <div class="category type2">
          <h3>CURRENT STOCK</h3>
          <a href="<?php echo $front_page_links['affix_current_stock'] ?>">
-            <img src="<?php echo $front_page_links["image_designer_pendrive"] ?>" width="265" height="154" alt="CURRENT STOCK">
+            <img src="<?php echo $front_page_links["image_current_stock"] ?>" width="265" height="154" alt="CURRENT STOCK">
          </a>
     </div>
     <div class="category type3">
          <h3>DESIGNER PEN DRIVE</h3>
          <a href="<?php echo $front_page_links['affix_designer_pendrive'] ?>">
-            <img src="<?php echo $front_page_links["image_current_stock"] ?>" width="265" height="154" alt="DESIGNER PEN DRIVE">
+            <img src="<?php echo $front_page_links["image_designer_pendrive"] ?>" width="265" height="154" alt="DESIGNER PEN DRIVE">
          </a>
          <a class="download designer-pendrive" href="<?php echo $front_page_links['massdata_designer_download_pdf'] ?>"><img src="<?php echo MASSDATA_THEMEROOT; ?>/images/download.png" width="35" height="42" alt=""></a>
     </div>
