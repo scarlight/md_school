@@ -785,7 +785,6 @@ endif;
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// tOUch tHE cODE bELOW aND tHE uNIVERSE wILL eXPLODE /////////
 ////////////////////////////////////////////////////////////////////////////////////////////
-
 add_action('register_post', 'massdata_register_post', 10, 3);
 add_filter('registration_errors', 'massdata_register_error', 10, 3);
 add_action('user_register', 'massdata_user_register');
@@ -808,12 +807,12 @@ function massdata_register_post($sanitized_user_login, $user_email, $errors)
     }
 
     if (empty($sanitized_user_login)) {
-        exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include your full name')), $url_status_failed)));
+        exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include your username')), $url_status_failed)));
     } else {
 
         if (!validate_username($sanitized_user_login)) {
 
-            wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include a valid full name')), $url_status_failed));
+            wp_redirect(add_query_arg(array(urlencode('message') => urlencode('You must include a valid username')), $url_status_failed));
             exit;
 
         }else if (strlen($sanitized_user_login) >= 50) {
@@ -897,7 +896,6 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
 
     } else if (isset($_POST['md-submit']) && $_POST['md-submit'] == 'Submit' && isset($_POST['md-in-product-name'])) { //this is general quote validation
 
-
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
 
         $product_quote_massdata_quotation_message = null;
@@ -922,7 +920,11 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
         $product_quote_errors = general_quote_validator();
         foreach ($product_quote_errors as $error => $fields) {
             foreach ($fields as $field => $message) {
-                $product_quote_massdata_quotation_message = $message[0];
+                if(is_array($message)){
+                    $product_quote_massdata_quotation_message = $message[0];
+                }else if(is_string($message)){
+                    $product_quote_massdata_quotation_message = $message;
+                }
             }
             if (!is_null($product_quote_massdata_quotation_message)) {
                 break;
@@ -953,9 +955,7 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
 
             foreach ($product_quote_errors as $error => $fields) {
                 foreach ($fields as $field => $message) {
-
                         $product_quote_massdata_quotation_message = $message;
-
                 }
                 if (!is_null($product_quote_massdata_quotation_message)) {
                     break;
@@ -974,9 +974,11 @@ function massdata_register_error($errors, $sanitized_user_login, $user_email){
                 foreach ($fields as $field => $message) {
 
                     if(isset($message[0]) && !empty($message[0])){
-
-                        $product_quote_massdata_quotation_message = $message[0];
-
+                        if(is_array($message)){
+                            $product_quote_massdata_quotation_message = $message[0];
+                        }else if(is_string($message)){
+                            $product_quote_massdata_quotation_message = $message;
+                        }
                     }
                 }
                 if (!is_null($product_quote_massdata_quotation_message)) {
@@ -1001,7 +1003,6 @@ function massdata_user_register($user_id, $password = "", $meta = array())
 
     require_once get_template_directory() . '/md_post_data.php';
 
-    $post_error = array();
     if (isset($_POST['md-signup']) && $_POST['md-signup'] === 'Submit') {
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('signup')), $_SERVER['HTTP_REFERER']);
@@ -1013,6 +1014,25 @@ function massdata_user_register($user_id, $password = "", $meta = array())
         } else {
             exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
         }
+    } else if( isset($_POST['md-submit']) && $_POST['md-submit'] === 'Submit' && isset($_POST['md-in-product-name']) ){
+
+        $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
+
+        if(isset($_POST['md-in-product-name'])){
+
+            $post_error = send_user_data($user_id);
+            // check hidden field for product id, and also verify product id exist in the system.
+            $post_error = send_general_quote();
+            if (empty($post_error)) {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("Quotation is successfully send")), $url_status_failed)));
+            } else {
+                exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode($post_error[0])), $url_status_failed)));
+            }
+
+        }else {
+            exit(wp_redirect(add_query_arg(array(urlencode('message') => urlencode("An error has occured. Please reopen tab, and try again")), $url_status_failed)));
+        }
+
     } else if (isset($_POST['md-submit']) && $_POST['md-submit'] === 'Submit' && isset($_POST['__md__']) && isset($_POST['md-in-product'])) {
 
         $url_status_failed = add_query_arg(array(urlencode('status') => urlencode('submit')), $_SERVER['HTTP_REFERER']);
@@ -1067,7 +1087,7 @@ function massdata_login_failed($username)
     $referrer = $_SERVER['HTTP_REFERER'];
     if (!empty($referrer) && !strstr($referrer, 'wp-login') && !strstr($referrer, 'wp-admin')) {
         $url = add_query_arg(urlencode('status'), urlencode('signin'), $_SERVER['HTTP_REFERER']);
-        exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. Try again. Reset your password if you have forgotten it.'), $url)));
+        exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. Try again. Please make sure your email or password is correct'), $url)));
     }
 }
 function massdata_login_redirect($redirect_to, $request, $user)
@@ -1094,10 +1114,10 @@ function massdata_authenticate_username_password($user, $username, $password){
     if (!empty($referer) && !strstr($referer, 'wp-login') && !strstr($referer, 'wp-admin')) {
         if (empty($username)) {
             $url = add_query_arg(urlencode('status'), urlencode('signin'), $referer);
-            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed, Try again. Reset your password if you have forgotten it.'), $url)));
+            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed, Try again. Please make sure your email or password is correct'), $url)));
         } else if (empty($password)) {
             $url = add_query_arg(urlencode('status'), urlencode('signin'), $referer);
-            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. Try again. Reset your password if you have forgotten it.'), $url)));
+            exit(wp_redirect(add_query_arg(urlencode('message'), urlencode('Login failed. Try again. Please make sure your email or password is correct'), $url)));
         }
     }
     if (empty($username) || empty($password)) {
@@ -1636,8 +1656,21 @@ function massdata_manage_users_custom_columns($value, $column_name, $user_id){
     }
 }
 
-//add_action('before_delete_post', 'massdata_before_post_delete');
-add_action( 'delete_user', 'massdata_before_user_delete' );
+add_action('before_delete_post', 'massdata_before_post_delete');
+//add_action( 'delete_user', 'massdata_before_user_delete' );
+function massdata_before_post_delete($post_id){
+
+    // We check if the global post type isn't ours and just return
+    global $post_type;
+    if ( $post_type != 'massdata_quotation' ) return;
+
+    $post_meta= get_post_custom($post_id);
+    $temp = unserialize($post_meta['md_in_artwork'][0]);
+
+    if(isset($temp['file'])){
+        unlink($temp['file']);
+    }
+}
 function massdata_before_user_delete($user_id){
 
     $queried = new WP_Query(array(

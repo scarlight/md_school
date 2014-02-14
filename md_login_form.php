@@ -43,7 +43,7 @@ $message = null;
                     echo "<p id='md_signin_err' style='color:red; font-style: italic'><strong>{$message}</strong></p>";
                 }
                 ?>
-                <label class="control-label" for="login-email">Full Name/Username</label>
+                <label class="control-label" for="login-email">Email</label>
                 <input type="text" id="login-email" name="log" class="form-control login-email" value="<?php if (isset($_POST['log'])) echo esc_attr($_POST['log']); ?>">
             </div>
             <div class="form-group">

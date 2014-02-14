@@ -23,7 +23,12 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
         foreach ($errors as $error => $fields) {
             foreach ($fields as $field => $message) {
                 if (!empty($message)) {
-                    $massdata_quotation_message = $message;
+                    if(is_array($message)){
+                        $massdata_quotation_message = $message[0];
+                    }else if(is_string($message)){
+                        $massdata_quotation_message = $message;
+                    }
+
                 }
             }
             if (!is_null($massdata_quotation_message)) {
@@ -34,7 +39,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
 
             $result = send_quote($_POST['md-in-product']);
             if (empty($result) && $quote_request == true) {
-                $massdata_quotation_message = "Quotation is successfully";
+                $massdata_quotation_message = "Quotation is successfully send";
             }else{
                 $massdata_quotation_message = $result[0];
             }

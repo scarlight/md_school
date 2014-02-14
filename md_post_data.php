@@ -48,12 +48,11 @@ function send_quote($product_id)
                     update_post_meta($quote_id, 'md_in_logo_back', array($_POST['md-in-logo-back'], $_POST['md-in-logo-back-color']), true);
                 }
 
-                if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name'])) {
+                if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name']) && !empty($_FILES['md-in-artwork']['name'])) {
 
                     if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
 //                    $_FILES['md-in-artwork']['name'] = md5(time()).$_FILES['md-in-artwork']['name'];
 //                    $upload = wp_handle_upload($_FILES['md-in-artwork'], array('test_form' => false));
-
 
                     $upload = wp_upload_bits(md5(time()).$_FILES['md-in-artwork']['name'], null, file_get_contents($_FILES['md-in-artwork']['tmp_name']));
 
@@ -161,22 +160,27 @@ function send_general_quote()
                     update_post_meta($quote_id, 'md_in_logo_back', array($_POST['md-in-logo-back'], $_POST['md-in-logo-back-color']), true);
                 }
 
-                if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name'])) {
+                if (isset($_FILES['md-in-artwork']['size']) != 0 && isset($_FILES['md-in-artwork']['name']) && !empty($_FILES['md-in-artwork']['name'])) {
 
-                    if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
 //                    $_FILES['md-in-artwork']['name'] = md5(time()).$_FILES['md-in-artwork']['name'];
 //                    $upload = wp_handle_upload($_FILES['md-in-artwork'], array('test_form' => false));
-                    $upload = wp_upload_bits(md5(time()).$_FILES['md-in-artwork']['name'], null, file_get_contents($_FILES['md-in-artwork']['tmp_name']));
-                    if (isset($upload['error']) && $upload['error'] != 0) {
 
-                        if ( isset($upload['file']) && is_readable($upload['file'])) { //$upload['file'], $upload['url'], $upload['error']
-                            $post_error[] = unlink($upload['file']);
-                        } else {
-                            $post_error[] = 'Failed to store design file. Please try to  upload again.'; // error to create upload folder
-                        }
+
+                $upload = wp_upload_bits(md5(time()).$_FILES['md-in-artwork']['name'], null, file_get_contents($_FILES['md-in-artwork']['tmp_name']));
+
+                if (isset($upload['error']) && $upload['error'] != 0) {
+
+
+                    if ( isset($upload['file']) && is_readable($upload['file'])) { //$upload['file'], $upload['url'], $upload['error']
+                        $post_error[] = unlink($upload['file']);
                     } else {
-                        update_post_meta($quote_id, 'md_in_artwork', $upload, true);
+                        $post_error[] = 'Failed to store design file. Please try to  upload again.'; // error to create upload folder
                     }
+                } else {
+                    update_post_meta($quote_id, 'md_in_artwork', $upload, true);
+                }
+
                 }
 
                 update_post_meta($quote_id, 'md_in_accessories_type', $_POST['md-in-accessories-type']);
@@ -269,14 +273,17 @@ function send_user_data($user_id){
 
         if(isset($_POST['md-in-enquiry'])){
             update_user_meta($user_id, 'enquiry', $_POST['md-in-enquiry']);
+
 $user_data = get_userdata($user_id);
+$username = $user_data->data->user_login;
+$enquiry = $_POST['md-in-enquiry'];
 $user_enquiry = <<<"HERE"
 A new user has send enquiry when the user registered:
-Username: {$user_data->data->user_login}
+Username: {$username}
 User ID: {$user_id}
 
 Enquiry:
-{$_POST['md-in-enquiry']}
+{$enquiry}
 HERE;
             wp_mail(get_option('admin_email'), 'Massdata System: Enquiry during User Registration', $user_enquiry);
         }
@@ -295,7 +302,7 @@ HERE;
         $email_message = <<<"User_register"
 Thank you for signing up to Massdata.
 
-Your username is your email  : {$user_email}
+Your login is your email  : {$user_email}
 Your password                : {$password}
 You can now login into Massdata, {$site}
 User_register;

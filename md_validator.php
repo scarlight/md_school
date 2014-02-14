@@ -286,14 +286,15 @@ function quote_validator()
                 $errors['md-in-logo-front'][] = 'Select front logo option';
             }
         }
-        if (in_array($_POST['md-in-logo-front'], array('printing', 'laser-graving', 'emboss'))) {
+
+        if (in_array($_POST['md-in-logo-front'], array('printing', 'laser-engraving', 'emboss'))) {
             if (empty($_POST['md-in-logo-front-color'])) {
 
                 $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
             } else {
 
                 $_POST['md-in-logo-front-color'] = sanitize_text_field($_POST['md-in-logo-front-color']);
-                if ($_POST['md-in-logo-front-color'] < 0 or $_POST['md-in-logo-front-color'] > 10) {
+                if ($_POST['md-in-logo-front-color'] < 1 or $_POST['md-in-logo-front-color'] > 10) {
 
                     $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
                 } else if (!is_numeric($_POST['md-in-logo-front-color'])) {
@@ -318,7 +319,7 @@ function quote_validator()
                 $errors['md-in-logo-back'][] = 'Select back logo option';
             }
         }
-        if (in_array($_POST['md-in-logo-back'], array('printing', 'laser-graving', 'emboss'))) {
+        if (in_array($_POST['md-in-logo-back'], array('printing', 'laser-engraving', 'emboss'))) {
             if (empty($_POST['md-in-logo-back-color'])) {
 
                 $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
@@ -342,7 +343,7 @@ function quote_validator()
 
             $err_msg = $_FILES['md-in-artwork']['error'];
             if ($err_msg == UPLOAD_ERR_INI_SIZE) {
-                $errors['md-in-artwork'][] = 'Uploads file is too big. Maximum allowed is 20MB. Please try again';
+                $errors['md-in-artwork'][] = 'Uploads file is too big. Maximum allowed is 2MB. Please try again';
             } else if ($err_msg == UPLOAD_ERR_FORM_SIZE) {
                 $errors['md-in-artwork'][] = 'The uploaded file exceeds max file upload. Please try again';
             } else if ($err_msg == UPLOAD_ERR_PARTIAL) {
@@ -580,14 +581,14 @@ function general_quote_validator()
             }
         }
 
-        if (in_array($_POST['md-in-logo-front'], array('printing', 'laser-graving', 'emboss'))) {
+        if (in_array($_POST['md-in-logo-front'], array('printing', 'laser-engraving', 'emboss'))) {
             if (empty($_POST['md-in-logo-front-color'])) {
 
                 $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
             } else {
 
                 $_POST['md-in-logo-front-color'] = sanitize_text_field($_POST['md-in-logo-front-color']);
-                if ($_POST['md-in-logo-front-color'] < 0 or $_POST['md-in-logo-front-color'] > 10) {
+                if ($_POST['md-in-logo-front-color'] < 1 or $_POST['md-in-logo-front-color'] > 10) {
 
                     $errors['md-in-logo-front-color'][] = 'Please enter the number of colors for front';
                 } else if (!is_numeric($_POST['md-in-logo-front-color'])) {
@@ -613,7 +614,7 @@ function general_quote_validator()
             }
         }
 
-        if (in_array($_POST['md-in-logo-back'], array('printing', 'laser-graving', 'emboss'))) {
+        if (in_array($_POST['md-in-logo-back'], array('printing', 'laser-engraving', 'emboss'))) {
             if (empty($_POST['md-in-logo-back-color'])) {
 
                 $errors['md-in-logo-back-color'][] = 'Please enter the number of colors for back';
@@ -637,7 +638,7 @@ function general_quote_validator()
 
             $err_msg = $_FILES['md-in-artwork']['error'];
             if ($err_msg == UPLOAD_ERR_INI_SIZE) {
-                $errors['md-in-artwork'][] = 'Uploads file is too big. Maximum allowed is 20MB. Please try again';
+                $errors['md-in-artwork'][] = 'Uploads file is too big. Maximum allowed is 2MB. Please try again';
             } else if ($err_msg == UPLOAD_ERR_FORM_SIZE) {
                 $errors['md-in-artwork'][] = 'The uploaded file exceeds max file upload. Please try again';
             } else if ($err_msg == UPLOAD_ERR_PARTIAL) {
