@@ -266,9 +266,22 @@ function send_user_data($user_id){
         }else{
             update_user_meta($user_id, 'survey', $_POST['md-in-survey']);
         }
+
         if(isset($_POST['md-in-enquiry'])){
             update_user_meta($user_id, 'enquiry', $_POST['md-in-enquiry']);
+$user_data = get_userdata($user_id);
+$user_enquiry = <<<"HERE"
+A new user has send enquiry when the user registered:
+Username: {$user_data->data->user_login}
+User ID: {$user_id}
+
+Enquiry:
+{$_POST['md-in-enquiry']}
+HERE;
+            wp_mail(get_option('admin_email'), 'Massdata System: Enquiry during User Registration', $user_enquiry);
         }
+
+
         update_user_meta($user_id, 'view_pricing', $_POST['md-in-view-pricing']);
 
         //get current user id and his user login and password

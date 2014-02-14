@@ -17,10 +17,20 @@ function get_massdata_stock($product_variant_id){
 function get_variant_price($product_variant_id){
     $get_current_user_role = wp_get_current_user()->roles[0];
     $price = null;
+
     if ($get_current_user_role === 'agent') {
-        $price = get_post_meta($product_variant_id, '_massdata_agent_price', true);
+
+        $view_pricing = get_user_meta(wp_get_current_user()->ID, 'view_pricing');
+        if($view_pricing[0] === 'yes'){
+            $price = get_post_meta($product_variant_id, '_massdata_agent_price', true);
+        }
+
     } else if ($get_current_user_role == 'corporate') {
-        $price = get_post_meta($product_variant_id, '_massdata_corporate_price', true);
+
+        $view_pricing = get_user_meta(wp_get_current_user()->ID, 'view_pricing');
+        if($view_pricing[0] === 'yes'){
+            $price = get_post_meta($product_variant_id, '_massdata_corporate_price', true);
+        }
     }
     if(empty($price)){
         $price = ' - ';
@@ -310,6 +320,7 @@ function echo_row_total_my_reserve($my_reserve)
 function display_row_quantity_price_table($product_variant_id, $quantity)
 {
     global $product;
+
     if (is_user_logged_in()) {
         if ($product->product_type === "variable") {
             $price = get_variant_price($product_variant_id);

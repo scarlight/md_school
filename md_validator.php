@@ -35,7 +35,7 @@ function signup_validator()
 
             $_POST['md-in-companyname'] = sanitize_text_field($_POST['md-in-companyname']);
             if(!empty($_POST['md-in-companyname'])){
-                if (strlen($_POST['md-in-companyname'] > 50)) {
+                if (strlen($_POST['md-in-companyname']) > 50) {
 
                     $errors['md-in-companyname'][] = 'Please make the company name field less than 50';
                 }
@@ -65,8 +65,14 @@ function signup_validator()
             $_POST['md-in-mobile'] = sanitize_text_field($_POST['md-in-mobile']);
             if(!empty($_POST['md-in-mobile'])){
 
-                $pattern = '/[0-9]{10, 13}/';
-                if (preg_match($pattern, $_POST['md-in-mobile'], $match) && is_numeric($_POST['md-in-mobile'])) {
+                if(strlen($_POST['md-in-mobile']) >= 10 && strlen($_POST['md-in-mobile']) <= 13){
+                    $len = strlen($_POST['md-in-mobile']);
+                    $match_result = preg_match("/[0-9]{".$len."}/", $_POST['md-in-mobile']);
+
+                    if((int)$match_result !== 1){
+                        $errors['md-in-mobile'][] = 'Invalid mobile number, please enter numbers between 10 and 13 numbers';
+                    }
+                }else{
                     $errors['md-in-mobile'][] = 'Invalid mobile number, please enter numbers between 10 and 13 numbers';
                 }
             }else{
@@ -81,9 +87,14 @@ function signup_validator()
             $_POST['md-in-telephone'] = sanitize_text_field($_POST['md-in-telephone']);
             if(!empty($_POST['md-in-telephone'])){
 
-                $pattern = '/[0-9]{10, 13}/';
-                if (preg_match($pattern, $_POST['md-in-telephone'], $match) && is_numeric($_POST['md-in-telephone'])) {
+                if(strlen($_POST['md-in-telephone']) >= 10 && strlen($_POST['md-in-telephone']) <= 13){
+                    $len = strlen($_POST['md-in-telephone']);
+                    $match_result = preg_match("/[0-9]{".$len."}/", $_POST['md-in-telephone']);
 
+                    if((int)$match_result !== 1){
+                        $errors['md-in-telephone'][] = 'Invalid telephone number, please enter numbers between 10 and 13 numbers';
+                    }
+                }else{
                     $errors['md-in-telephone'][] = 'Invalid telephone number, please enter numbers between 10 and 13 numbers';
                 }
 
@@ -97,9 +108,14 @@ function signup_validator()
             $_POST['md-in-fax'] = sanitize_text_field($_POST['md-in-fax']);
             if(!empty($_POST['md-in-fax'])){
 
-                $pattern = '/[0-9]{13}/';
-                if (preg_match($pattern, $_POST['md-in-fax'], $match) && is_numeric($_POST['md-in-fax'])) {
+                if(strlen($_POST['md-in-fax']) >= 6 && strlen($_POST['md-in-fax']) <= 13){
+                    $len = strlen($_POST['md-in-fax']);
+                    $match_result = preg_match("/[0-9]{".$len."}/", $_POST['md-in-fax']);
 
+                    if((int)$match_result !== 1){
+                        $errors['md-in-fax'][] = 'Invalid fax number, please enter numbers within 13 numbers';
+                    }
+                }else{
                     $errors['md-in-fax'][] = 'Invalid fax number, please enter numbers within 13 numbers';
                 }
             }else if(empty($_POST['md-in-fax'])){

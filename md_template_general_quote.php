@@ -14,7 +14,7 @@ if (isset($_POST['md-send']) && $_POST['md-send'] === 'Send') {
         foreach ($errors as $error => $fields) {
             foreach ($fields as $field => $message) {
                 if (!empty($message)) {
-                    $massdata_quotation_message = $message[0];
+                    $massdata_quotation_message = $message;
                 }
             }
             if (!is_null($massdata_quotation_message)) {
