@@ -1331,6 +1331,7 @@ function edit_massdata_quotation_columns($column_headers)
     $column_headers['massdata_quote_user'] = 'User';
     $column_headers['massdata_products'] = 'Products';
     $column_headers['massdata_quantity'] = 'Quantity';
+    $column_headers['massdata_quote_status'] = 'Quoted';
     $column_headers['date'] = 'Order Date';
 
     return $column_headers;
@@ -1344,11 +1345,12 @@ function edit_massdata_quotation_column_data($column_headers)
     $quote_query = new Wp_Query($quote_request);
 
     global $post;
+    $quote_post_meta = get_post_custom($post->ID);
 
     switch ($column_headers):
         case 'md_title':
 
-            echo "<a href=\"" . admin_url() . "post.php?post={$post->ID}&action=edit\">{$post->post_title}</a>";
+            echo "<a href=\"" . admin_url() . "post.php?post={$post->ID}&action=edit\">Quote ID: {$post->ID}</a>";
             break;
         case 'massdata_quote_user':
 
@@ -1361,6 +1363,17 @@ function edit_massdata_quotation_column_data($column_headers)
         case 'massdata_quantity':
 
             echo get_post_meta($post->ID, 'md_in_quantity', true);
+            break;
+        case 'massdata_quote_status':
+
+            if(empty($quote_post_meta['handled_by_who'][0]))
+            {
+                md_input_quote_status_button($post->ID);
+            }
+            else
+            {
+                echo "Quoted by: ".$quote_post_meta['handled_by_who'][0];
+            }
             break;
         case 'date':
 
@@ -1433,8 +1446,10 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
 }
 
 add_action('admin_enqueue_scripts', 'md_load_reserve_script');
+add_action('admin_enqueue_scripts', 'md_load_quote_script');
 add_action('wp_ajax_get_approve_status', 'md_ajax_approve_reservation');
 add_action('wp_ajax_get_cancel_status', 'md_ajax_cancel_reservation');
+add_action('wp_ajax_get_quote_status', 'md_ajax_quotation_status');
 function md_load_reserve_script($hook){
     if($hook != 'edit.php'){
         return;
@@ -1442,11 +1457,19 @@ function md_load_reserve_script($hook){
     wp_register_script('massdata_reservation_button_ajaxify', MASSDATA_THEMEROOT.'/js/reservation_button_ajaxify.js', array('jquery'));
     wp_enqueue_script('massdata_reservation_button_ajaxify');
 }
+function md_load_quote_script($hook){
+    if($hook != 'edit.php'){
+        return;
+    }
+    wp_register_script('massdata_quotation_button_ajaxify', MASSDATA_THEMEROOT.'/js/quotation_button_ajaxify.js', array('jquery'));
+    wp_enqueue_script('massdata_quotation_button_ajaxify');
+}
 function md_input_reserve_status_button(){
-//    echo '<form action="#" method="post" id="md_reserve_status_form">';
     echo '<input class="md_reserve_status_approve button-primary" type="button" value="Approve"/>';
     echo '<input class="md_reserve_status_cancel button" type="button" value="Cancel"/>';
-//    echo '</form>';
+}
+function md_input_quote_status_button($quote_id){
+    echo '<input class="md_quote_status_approve button-primary" massdata_quote_id="'.$quote_id.'" type="button" value="Quoted replied"/>';
 }
 function md_ajax_approve_reservation(){
 
@@ -1565,6 +1588,27 @@ HERE;
     die();
 
 
+}
+function md_ajax_quotation_status(){
+
+    require_once( dirname( dirname( dirname( dirname( __FILE__ )))) . '/wp-load.php' );
+
+    $response  = null;
+    $user = wp_get_current_user();
+    $user_login = $user->data->user_login;
+
+    if(isset($_POST['quote_id']) && is_numeric($_POST['quote_id'])){
+        $response = 1;
+    }
+
+    if($response === 1){
+        update_post_meta($_POST['quote_id'], 'handled_by_who', $user_login);
+        echo "edit.php?post_type=massdata_quotation";
+        die();
+    }else{
+        echo 0;
+        die();
+    }
 }
 
 add_filter('bulk_actions-edit-massdata_quotation','quotation_remove_bulk_actions');
