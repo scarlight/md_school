@@ -53,7 +53,8 @@
         }
     ?>
     </title>
-    
+    <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="<?php bloginfo('template_directory'); ?>/images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="<?php bloginfo("stylesheet_url"); ?>" type="text/css" media="screen" />
     <?php wp_enqueue_script('jquery'); ?>
     <?php wp_head(); ?>
