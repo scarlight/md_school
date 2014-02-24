@@ -2209,11 +2209,11 @@ function custom_wp_mail_from_name( $original_email_from )
 ////////////////////////////END EMAIL STUFFS/////////////////////
 
 ///////////////////////////////// Stock Report /////////////////
-add_filter('cron_schedules', 'fourteen_hours');
-function fourteen_hours( $schedules ) {
-    $schedules['fourteen_hours'] = array(
-        'interval' => 50400, // in seconds
-        'display'  => __('Every 14 hours')
+add_filter('cron_schedules', 'one_second_interval');
+function one_second_interval( $schedules ) {
+    $schedules['one_second_interval'] = array(
+        'interval' => 1, // in seconds
+        'display'  => __('Every 1 second')
     );
     return $schedules;
 }
@@ -2225,21 +2225,24 @@ add_action('reservation_event', 'clear_reservation');
 function activate_custom_event(){
 
     if( !wp_next_scheduled('stock_report_event') ){
-        wp_schedule_event(time(), 'fourteen_hours', 'stock_report_event');
+        wp_schedule_event(gmmktime("08", "00", gmdate("s"), gmdate("n"), gmdate("j"), gmdate("Y")), "one_second_interval", 'stock_report_event');
     }
     if( !wp_next_scheduled('reservation_event') ){
-//        wp_schedule_event(time(), 'six_hours', 'reservation_event');
-        wp_schedule_event(mktime(12, 0, 0, date('m'), date('d'), date('Y')), 'daily', 'reservation_event');
+        wp_schedule_event(gmmktime("08", "30", gmdate("s"), gmdate("n"), gmdate("j"), gmdate("Y")), 'one_second_interval', 'reservation_event');
     }
 }
 function send_stock_report(){
-    if(gmdate('t') == gmdate('d')){
-        wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', 'Today is the last day of the month. Sent stock report');
+    if(gmdate("H") == "08" && gmdate("i") == "00"){
+        wp_clear_scheduled_hook("stock_report_event");
+        wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', '4:00pm sending stock report');
         require_once(get_template_directory().'/md_email_template_stock_report.php');
     }
 }
 function clear_reservation(){
-    wp_mail('tech.stonehouse@gmail.com', 'Clearing reservation', '14 hours has passed, clearing old reservation');
+
+    if(gmdate("H") == "08" && gmdate("i") == "30"){
+        wp_clear_scheduled_hook("reservation_event");
+        wp_mail('tech.stonehouse@gmail.com', 'Clearing reservation', '4:40pm clearing 3 days old reservation');
     $args = array(
         'post_type' => 'massdata_reserve',
         'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
@@ -2267,5 +2270,6 @@ function clear_reservation(){
                 wp_delete_post($post->ID, true);
             }
         }
+    }
     }
 }
