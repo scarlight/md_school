@@ -2232,6 +2232,7 @@ function activate_custom_event(){
     }
 }
 function send_stock_report(){
+
     if(gmdate("H") == "08" && gmdate("i") == "00"){
         wp_clear_scheduled_hook("stock_report_event");
         wp_mail('tech.stonehouse@gmail.com', 'Checking GMT', '4:00pm sending stock report');
@@ -2256,7 +2257,7 @@ function clear_reservation(){
 
     if(isset($date->posts)){
         foreach($date->posts as $index => $post){
-            $reserved_meta = get_post_meta($post->ID);
+            $reserved_meta = get_post_meta($post);
             unset($reserved_meta['_edit_lock']);
 
             if(isset($reserved_meta)){
@@ -2267,7 +2268,7 @@ function clear_reservation(){
                     update_post_meta($reserved_index, '_reserve_stock', $global_reserve);
 
                 }
-                wp_delete_post($post->ID, true);
+                wp_delete_post($post, true);
             }
         }
     }
