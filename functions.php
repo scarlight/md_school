@@ -1394,7 +1394,7 @@ function edit_massdata_reserve_columns($column_headers){
     $column_headers['massdata_reserved_product'] = 'Product ID';
     $column_headers['massdata_reserved_stock'] ="Stock Reserved";
     $column_headers['massdata_reserver'] = 'User ID: User Name';
-    $column_headers['reservation_date'] = 'Reserve Date ( GMT )';
+    $column_headers['reservation_date'] = 'Reserve Date';
     $column_headers['date'] = 'Last Modified';
     $column_headers['reservation_status'] = 'Reserve Status';
 
@@ -1433,7 +1433,7 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
             break;
         case 'reservation_date':
 
-            echo  $post->post_date_gmt;
+            echo  $post->post_date;
             break;
         case 'reservation_modified_time':
             break;
