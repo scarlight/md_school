@@ -1377,7 +1377,7 @@ function edit_massdata_quotation_column_data($column_headers)
             break;
         case 'date':
 
-            echo $post->post_date_gmt;
+            echo $post->post_date;
             break;
         default:
             break;
@@ -1432,7 +1432,6 @@ function edit_massdata_reserve_column_data($column_headers, $post_id){
             echo $post->post_author.': ' . $user_nicename->user_nicename;
             break;
         case 'reservation_date':
-
             echo  $post->post_date;
             break;
         case 'reservation_modified_time':
