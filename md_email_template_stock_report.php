@@ -41,7 +41,7 @@ $popular_pen_drive = new WP_Query(
         'tax_query' => array(
             array(
                 'taxonomy' => 'product_cat',
-                'field' => 'id',
+                'field' => 'term_id',
                 'terms' => array(39),
                 'include_children' => false
             )
@@ -60,7 +60,10 @@ if (!empty($popular_pen_drive->posts)) {
             'post_status' => 'publish',
             'post_parent' => $id,
             'posts_per_page' => -1,
-            'fields' => 'ids'
+            'fields' => 'ids',
+            'order' => 'ASC',
+            'orderby' => 'menu_order'
+
         ));
         $popular_children[$id] = $queried->posts;
     }
@@ -183,7 +186,7 @@ $designer_pen_drive = new WP_Query(
         'tax_query' => array(
             array(
                 'taxonomy' => 'product_cat',
-                'field' => 'id',
+                'field' => 'term_id',
                 'terms' => array(40),
                 'include_children' => false
             )
@@ -202,7 +205,9 @@ if (!empty($designer_pen_drive->posts)) {
             'post_status' => 'publish',
             'post_parent' => $id,
             'posts_per_page' => -1,
-            'fields' => 'ids'
+            'fields' => 'ids',
+            'order' => 'ASC',
+            'orderby' => 'menu_order'
         ));
         $designer_children[$id] = $queried->posts;
     }
@@ -325,7 +330,7 @@ $usb_gadget = new WP_Query(
         'tax_query' => array(
             array(
                 'taxonomy' => 'product_cat',
-                'field' => 'id',
+                'field' => 'term_id',
                 'terms' => array(41),
                 'include_children' => false
             )
@@ -344,7 +349,9 @@ if (!empty($usb_gadget->posts)) {
             'post_status' => 'publish',
             'post_parent' => $id,
             'posts_per_page' => -1,
-            'fields' => 'ids'
+            'fields' => 'ids',
+            'order' => 'ASC',
+            'orderby' => 'menu_order'
         ));
         $usb_children[$id] = $queried->posts;
     }
@@ -467,7 +474,7 @@ $electronic_gadget = new WP_Query(
         'tax_query' => array(
             array(
                 'taxonomy' => 'product_cat',
-                'field' => 'id',
+                'field' => 'term_id',
                 'terms' => array(42),
                 'include_children' => false
             )
@@ -486,7 +493,9 @@ if (!empty($electronic_gadget->posts)) {
             'post_status' => 'publish',
             'post_parent' => $id,
             'posts_per_page' => -1,
-            'fields' => 'ids'
+            'fields' => 'ids',
+            'order' => 'ASC',
+            'orderby' => 'menu_order'
         ));
         $electronic_children[$id] = $queried->posts;
     }
