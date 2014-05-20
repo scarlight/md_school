@@ -1,0 +1,1973 @@
+@import "a_template_mixin.less";
+@import "a_colorcode.less";
+@import "a_filler.less";
+
+// https://daneden.me/animate/
+// for the custom modal drop animation, still trying to make it work
+@import (less) "animate-custom.css";
+
+html[data-useragent*='MSIE 10.0'] {} //sample css to target ie10; must add the javascript part to work
+
+body { -webkit-font-smoothing: subpixel-antialiased; -webkit-text-stroke: 0.15px; }
+
+@full-browser-width: 100%;
+@full-browser-height: 100%;
+@viewport-width: 100%;
+@working-width: 930px;
+@template-base-color: #282828; //new
+@orange: #fb8411;
+@blue: #006a97;
+@pale-blue: #c6ecff;
+@sky-blue: #00aaff;
+@green: #639a01;
+@maroon: #a91919;
+
+
+// START OTHER STUFFS
+// --------------------------------------------------
+.blue-arrow-right { .wrap(inline-block); background : transparent url(../images/blue-arrow-right.png) no-repeat 0px 0px scroll; width:15px; height:15px; top:2px; margin-right: 5px;}
+.blue-arrow-left { .wrap(inline-block); background : transparent url(../images/blue-arrow-left.png) no-repeat 0px 0px scroll; width:15px; height:15px; top:2px; margin-left: 5px;}
+.orange-heading { color: @orange; .void; }
+.green-heading { color: @green; .void; }
+.black-heading { color: @template-base-color; .void; }
+.orange-text { color: @orange; }
+.blue-text { color: @blue; }
+.skyblue-text { color: @sky-blue; }
+.required { color: #ff0000; .void; }
+hr.dotted { .void; height:11px; background : transparent url(../images/hr-dotted.png) repeat-x 0px center scroll; }
+hr.stiched { .void; height:11px; background : transparent url(../images/hr-stiched.png) repeat-x 0px center scroll; }
+.red-remark { font-weight:400; font-style:italic; color: red; }
+pre.invalid-fields { display:inline-block; width:97%; font-weight:100; color:red; }
+#tab-request_quote .highlight-invalid {
+    border-style: solid;
+    border-width: 3px;
+    border-color: #FF8282;
+}
+// --------------------------------------------------
+// END OTHER STUFFS
+
+
+// START CONTAINER LAYOUT FULL OR SPECIFIED, ALSO IT CAN BE MADE FIXED FOOTER IF NEEDED
+// --------------------------------------------------
+html, body { height:100%; }
+#browser-wrapper{
+    .wrap;
+    width          : @full-browser-width;
+    min-width      : @full-browser-width;
+    height         : @full-browser-height;
+    min-height     : @full-browser-height;
+    margin         : 0 auto;
+    .oilpaper;
+}
+#main-wrapper{
+    .wrap;
+    width          : @full-browser-width;
+    min-width      : @full-browser-width;
+    height         : auto !important;
+    height         : @full-browser-height;
+    min-height     : @full-browser-height;
+    overflow       : hidden;
+    margin         : 0 auto;
+}
+body.homepage #main-wrapper{
+    background : transparent url(../images/home-bg.png) repeat-x 0px 0px scroll;
+}
+#viewport-wrapper{
+    .wrap;
+    width          : @viewport-width;
+    height         : auto;
+    margin         : 0 auto;
+    padding-bottom : (60px+50px); //modify - optional if you need fixed footer (must match the footer height)
+    // 60px is for the footer height and 50px additional gap from the footer
+}
+// --------------------------------------------------
+// END CONTAINER LAYOUT
+
+
+// START COMPANY LOGO
+// --------------------------------------------------
+#powerista-company-logo
+{
+    .wrap;
+    line-height:0;
+    width:277px;
+    height:73px;
+    margin-left:-12px;
+    float: left;
+}
+h1#company{
+    .wrap(inline-block);
+    line-height:0;
+    text-indent:-99999px;
+    a
+    {
+        .wrap;
+        line-height:0;
+        font-size:1.2em;
+    }
+}
+div#company-logo{
+    .wrap;
+    width:277px;
+    height:73px;
+    background:transparent url(../images/logo.png) no-repeat center center scroll;
+    top:0;
+}
+// --------------------------------------------------
+// END COMPANY LOGO
+
+
+// START TITLE BAR
+// --------------------------------------------------
+#title-bar-wrp, #title-bar2-wrp{
+    .wrap;
+    width:100%;
+    height:auto;
+    background-color:#f8f8f8;
+    border: solid 1px #ebebeb;
+    margin-top:15px;
+    > div
+    {
+        .wrap;
+        width: @working-width;
+        height:45px;
+        margin: 0px auto;
+    }
+}
+h1.title-bar
+{
+    .void;
+    color: #676767;
+    font-weight:700;
+    padding-top:3px;
+    font-size:19px; //drop 1px so it bolds up to look like 20px for bold 700
+    text-transform:uppercase;
+    .breadcrumbs
+    {
+        span.trail-begin
+        {
+            //display:none;
+        }
+        span.trail-end
+        {
+            color:@orange;
+        }
+        span.sep
+        {
+            margin:0 3px 0 3px;
+        }
+        a
+        {
+            color:#676767;
+        }
+    }
+}
+// --------------------------------------------------
+// END TITLE BAR
+
+
+// START POWERISTA BODY STRUCTURE
+// --------------------------------------------------
+#powerista-header-wrp
+{
+    .wrap;
+    width:100%;
+    min-height:155px;
+    margin: 0px auto 30px;
+}
+#powerista-header
+{
+    .wrap;
+    width:@working-width;
+    height: auto; //modify - optional
+    margin:0 auto;
+    padding-top:19px;
+}
+#powerista-body-wrp
+{
+    .wrap;
+    width:100%;
+    height:auto;
+    margin: 0px auto;
+    //.bg(10);
+    //.op(5);
+}
+#powerista-body
+{
+    .wrap;
+    width:@working-width;
+    height:auto; //modify - optional
+    margin:0 auto;
+}
+#powerista-body2-wrp
+{
+    .wrap;
+    width:100%;
+    height:auto;
+    margin: 0px auto;
+    //.bg(6);
+    //.op(5;)
+}
+.bgcolor-gray
+{
+    margin: 70px auto 0;
+    padding-bottom:30px;
+    border-top:1px solid #d8d8d8;
+    background-color:#f9f9f9;
+    div.panel
+    {
+        margin-bottom: 0px;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        -webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+        box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+    }
+}
+#powerista-body2
+{
+    .wrap;
+    width:@working-width;
+    height:auto; //modify - optional
+    margin: 0px auto;
+}
+#powerista-footer-wrp
+{
+    .wrap-absolute;
+    width:100%;
+    height:auto;
+    bottom:0;
+}
+#powerista-footer
+{
+    .wrap;
+    width:@working-width;
+    height:50px; //modify - optional
+    margin:0 auto;
+    padding:0px 0 10px;
+}
+// --------------------------------------------------
+// END POWERISTA BODY STRUCTURE
+
+
+// START LOGIN MODULE ON TOP RIGHT CORNER
+// --------------------------------------------------
+#login{
+    margin-top:5px;
+    margin-right:-10px;
+    float:right;
+    ul
+    {
+        .wrap;
+        list-style-type:none;
+        list-style-position:outside;
+        float:right;
+        margin-bottom:12px;
+        li
+        {
+            .wrap(inline-block);
+            a
+            {
+                .wrap(inline-block);
+                width:auto;
+                height:22px;
+                padding-left:30px;
+                margin-left:15px;
+                font-weight:700;
+                color: #676767;
+            }
+            a.login
+            {
+                color: @orange;
+                background : transparent url(../images/login-signup.png) no-repeat 0px 0px scroll;
+                &:hover {
+                    color: lighten(@orange, 10%);
+                    text-decoration: none;
+                }
+            }
+            a.signup
+            {
+                color:@blue;
+                background : transparent url(../images/login-signup.png) no-repeat 0px -22px scroll;
+                &:hover {
+                    color: lighten(@blue, 10%);
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+    form{
+        .wrap;
+        float:right;
+        div.input-group{
+            width:260px;
+            button.btn
+            {
+                padding:3px 10px;
+                height:30px; //avoid using auto cause browsers render height differently
+                .icon-search
+                {
+                    font-size:14px;
+                }
+            }
+        }
+        input.form-control
+        {
+            padding:3px 10px;
+            height:30px; //avoid using auto cause browsers render height differently
+        }
+    }
+    a.signout
+    {
+        .void;
+        padding-right:14px;
+    }
+}
+html[data-useragent*='Firefox'] #login input.form-control
+{
+
+}
+.ie11 #login input.form-control
+{
+    //padding:4px 10px;
+}
+// --------------------------------------------------
+// END LOGIN MODULE ON TOP RIGHT CORNER
+
+
+// START POWERISTA TOP MENU
+// --------------------------------------------------
+#top-mainmenu{
+    .wrap(inline-block);
+    margin-top:20px;
+    list-style-type:none;
+    list-style-position:outside;
+    background : transparent url(../images/menu-divider.png) no-repeat 0 50% scroll;
+        li
+        {
+            .wrap(inline-block);
+            float:left;
+            a
+            {
+                .wrap(inline-block);
+                font-size: 16px;
+                font-weight:700;
+                color: #676767;
+                text-transform: uppercase;
+                width: (@working-width/5);
+                padding:10px 0;
+                background : transparent url(../images/menu-divider.png) no-repeat 100% 50% scroll;
+                text-align:center;
+                .transition-all(150ms);
+                &:hover {
+                    color: @orange;
+                    text-decoration: none;
+                }
+            }
+            ul.sub-menu
+            {
+                .wrap-absolute(none);
+                border:solid 1px #ebebeb;
+                background-color: #ffffff;
+                margin-top:0px;
+                margin-left:0px;
+                padding:10px 0;
+                width:auto;
+                z-index:200;
+                li
+                {
+                    .wrap;
+                    a
+                    {
+                        .wrap(block);
+                        font-size: 13px;
+                        font-weight:400;
+                        color: #4e575f;
+                        width: auto;
+                        padding: 5px 25px 5px 35px;
+                        text-align:left;
+                        background : transparent url(../images/mass-data-icon-small.png) no-repeat 10px 50px scroll;
+                        .transition-all(150ms);
+                        &:hover {
+                            color: @orange;
+                            font-weight:600;
+                            background : transparent url(../images/mass-data-icon-small.png) no-repeat 10px center scroll;
+                        }
+                    }
+                }
+                ul{
+                    margin-top: -41px;
+                }
+            }
+        }
+        li.menu-item-has-children
+        {
+            &:hover
+            {
+                color:@orange;
+                & > a.sf-with-ul
+                {
+                    color:@orange;
+                }
+                ul.sub-menu
+                {
+                    display:block;
+                    ul{
+                        margin-top: -41px;
+                    }
+                }
+            }
+        }
+        li.current-menu-parent, li.current-menu-item
+        {
+            a
+            {
+                color: @orange;
+            }
+            li.current-menu-item{
+                a
+                {
+                    color: @orange;
+                    font-weight:600;
+                    background : transparent url(../images/mass-data-icon-small.png) no-repeat 10px center scroll;
+                }
+            }
+        }
+}
+// --------------------------------------------------
+// END POWERISTA TOP MENU
+
+
+// START SLIDER - HOMEPAGE
+// --------------------------------------------------
+#slider-home
+{
+    .wrap;
+    width:@working-width;
+    height:auto;
+    margin:0 auto;
+    .slider-pointer
+    {
+        .wrap-absolute;
+        width:0px;
+        height:0px;
+        top:397px;
+        left:30px;
+        border:solid 15px transparent;
+        border-bottom-width: 20px;
+        border-bottom-color: #ffffff;
+        z-index:100;
+    }
+}
+#massdata-slides
+{
+    .wrap;
+    width:@working-width;
+    height:auto;
+    overflow: hidden;
+    background-color: #ffffff;
+    img{
+        .wrap;
+    }
+}
+.massdata-slides-wrapper
+{
+    .box-shadow (0px, 15px, 8px, -11px, lighten(@template-base-color, 25%));
+    border-bottom: solid 1px #999999;
+}
+#massdata-slides-thumbnail
+{
+    .wrap;
+    margin-top:3px;
+    margin-left: -2px;
+    padding-top:5px;
+    height:95px;
+    img
+    {
+        height:70px;
+        width: 90px;
+        margin-left:3px;
+        background: #676767;
+        border: solid 1px #e1e1e1;
+        cursor: pointer;
+        &:hover, &.selected
+        {
+            .transition-all(250ms);
+            border:solid 3px #f2f2f2;
+            border-top-color: #f2f2f2;
+            border-bottom-color: #f2f2f2;
+            .box-shadow (0px, 8px, 5px, -5px, lighten(@template-base-color, 10%));
+            outline: solid 1px #ccc;
+            z-index:999;
+        }
+    }
+}
+.massdata-slides-thumbnail-wrapper
+{
+
+}
+// --------------------------------------------------
+// END SLIDER - HOMEPAGE
+
+
+// START SIDEBAR
+// --------------------------------------------------
+#sidebar
+{
+    .wrap-absolute;
+    margin-top:0px;
+    margin-left:950px;
+    width:auto;
+    height:auto;
+    z-index: 100;
+    ul
+    {
+        //positioning fixed let .affix-top take care else ul specificity will take over
+        list-style-type:none;
+        list-style-position:outside;
+        li
+        {
+            .wrap;
+            width:200px; //gives enough room for the tooltip to show properly when positioning to LEFT
+            a
+            {
+                .wrap;
+                width:47px;
+                height:47px;
+                text-indent:-99999px;
+            }
+            a.sidebar-quote
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px 0px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px 0px scroll; }
+            }
+            a.sidebar-p
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px -47px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px -47px scroll; }
+            }
+            a.sidebar-c
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px -94px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px -94px scroll; }
+            }
+            a.sidebar-d
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px -141px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px -141px scroll; }
+            }
+            a.sidebar-u
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px -188px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px -188px scroll; }
+            }
+            a.sidebar-e
+            {
+                background : transparent url(../images/sidebar.png) no-repeat 0px -235px scroll;
+                &:hover { background : transparent url(../images/sidebar.png) no-repeat -47px -235px scroll; }
+            }
+        }
+    }
+    .tooltip-inner
+    {
+        font-size: 14px;
+        font-weight:700;
+        line-height:2;
+        padding:4px 10px;
+        color: @template-base-color;
+        border:1px solid  #d8d8d8;
+        background-color: #ffffff;
+        height:37px;
+        .border-radius(0px);
+    }
+    .tooltip-arrow
+    {
+        border:none;
+        background : transparent url(../images/left-pointer.png) no-repeat 0px 0px scroll;
+        width:6px;
+        height:6px;
+    }
+}
+ul.affix-top
+{
+    .wrap(inline-block);
+}
+// the affix needs to be inside a relatively/absolutely pre-positioned parent for affix "fixed" position to work smoothly
+ul.affix
+{
+    .default(fixed, inline-block); .void;
+    top:15px;
+}
+ul.affix-bottom
+{
+    .wrap-absolute;
+}
+// --------------------------------------------------
+// END SIDEBAR
+
+
+// START HOMEPAGE PRODUCT TYPE
+// --------------------------------------------------
+#product-type{
+    .wrap;
+    margin-top:40px;
+    width:100%;
+    height:auto;
+    //.bg(15);
+    //.op(8);
+    .category
+    {
+        .wrap;
+        //.bg(1);
+        width:271px;
+        height:auto;
+        margin: 0px auto 50px;
+        a
+        {
+            .wrap;
+            border:1px solid  #f6f6f6;
+            padding:2px;
+            margin: 0px auto;
+            .border-radius(5px);
+            .transition-all(150ms);
+            &:hover
+            {
+                border:1px solid  #c0c0c0;
+            }
+            img
+            {
+                .default;
+                border:1px solid  #ececec;
+            }
+        }
+        a.popular-pendrive, a.designer-pendrive
+        {
+            .wrap-absolute;
+            margin-top:-58px;
+            margin-left: 217px;
+            padding:8px;
+            border:none;
+            img
+            {
+                border:none;
+            }
+        }
+    }
+    .type1
+    {
+        float:left;
+    }
+    .type2
+    {
+        float:left;
+        margin-left:58px;
+    }
+    .type3
+    {
+        float:right;
+    }
+    h3
+    {
+        .void;
+        text-align: center;
+        //.bg(12);
+    }
+    .other-category
+    {
+        .wrap;
+        width:730px;
+        height:auto;
+        margin: 0px auto;
+        background : transparent url(../images/homepage-category-divide.png) no-repeat 365px center scroll;
+        h5
+        {
+            .void;
+            float:left;
+        }
+        a
+        {
+            float:left;
+            color: @template-base-color;
+            line-height: 3.7;
+            text-indent:5px;
+            .transition-all(200ms);
+            &:hover
+            {
+                color: @orange;
+                text-decoration: none;
+            }
+        }
+        img
+        {
+            float:left;
+        }
+        a.download
+        {
+            .wrap-absolute;
+            border:none;
+        }
+        .type4 a.download
+        {
+            top:15px;
+            margin-left:238px;
+        }
+        .type5 a.download
+        {
+            top:15px;
+            margin-left:289px;
+        }
+    }
+    .type4, .type5
+    {
+        .wrap;
+        width:300px;
+        height:auto;
+        float:left;
+    }
+    .type5
+    {
+        margin-left:125px;
+    }
+}
+// --------------------------------------------------
+// END HOMEPAGE PRODUCT TYPE
+
+
+// START FOOTER INFORMATION
+// --------------------------------------------------
+p.copyright
+{
+    float:left;
+    padding-top:5px;
+    font-size:12px;
+    width:570px;
+}
+p.terms
+{
+    float:right;
+    padding-top:5px;
+    font-size:12px;
+    a
+    {
+        color:#4e575f;
+        &:hover
+        {
+            color:darken(#4e575f, 50%);
+        }
+    }
+    a.privacy-policy
+    {
+        .wrap;
+        float:left;
+        margin-right:30px;
+    }
+    a.terms
+    {
+        .wrap;
+        float:left;
+        margin-right:20px;
+    }
+    a.facebook
+    {
+        .wrap;
+        float:left;
+        padding-right:10px;
+        border-left:solid 1px #d8d8d8;
+        vertical-align: top;
+        img
+        {
+            .void;
+            margin-left:15px;
+            margin-right:10px;
+        }
+    }
+}
+// --------------------------------------------------
+// END FOOTER INFORMATION
+
+
+// START CONTACT FORM
+// --------------------------------------------------
+#contact-page{
+    .wrap;
+    width:100%;
+    height:auto;
+    .left
+    {
+        .wrap;
+        width:430px;
+        height:auto;
+        .control-label
+        {
+            font-weight:400;
+            width:125px;
+        }
+        .form-control
+        {
+            .default(relative, inline-block);
+            width:300px;
+            height:30px;
+            font-style: italic;
+            padding:0px 12px;
+        }
+        .textarea
+        {
+            height:auto;
+            padding:7px 10px 10px;
+        }
+        .aligntop
+        {
+            vertical-align: top;
+        }
+        .form-group
+        {
+            margin-bottom:5px;
+            .btn
+            {
+                font-size:16px;
+                margin-left:30px;
+            }
+        }
+        .classification
+        {
+            padding-left: 128px;
+        }
+    }
+    .right
+    {
+        .wrap;
+        width:430px;
+        height:auto;
+
+    }
+}
+// --------------------------------------------------
+// END CONTACT FORM
+
+
+// START PRODUCT ITEM STYLES
+// --------------------------------------------------
+#product-spec
+{
+    .wrap;
+    .item-image
+    {
+        .wrap;
+        width:595px;
+        height:auto;
+        float:left;
+    }
+    .item-spec
+    {
+        .wrap;
+        width:325px;
+        height:auto;
+        float:right;
+        h1.item-code
+        {
+            .void;
+            line-height:1;
+            margin-left:15px;
+            font-size:22px;
+            color: @orange;
+            text-transform: uppercase;
+        }
+        h2
+        {
+            .void;
+            margin-left:15px;
+            margin-top:8px;
+            vertical-align:middle;
+            color: @maroon;
+            span.pencil-icon
+            {
+                .wrap(inline-block);
+                top:5px;
+                width:30px;
+                height:33px;
+                background : transparent url(../images/pencil-icon.png) no-repeat 0px 0px scroll;
+            }
+        }
+        table
+        {
+            width:100%;
+            height:auto;
+            margin-top:10px;
+            tr
+            {
+                td
+                {
+                    vertical-align: top
+                }
+                td.desc
+                {
+                    width:185px;
+                    padding: 3px 0px 3px 15px;
+                    font-weight: 700;
+                    span.red-remark
+                    {
+                        margin-left:10px;
+                    }
+                }
+                td.detail
+                {
+                    widows:115px;
+                    padding: 3px 5px;
+                }
+            }
+            tr:nth-child(even)
+            {
+                background-color:#eaeaea;
+            }
+        }
+    }
+}
+.term-description
+{
+    margin-bottom:20px;
+}
+
+//woocommerce content-single-product
+#powerista-body
+{
+    .item-image
+    {
+        a
+        {
+            img
+            {
+                .box-shadow(0px, 0px, 0px, 0px, transparent );
+            }
+        }
+        a.woocommerce-main-image
+        {
+            .wrap;
+            width:593px;
+            height:386px;
+            border:1px solid #d8d8d8;
+            overflow:hidden;
+            img
+            {
+                position: absolute;
+            }
+        }
+        div.thumbnails
+        {
+            margin-top:10px;
+            margin-right:0.5%;
+            a.zoom
+            {
+                margin-left:1%;
+                margin-right:0;
+                border:1px solid #d8d8d8;
+                float:right;
+            }
+        }
+    }
+}
+// --------------------------------------------------
+// END PRODUCT ITEM STYLES
+
+
+// START PRODUCT STOCK DETAILS
+// --------------------------------------------------
+ul.tab-title
+{
+    .wrap-absolute;
+    margin-top:-43px;
+    font-size:14px;
+    font-weight:bold;
+    text-transform: uppercase;
+    li > a
+    {
+        color: #d8d8d8;
+        border-bottom: #d8d8d8;
+        padding-left: 40px;
+        padding-right: 40px;
+        &:hover
+        {
+            color: @template-base-color;
+        }
+    }
+    li.active > a
+    {
+        background-color: #f9f9f9;
+        &:hover
+        {
+            background-color: #f9f9f9;
+        }
+    }
+}
+
+.product-stock
+{
+    .void;
+    width:100%;
+    border:4px solid  #e1e1e1;
+    tr
+    {
+        background-color: #ffffff;
+        th
+        {
+            color: @blue;
+            font-size:15px;
+            text-transform: uppercase;
+            text-align: center;
+            background-color: @pale-blue;
+            border: solid 1px #e1e1e1;
+            padding:5px 10px;
+        }
+        .sky-blue
+        {
+            color:#ffffff;
+            text-align: center;
+            background-color: @sky-blue;
+            padding:5px 10px;
+        }
+        .stock-remark
+        {
+            font-size:13px;
+            font-style:italic;
+            font-weight:400;
+        }
+        td
+        {
+            border-left: solid 1px #e1e1e1;
+            padding:5px 10px;
+            text-align:center;
+        }
+        td:nth-child(1)
+        {
+            text-align: left;
+            padding:5px 10px 5px 25px;
+        }
+    }
+    tr:nth-child(even)
+    {
+        background-color: #f3f3f3;
+    }
+    tr.total-stock-count
+    {
+        text-transform: uppercase;
+        font-weight:700;
+        border: solid 1px #e1e1e1;
+    }
+}
+
+#tab-request_quote form
+{
+    table.product-stock input.form-control
+    {
+        width:50px;
+        text-align:center;
+    }
+}
+// --------------------------------------------------
+// END PRODUCT STOCK DETAILS
+
+
+// START CURRENT STOCK MENU
+// --------------------------------------------------
+ul#current-stock-menu
+{
+    .wrap(inline-block);
+    width:880px;
+    height:auto;
+    margin-left: 50px;
+    list-style-type:none;
+    list-style-position:outside;
+    li
+    {
+        .wrap(inline-block);
+        width:auto;
+        float:left;
+        a
+        {
+            .wrap(inline-block);
+            font-weight:600;
+            color: @template-base-color;
+            padding:0px 40px;
+            text-align:center;
+            background : transparent url(../images/mass-data-icon.png) no-repeat 0px 50px scroll;
+            .transition-all(150ms);
+            &:hover {
+                color: @orange;
+                text-decoration: none;
+                background : transparent url(../images/mass-data-icon.png) no-repeat left center scroll;
+            }
+        }
+        a.active
+        {
+            color: @orange;
+            background : transparent url(../images/mass-data-icon.png) no-repeat left center scroll;
+        }
+    }
+}
+// --------------------------------------------------
+// END CURRENT STOCK MENU
+
+
+// START CURRENT STOCK LISTS (CATEGORY VIEW)
+// --------------------------------------------------
+ul#stock-item
+{
+    .wrap(inline-block);
+    width:100%;
+    height:auto;
+    margin-top:20px;
+    list-style-type:none;
+    list-style-position:outside;
+    // background-color: red;
+    li
+    {
+        .wrap(inline-block);
+        width:auto;
+        margin:5px;
+        float:left;
+        a
+        {
+            .wrap(inline-block);
+            color: @template-base-color;
+            text-align:center;
+            background-color : #ffffff;
+            padding:10px;
+            .transition-all(150ms);
+            &:hover {
+                text-decoration: none;
+                background-color : #f2f2f2;
+            }
+            img
+            {
+                .wrap;
+                border:1px solid  #d8d8d8;
+                margin: 0px auto 5px;
+            }
+        }
+        a span
+        {
+            .default;
+            font-weight:600;
+        }
+        a span.stock-sku
+        {
+            color:@blue;
+        }
+        a span.stock-item-name
+        {
+            font:600;
+        }
+        a span.stock-quantity
+        {
+            color: #ff0000;
+        }
+    }
+}
+// --------------------------------------------------
+// END CURRENT STOCK LISTS (CATEGORY VIEW)
+
+// START CALENDAR EVENT
+// --------------------------------------------------
+#calendar-event
+{
+    .wrap;
+    width:100%;
+    height:auto;
+    margin-top:5px;
+    background : transparent url(../images/hr-dotted.png) repeat-x left top scroll;
+
+    ul.event-thumbnail
+    {
+        .wrap;
+        width:690px;
+        height:auto;
+        list-style-type:none;
+        list-style-position:outside;
+        margin: 15px auto;
+        overflow:hidden;
+        li
+        {
+            .wrap(inline-block);
+            width:auto;
+            margin-left:5px;
+            float:left;
+            a
+            {
+                .wrap(inline-block);
+                width:auto;
+                float:left;
+                &:hover
+                {
+                    img
+                    {
+                        .transition-all(150ms);
+                        border:solid 1px #c8c8c8;
+                    }
+                }
+                img
+                {
+                    border:solid 1px transparent;
+                }
+            }
+        }
+    }
+    .event-buttons
+    {
+        .wrap;
+        a
+        {
+            .wrap-absolute;
+            margin-top:40px;
+            width:15px;
+            height:15px;
+            border: solid 15px transparent;
+            cursor: pointer;
+        }
+        a.next
+        {
+            right:10px;
+            border-left-color: #e1e1e1;
+            &:hover
+            {
+                border-left-color: darken(#e1e1e1, 15%);
+            }
+        }
+        a.prev
+        {
+            border: solid 15px transparent;
+            border-right-color: #e1e1e1;
+            &:hover
+            {
+                border-right-color: darken(#e1e1e1, 15%);
+            }
+        }
+    }
+    tr
+    {
+        vertical-align:top;
+        td
+        {
+            padding:10px 0;
+        }
+    }
+    tr:nth-child(1)
+    {
+        background : transparent url(../images/hr-dotted.png) repeat-x left bottom scroll;
+        th
+        {
+            padding:8px 0px;
+        }
+    }
+    th:nth-child(1)
+    {
+        width:130px;
+        text-align: center;
+    }
+    th:nth-child(2)
+    {
+        width:730px;
+    }
+    td:nth-child(1)
+    {
+        width:135px;
+        text-align:center;
+    }
+}
+// --------------------------------------------------
+// END CALENDAR EVENT
+
+// START FAQ
+// --------------------------------------------------
+ol.faq
+{
+    .wrap(inline-block);
+    width:100%;
+    counter-reset: counter;
+    list-style: none; //dont want the default styling, im going to use my own styling
+    li
+    {
+        .wrap;
+        counter-increment: counter;
+        text-align: justify;
+        padding-bottom:30px;
+        h6
+        {
+            background : transparent url(../images/hr-dotted.png) repeat-x 0px bottom scroll;
+        }
+        p
+        {
+            padding-left:32px;
+        }
+    }
+    li:before {
+        .wrap;
+        float:left;
+        top:4px;
+        margin-right:20px;
+        content: counter(counter, decimal) ".";
+        font-size:14px;
+        font-weight:600;
+    }
+}
+// --------------------------------------------------
+// END FAQ
+
+
+// START PRODUCT QUOTE / REGISTRATION
+// --------------------------------------------------
+.tab-content
+{
+    #tab-request_quote
+    {
+        .left-form
+        {
+            .wrap;
+            width:440px;
+            height:auto;
+            float:left;
+            .control-label
+            {
+                font-weight:400;
+                width:165px;
+            }
+            .form-control
+            {
+                width:270px;
+            }
+            .classification
+            {
+                padding-left: 170px;
+                margin-top:5px;
+            }
+        }
+        .right-form
+        {
+            .wrap;
+            width:440px;
+            height:auto;
+            float:right;
+        }
+        .control-label
+        {
+            font-weight:400;
+            width:120px;
+        }
+        .form-control
+        {
+            .default(relative, inline-block);
+            width:285px;
+            height:30px;
+            font-style: italic;
+            padding:0px 12px;
+        }
+        .textarea
+        {
+            height:auto;
+            padding:7px 10px 10px;
+        }
+        .aligntop
+        {
+            vertical-align: top;
+        }
+        .form-group
+        {
+            margin-bottom:5px;
+            .btn
+            {
+                font-size:16px;
+                margin-left:15px;
+            }
+        }
+        .classification
+        {
+            padding-left: 123px;
+        }
+        .bootstrap-select
+        {
+            padding:0;
+            margin-bottom:5px;
+            button.btn
+            {
+                height:33px;
+                font-size:13px;
+                margin:0;
+            }
+        }
+        .short-select-tag .bootstrap-select
+        {
+            width:162px;
+        }
+        .fileinput
+        {
+            .input-group
+            {
+                width:201px;
+                margin-left:168px;
+                margin-top:-25px;
+            }
+            .uneditable-input
+            {
+                width:195px;
+            }
+            i.fileinput-exists,
+            a.fileinput-exists,
+            .fileinput-filename,
+            .fileinput-new
+            {
+                font-size:13px;
+                vertical-align:bottom;
+            }
+            i.fileinput-exists
+            {
+                margin-right:5px;
+            }
+            span.fileinput-filename
+            {
+                .default(relative,inline);
+                font-size:11px;
+                line-height:1;
+                z-index: 1;
+            }
+            input#artwork
+            {
+                .wrap-absolute(inline-block); //each worked for cross browser test
+                height:30px;                  //each worked for cross browser test
+                width:100%;                   //each worked for cross browser test
+                -webkit-transform: none;      //each worked for cross browser test
+                   -moz-transform: none;      //each worked for cross browser test
+                    -ms-transform: none;      //each worked for cross browser test
+                     -o-transform: none;      //each worked for cross browser test
+                        transform: none;      //each worked for cross browser test
+            }
+        }
+        div.fileinput-exists .btn-file
+        {
+            display:none;
+        }
+
+    }
+}
+// --------------------------------------------------
+// END PRODUCT QUOTE / REGISTRATION
+
+// START MODAL WINDOW
+// --------------------------------------------------
+.modal
+{
+    padding:8px;
+    background-color: rgba(0,0,0, 0.4);
+    .border-radius(0px);
+    .box-shadow(0px, 0px, 0px, 0px, transparent);
+    h2
+    {
+        .wrap-absolute;
+        margin-top:-45px;
+    }
+    #login-btn
+    {
+        font-weight: 400;
+        font-size:15px;
+        padding:3px 40px;
+        background-color: #df4a32;
+        color:#ffffff;
+        &:hover
+        {
+            background-color: darken(#df4a32, 10%);
+        }
+    }
+    .modal-body
+    {
+        background-color: #ffffff;
+        padding:60px 30px 30px;
+        div.form-group
+        {
+            margin-bottom:10px;
+        }
+        label.control-label
+        {
+            font-weight: 400;
+        }
+    }
+    button.login-modal-close, button.signup-modal-close
+    {
+        .wrap-absolute;
+        top:-10px;
+        right:-10px;
+        width:28px;
+        height:28px;
+        background-color: #ffffff;
+        font-size:26px;
+        font-weight:900;
+        color: #686868;
+        text-align: center;
+        line-height:0;
+        border: solid 4px #383838;
+        .op(10);
+        .border-radius(30px);
+        -webkit-text-shadow: 0px 0px 0px transparent; /* for chrome */
+               -text-shadow: 0px 0px 0px transparent; /* for all browser*/
+                text-shadow: 0px 0px 0px transparent; /* same as above*/
+           -moz-text-shadow: 0px 0px 0px transparent; /* for firefox */
+             -o-text-shadow: 0px 0px 0px transparent; /* for opera */
+            -ms-text-shadow: 0px 0px 0px transparent; /* for ie 9+ */
+         -khtml-text-shadow: 0px 0px 0px transparent; /* for gecko based browser*/
+        z-index:10;
+    }
+}
+#signup-modal
+{
+    .control-label
+    {
+        font-weight:400;
+        width:125px;
+    }
+    .form-control
+    {
+        .default(relative, inline-block);
+        width:300px;
+        height:30px;
+        font-style: italic;
+        padding:0px 12px;
+    }
+    .textarea
+    {
+        height:auto;
+        padding:7px 10px 10px;
+    }
+    .aligntop
+    {
+        vertical-align: top;
+    }
+    .form-group
+    {
+        margin-bottom:5px;
+        .btn
+        {
+            font-size:16px;
+            margin-left:30px;
+        }
+    }
+    .classification
+    {
+        padding-left: 128px;
+    }
+}
+.modal-backdrop
+{
+    &.fade
+    {
+        &.in{
+            background-color: black;
+            .op(7);
+        }
+    }
+}
+// --------------------------------------------------
+// END MODAL WINDOW
+
+// START BLIND-PRODUCT QUOTE / REGISTRATION
+// --------------------------------------------------
+#orange-quote
+{
+    .left-form
+    {
+        .wrap;
+        width:440px;
+        height:auto;
+        float:left;
+        .control-label
+        {
+            font-weight:400;
+            width:165px;
+        }
+        .form-control
+        {
+            width:270px;
+        }
+        .classification
+        {
+            padding-left: 170px;
+            margin-top:5px;
+        }
+    }
+    .right-form
+    {
+        .wrap;
+        width:440px;
+        height:auto;
+        float:right;
+    }
+    .control-label
+    {
+        font-weight:400;
+        width:120px;
+    }
+    .form-control
+    {
+        .default(relative, inline-block);
+        width:285px;
+        height:30px;
+        font-style: italic;
+        padding:0px 12px;
+    }
+    .textarea
+    {
+        height:auto;
+        padding:7px 10px 10px;
+    }
+    .aligntop
+    {
+        vertical-align: top;
+    }
+    .form-group
+    {
+        margin-bottom:5px;
+        .btn
+        {
+            font-size:16px;
+            margin-left:15px;
+        }
+    }
+    .classification
+    {
+        padding-left: 123px;
+    }
+    .bootstrap-select
+    {
+        padding:0;
+        margin-bottom:5px;
+        button.btn
+        {
+            height:33px;
+            font-size:13px;
+            margin:0;
+        }
+    }
+    .short-select-tag .bootstrap-select
+    {
+        width:162px;
+    }
+    .fileinput
+    {
+        .input-group
+        {
+            width:201px;
+            margin-left:168px;
+            margin-top:-25px;
+        }
+        .uneditable-input
+        {
+            width:195px;
+        }
+        i.fileinput-exists,
+        a.fileinput-exists,
+        .fileinput-filename,
+        .fileinput-new
+        {
+            font-size:13px;
+            vertical-align:bottom;
+        }
+        i.fileinput-exists
+        {
+            margin-right:5px;
+        }
+        span.fileinput-filename
+        {
+            .default(relative,inline);
+            font-size:11px;
+            line-height:1;
+            z-index: 1;
+        }
+        input#artwork
+        {
+            .wrap-absolute(inline-block); //each worked for cross browser test
+            height:30px;                  //each worked for cross browser test
+            width:100%;                   //each worked for cross browser test
+            -webkit-transform: none;      //each worked for cross browser test
+               -moz-transform: none;      //each worked for cross browser test
+                -ms-transform: none;      //each worked for cross browser test
+                 -o-transform: none;      //each worked for cross browser test
+                    transform: none;      //each worked for cross browser test
+        }
+    }
+    div.fileinput-exists .btn-file
+    {
+        display:none;
+    }
+
+}
+// --------------------------------------------------
+// END BLIND-PRODUCT QUOTE / REGISTRATION
+
+// START PRODUCT CATEGORY MENU
+// --------------------------------------------------
+ul#item-categories-menu
+{
+    .wrap(inline-block);
+    width:@working-width;
+    height:auto;
+    list-style-type:none;
+    list-style-position:outside;
+    li
+    {
+        .wrap(inline-block);
+        width:auto;
+        float:left;
+        margin-bottom:5px;
+        background : transparent url(../images/hr-dotted.png) repeat-x left top scroll;
+        a
+        {
+            .wrap(inline-block);
+            font-weight:600;
+            color: @template-base-color;
+            width:(@working-width/4);
+            padding: 7px 0px 4px 40px;
+            text-align:left;
+            vertical-align: bottom;
+            background : transparent url(../images/mass-data-icon.png) no-repeat 0px 50px scroll;
+            .transition-all(150ms);
+            &:hover {
+                color: @orange;
+                text-decoration: none;
+                background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+            }
+        }
+        a.active
+        {
+            color: @orange;
+            background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+        }
+        &.current-menu-item
+        {
+            a
+            {
+                color: @orange;
+                text-decoration: none;
+                background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+            }
+        }
+    }
+    li:nth-child(-n+4)
+    {
+        background:none;
+    }
+}
+
+div#custom_list_five ul#item-categories-menu
+{
+    .wrap(inline-block);
+    width:@working-width;
+    height:auto;
+    list-style-type:none;
+    list-style-position:outside;
+    li
+    {
+        .wrap(inline-block);
+        width:auto;
+        float:left;
+        padding-bottom:5px;
+        background : transparent url(../images/hr-dotted.png) repeat-x left bottom scroll;
+        a
+        {
+            .wrap(inline-block);
+            font-weight:600;
+            color: @template-base-color;
+            width:(@working-width/5);
+            padding: 7px 0px 4px 40px;
+            text-align:left;
+            vertical-align: bottom;
+            background : transparent url(../images/mass-data-icon.png) no-repeat 0px 50px scroll;
+            .transition-all(150ms);
+            &:hover {
+                color: @orange;
+                text-decoration: none;
+                background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+            }
+        }
+        a.active
+        {
+            color: @orange;
+            background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+        }
+        &.current-menu-item
+        {
+            a
+            {
+                color: @orange;
+                text-decoration: none;
+                background : transparent url(../images/mass-data-icon.png) no-repeat left 60% scroll;
+            }
+        }
+    }
+}
+// --------------------------------------------------
+// END PRODUCT CATEGORY MENU
+
+
+// START 404 NOT FOUND
+// --------------------------------------------------
+.four-o-four
+{
+    color:#e8e8e8;
+    font-size:90px;
+}
+.four-o-four-desc
+{
+    color:@orange;
+    font-size:19px;
+    font-style:italic;
+}
+#for-404
+{
+
+    form{
+        .wrap;
+        float:right;
+        div.input-group{
+            width:99%;
+            button.btn
+            {
+                padding:5px 25px;
+                height:65px; //avoid using auto cause browsers render height differently
+                .icon-search
+                {
+                    font-size:32px;
+                    color:#444444;
+                }
+            }
+        }
+        input.form-control
+        {
+            padding:5px 25px;
+            height:65px; //avoid using auto cause browsers render height differently
+            font-size:20px;
+        }
+    }
+}
+// --------------------------------------------------
+// END 404 NOT FOUND
+
+
+// START SEARCH LISTING
+// --------------------------------------------------
+ol.search-list
+{
+    .wrap(inline-block);
+    width:100%;
+    counter-reset: counter;
+    list-style: none; //dont want the default styling, im going to use my own styling
+    li
+    {
+        .wrap;
+        counter-increment: counter;
+        text-align: justify;
+        color: @orange;
+        h5
+        {
+            background : transparent url(../images/hr-dotted.png) repeat-x 0px bottom scroll;
+        }
+        blockquote.entry-summary p
+        {
+            font-size:13px;
+            font-style:italic;
+            color:#858585;
+        }
+        .entry-thumbnail img.attachment-post-thumbnail
+        {
+            width:200px;
+            height:130px;
+            border: 1px solid #d8d8d8;
+        }
+    }
+    li:before {
+        .wrap;
+        float:left;
+        top:4px;
+        margin-right:12px;
+        content: counter(counter, decimal) ".";
+        font-size:16px;
+        font-weight:600;
+    }
+}
+// --------------------------------------------------
+// END SEARCH LISTING
+
+
+// START MISC TWEAKING WITH WOOCOMMERCE
+// --------------------------------------------------
+div.pp_woocommerce div.ppt
+{
+    .wrap;
+    font-weight:700;
+    font-size:22px;
+    color:@orange !important;
+}
+div.pp_woocommerce .pp_top
+{
+    display:none;
+}
+div.pp_woocommerce a.pp_close
+{
+    font-size: 13px!important;
+}
+div.pp_woocommerce a.pp_next:before,
+div.pp_woocommerce a.pp_previous:before
+{
+    height:25px;
+    width:25px;
+    font-size: 18px!important;
+}
+div.pp_nav a.pp_arrow_previous,
+div.pp_nav a.pp_arrow_next,
+div.pp_nav a.pp_arrow_previous:hover,
+div.pp_nav a.pp_arrow_next:hover
+{
+    width:20px;
+    height:20px;
+    margin-top:1px;
+    font-size:15px !important;
+}
+.woocommerce nav.woocommerce-pagination,
+.woocommerce #content nav.woocommerce-pagination,
+.woocommerce-page nav.woocommerce-pagination,
+.woocommerce-page #content nav.woocommerce-pagination {
+    display:block;
+    text-align: center; //amazing without width property can center
+}
+.woocommerce nav.woocommerce-pagination ul,
+.woocommerce #content nav.woocommerce-pagination ul,
+.woocommerce-page nav.woocommerce-pagination ul,
+.woocommerce-page #content nav.woocommerce-pagination ul
+{
+    display: inline-block;
+    white-space: nowrap;
+    padding: 0;
+    clear: both;
+    border: 1px solid #dfdbdf;
+    border-right: 0;
+    margin: 1px;
+}
+.woocommerce nav.woocommerce-pagination ul li,
+.woocommerce #content nav.woocommerce-pagination ul li,
+.woocommerce-page nav.woocommerce-pagination ul li,
+.woocommerce-page #content nav.woocommerce-pagination ul li {
+    border-right: 1px solid #dfdbdf;
+    padding: 0;
+    margin: 0;
+    float: left;
+    display: inline;
+    overflow: hidden;
+}
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce #content nav.woocommerce-pagination ul li a,
+.woocommerce-page nav.woocommerce-pagination ul li a,
+.woocommerce-page #content nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span,
+.woocommerce #content nav.woocommerce-pagination ul li span,
+.woocommerce-page nav.woocommerce-pagination ul li span,
+.woocommerce-page #content nav.woocommerce-pagination ul li span {
+    padding: 10px 10px;
+    line-height:2;
+}
+.alol{position: relative;}
+// --------------------------------------------------
+// END MISC TWEAKING WITH WOOCOMMERCE

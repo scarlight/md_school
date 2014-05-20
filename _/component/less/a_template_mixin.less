@@ -1,0 +1,71 @@
+.oilpaper(){
+    //background: transparent url(../_/images/oilpaper/fd107.jpg) no-repeat center 0 scroll;
+    //.op(5);
+}
+.default (@position:relative, @display:block){ 
+    position:@position;
+    display:@display;
+}
+.void (){
+    margin:0;
+    padding:0;
+    border:0;
+}
+.wrap(@display:block){
+    .default(relative, @display);
+    .void();
+}
+.wrap-absolute(@display:block){
+    .default(absolute, @display);
+    .void();
+}
+//http://designshack.net/articles/css/10-less-css-examples-you-should-steal-for-your-projects/
+.op(@opacity)
+{
+
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacity)"; //IE 8
+    filter:alpha(opacity=@opacity); //IE 5-7
+    -moz-opacity:(@opacity/10); //Netscape
+    -khtml-opacity:(@opacity/10); //Safari 1.x
+    opacity:(@opacity/10); //Good browsers
+}
+.border-radius (@radius) {
+    -webkit-border-radius: @radius;
+    -moz-border-radius: @radius;
+    border-radius: @radius;
+}
+.border-radius-topleft (@radius) {
+    -webkit-border-top-left-radius: @radius;
+        moz-border-radius-topleft : @radius;
+            border-top-left-radius: @radius;
+}
+.border-radius-topright (@radius) {
+    -webkit-border-top-right-radius: @radius;
+        moz-border-radius-topright : @radius;
+            border-top-right-radius: @radius;
+}
+.border-radius-bottomleft (@radius) {
+    -webkit-border-bottom-left-radius: @radius;
+        moz-border-radius-bottomleft : @radius;
+            border-bottom-left-radius: @radius;
+}
+.border-radius-bottomright (@radius) {
+    -webkit-border-bottom-right-radius: @radius;
+        moz-border-radius-bottomright : @radius;
+            border-bottom-right-radius: @radius;
+}
+.box-shadow (@h-shadow, @v-shadow, @blur, @spread, @color){
+    -webkit-box-shadow: @h-shadow @v-shadow @blur @spread @color;
+            box-shadow: @h-shadow @v-shadow @blur @spread @color;
+}
+.box-shadow-inset (@h-shadow, @v-shadow, @blur, @spread, @color){
+    -webkit-box-shadow: @h-shadow @v-shadow @blur @spread @color inset;
+            box-shadow: @h-shadow @v-shadow @blur @spread @color inset;
+}
+.transition-all(@transition) { 
+    -webkit-transition:all @transition ease;
+    -msie-transition:all @transition ease;
+    -moz-transition:all @transition ease;
+    -o-transition:all @transition ease;
+    transition:all @transition ease;
+}

@@ -1382,6 +1382,7 @@ ul#stock-item li a img {
 ul#stock-item li a span {
   position: relative;
   display: block;
+  width: 202px;
   font-weight: 600;
 }
 ul#stock-item li a span.stock-sku {
