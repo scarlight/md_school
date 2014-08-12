@@ -323,6 +323,25 @@ cs(document).ready(function(){
             cs("p.search-result").remove();
     }
 
+    // -----------------------------------------------------------
+
+    if(cs("ul#stock-item").length > 0){
+        var
+            highest_li = 0,
+            stock_li = cs("ul#stock-item li");
+        stock_li.each(function(i, elem){
+            if( highest_li < cs(this).outerHeight() )
+            {
+                highest_li = cs(this).outerHeight();
+            }
+        });
+
+        stock_li.each(function(i, elem){
+           cs(this).css({'height':highest_li+'px'});
+        });
+
+    }
+
     /*
     // -----------------------------------------------------------
 
